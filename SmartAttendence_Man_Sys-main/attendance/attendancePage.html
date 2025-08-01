@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Attendance Report</title>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; margin: 0; }
+    header, footer { background: #002855; color: white; text-align: center; padding: 1em; }
+    main { display: flex; justify-content: center; padding: 2em; }
+    .container { background: white; padding: 2em; border-radius: 10px; width: 80%; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1em; }
+    th, td { border: 1px solid #ccc; padding: 12px; text-align: center; }
+    th { background: #0056b3; color: white; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    #downloadBtn { margin-top: 1em; padding: 10px 20px; background: #0077cc; color: white; border: none; border-radius: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Attendance Report</h1>
+  </header>
+
+  <main>
+    <div class="container">
+      <h3>📋 Student Attendance</h3>
+      <table id="attendanceTable">
+        <thead>
+          <tr>
+            <th>ID</th><th>Name</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button id="downloadBtn">⬇️ Download CSV</button>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 Dr. G.U. Pope College of Engineering
+  </footer>
+
+  <script>
+    const studentDatabase = {
+        "950422104003": "M.Akash",
+        "950422104004": "M.AriramaSelvam",
+        "950422104011": "N.Davidjones",
+        "950422104030": "M.Linga Bharath",
+        "950422104035": "P.Mari Selvam",
+        "950422104037": "S.Matheswaran",
+        "950422104038": "C.Michael Selvin",
+        "950422104041": "V.Muthukumar",
+        "950422104051": "C.Selton",
+        "950422104053": "S.Sheikanwar",
+        "950422104054": "S.Sivabalan",
+        "950422104055": "K.Srikaran",
+        "950422104058": "B.Vignesh",
+        "950422104059": "L.Vilvadurai"
+    };
+
+    const presentSet = new Set(JSON.parse(localStorage.getItem("presentStudents") || "[]"));
+    const tbody = document.querySelector("#attendanceTable tbody");
+
+    for (const [id, name] of Object.entries(studentDatabase)) {
+      const status = presentSet.has(id) ? "✅ Present" : "❌ Absent";
+      const row = `<tr><td>${id}</td><td>${name}</td><td>${status}</td></tr>`;
+      tbody.insertAdjacentHTML("beforeend", row);
+    }
+
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      const table = document.getElementById("attendanceTable");
+      const rows = Array.from(table.rows).map(row =>
+        Array.from(row.cells).map(cell => cell.innerText).join(",")
+      ).join("\n");
+
+      const blob = new Blob([rows], { type: "text/csv" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "attendance_report.csv";
+      a.click();
+    });
+  </script>
+</body>
+</html>

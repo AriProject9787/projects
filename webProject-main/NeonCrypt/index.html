@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon Encryption & Decryption</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<style>
+    body {
+        background: radial-gradient(circle at top, #0f0c29, #302b63, #24243e);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #00ffe0;
+        text-align: center;
+        padding: 20px;
+        margin: 0;
+    }
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        text-shadow: 0 0 20px #00ffe0, 0 0 30px #00b3ff;
+    }
+
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .box {
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid #00ffe0;
+        border-radius: 15px;
+        padding: 20px;
+        width: 350px;
+        box-shadow: 0 0 20px #00ffe0, inset 0 0 10px #00b3ff;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 30px #00ffe0, inset 0 0 20px #00b3ff;
+    }
+
+    textarea, input {
+        width: 100%;
+        margin: 10px 0;
+        padding: 10px;
+        font-size: 1em;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid #00ffe0;
+        border-radius: 8px;
+        color: #fff;
+        resize: none;
+    }
+
+    button {
+        padding: 10px 20px;
+        margin-top: 10px;
+        font-size: 1em;
+        color: #fff;
+        background: #00b3ff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    button:hover {
+        background: #00ffe0;
+        transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+        .box {
+            width: 90%;
+        }
+    }
+</style>
+</head>
+<body>
+<h1>Futuristic Neon Encryption & Decryption</h1>
+<div class="container">
+    <!-- Encryption Box -->
+    <div class="box">
+        <h2>Encrypt</h2>
+        <textarea id="encInput" rows="5" placeholder="Enter text to encrypt..."></textarea>
+        <input type="text" id="encPassword" placeholder="Enter password">
+        <button onclick="encryptText()">Encrypt</button>
+        <textarea id="encOutput" rows="5" readonly placeholder="Encrypted text will appear here..."></textarea>
+    </div>
+
+    <!-- Decryption Box -->
+    <div class="box">
+        <h2>Decrypt</h2>
+        <textarea id="decInput" rows="5" placeholder="Paste encrypted text..."></textarea>
+        <input type="text" id="decPassword" placeholder="Enter password">
+        <button onclick="decryptText()">Decrypt</button>
+        <textarea id="decOutput" rows="5" readonly placeholder="Decrypted text will appear here..."></textarea>
+    </div>
+</div>
+
+<script>
+    function encryptText() {
+        const text = document.getElementById("encInput").value;
+        const password = document.getElementById("encPassword").value;
+        if (!text || !password) {
+            alert("Please enter text and password.");
+            return;
+        }
+        const encrypted = CryptoJS.AES.encrypt(text, password).toString();
+        document.getElementById("encOutput").value = encrypted;
+    }
+
+    function decryptText() {
+        const encryptedText = document.getElementById("decInput").value;
+        const password = document.getElementById("decPassword").value;
+        if (!encryptedText || !password) {
+            alert("Please enter encrypted text and password.");
+            return;
+        }
+        try {
+            const bytes = CryptoJS.AES.decrypt(encryptedText, password);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            if (!decrypted) throw new Error("Wrong password or invalid text");
+            document.getElementById("decOutput").value = decrypted;
+        } catch (e) {
+            document.getElementById("decOutput").value = "Decryption failed!";
+        }
+    }
+</script>
+</body>
+</html>

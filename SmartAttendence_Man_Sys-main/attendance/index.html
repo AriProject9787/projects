@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Attendance Portal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>Dr. G. U. Pope College of Engineering</h2>
+    <p><strong> Student QR Code Attendance Website</strong></p>
+    <ul>
+      <li> Student Scan</li>
+      <li> Staff Login</li>
+      <li> Report Download</li>
+    </ul>
+    <p> <a href="https://drgupopeengg.org" target="_blank">Visit College Website</a></p>
+    <p> <a href="https://drgupopeengg.org/computer-science-engineering"target="_blank">About CSE Department</a></p>
+  </aside>
+
+  <main class="main-content">
+
+    <section class="box">
+      <h3>🎓 Student QR Scanner</h3>
+      <video id="video" autoplay></video>
+      <div class="status">
+        <p id="scannedIdText"></p>
+        <p id="statusText"></p>
+      </div>
+    </section>
+
+    <section class="box">
+      <h3>👩‍🏫 Staff Login</h3>
+      <input type="text" id="username" placeholder="Username" />
+      <input type="password" id="password" placeholder="Password" />
+      <button id="staffLoginBtn">Login</button>
+      <div class="status"><p id="staffStatusText"></p></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
