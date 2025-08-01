@@ -1,0 +1,83 @@
+body {
+    font-family: 'Arial', sans-serif;
+
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    margin: 0;
+}
+
+.container {
+    margin: 2%;
+    text-align: center;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+#countdowns {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.countdown-item {
+    background: #8ceee6;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.countdown-item span {
+    font-size: 1.2em;
+}
+
+
+/* General container styling */
+.container {
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    text-align: center;
+}
+
+/* Styling for "Today's Birthdays!" section */
+#countdown {
+    background-color: #78e611; /* Bright yellow background */
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'Arial', sans-serif;
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Heading styling for "Today's Birthdays!" */
+.container h1:first-of-type {
+    color: #ff5722; /* Bright orange color */
+    font-size: 24px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+/* Countdown item styling */
+#countdown div {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
