@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Birthday Reminder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 450px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    input, button, label, select {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    button {
+      background: #4CAF50;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .link {
+      text-align: center;
+      margin-top: 10px;
+      cursor: pointer;
+      color: blue;
+    }
+    .birthday-card {
+      background: #fff;
+      margin: 8px 0;
+      padding: 12px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    .today-card {
+      background: #e6ffea;
+      border-left: 4px solid #4CAF50;
+    }
+    .countdown {
+      margin-top: 6px;
+      font-weight: 500;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <!-- Signup -->
+  <div class="container" id="signupContainer" style="display:none;">
+    <h2>Create Account</h2>
+    <input type="text" id="signupUsername" placeholder="Username" />
+    <input type="email" id="signupEmail" placeholder="Email" />
+    <input type="password" id="signupPassword" placeholder="Password" />
+    <input type="date" id="signupDob" placeholder="Date of Birth" />
+    <select id="signupDobVisibility">
+      <option value="public">Public</option>
+      <option value="private">Private</option>
+    </select>
+    
+    <label>
+      <input type="checkbox" id="termsCheckbox" />
+      I agree to the <a href="terms.html" target="_blank">Terms and Conditions</a>
+    </label>
+
+    <button id="signupBtn">Sign Up</button>
+    <div class="link" onclick="toggleView('login')">Already have an account? Login</div>
+  </div>
+
+  <!-- Login -->
+  <div class="container" id="loginContainer">
+    <h2>Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email" />
+    <input type="password" id="loginPassword" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+    <div class="link" onclick="toggleView('signup')">New user? Sign Up</div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="container" id="dashboardContainer" style="display:none;">
+    <h2>Dashboard</h2>
+    <button id="logoutBtn">Logout</button>
+    <input type="text" id="name" placeholder="Name" />
+    <input type="date" id="dob" />
+    <select id="dobVisibility">
+      <option value="public">Public</option>
+      <option value="private">Private</option>
+    </select>
+    <button id="addBtn">Add Birthday</button>
+
+    <h3>🎂 Today</h3>
+    <div id="today"></div>
+    <h3>📅 Upcoming</h3>
+    <div id="upcoming"></div>
+    <h3>✅ Past</h3>
+    <div id="past"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA5dtwCn09lEtrAOP3ih_Iq9YDFSKB181w",
+      authDomain: "birthdaycountdown9787.firebaseapp.com",
+      projectId: "birthdaycountdown9787",
+      storageBucket: "birthdaycountdown9787.firebasestorage.app",
+      messagingSenderId: "1057605732413",
+      appId: "1:1057605732413:web:18768b4a6bb5a7c2f64254",
+      measurementId: "G-M3914S92YP"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let countdownIntervals = [];
+
+    function clearCountdownIntervals() {
+      countdownIntervals.forEach(id => clearInterval(id));
+      countdownIntervals = [];
+    }
+
+    function toggleView(view) {
+      document.getElementById("signupContainer").style.display = view === "signup" ? "block" : "none";
+      document.getElementById("loginContainer").style.display = view === "login" ? "block" : "none";
+    }
+    window.toggleView = toggleView;
+    toggleView("login");
+
+    // Sign up
+    document.getElementById("signupBtn").addEventListener("click", async () => {
+      const username = document.getElementById("signupUsername").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      const dob = document.getElementById("signupDob").value;
+      const visibility = document.getElementById("signupDobVisibility").value;
+      const termsChecked = document.getElementById("termsCheckbox").checked;
+
+      if (!username || !email || !password || !dob) {
+        alert("All fields are required");
+        return;
+      }
+      if (!termsChecked) { alert("Please accept the Terms and Conditions"); return; }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        currentUser = userCredential.user;
+
+        // Save user profile in Firestore
+        await addDoc(collection(db, "users"), {
+          uid: currentUser.uid,
+          username,
+          dob,
+          visibility
+        });
+
+        // Automatically add own birthday
+        await addDoc(collection(db, "birthdays"), {
+          uid: currentUser.uid,
+          name: username,
+          dob,
+          visibility
+        });
+
+        // Show dashboard and prefill data
+        showDashboard();
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+
+    // Login
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        currentUser = userCredential.user;
+        showDashboard();
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      currentUser = null;
+      toggleView("login");
+      document.getElementById("dashboardContainer").style.display = "none";
+    });
+
+    // Add birthday
+    document.getElementById("addBtn").addEventListener("click", async () => {
+      if (!currentUser) return;
+      const name = document.getElementById("name").value;
+      const dob = document.getElementById("dob").value;
+      const visibility = document.getElementById("dobVisibility").value;
+      if (!name || !dob) { alert("Enter both name and date"); return; }
+
+      await addDoc(collection(db, "birthdays"), {
+        uid: currentUser.uid,
+        name,
+        dob,
+        visibility
+      });
+
+      loadBirthdays();
+    });
+
+    // Load birthdays
+    async function loadBirthdays() {
+      if (!currentUser) return;
+      const todayContainer = document.getElementById('today');
+      const upcomingContainer = document.getElementById('upcoming');
+      const pastContainer = document.getElementById('past');
+      clearCountdownIntervals();
+      todayContainer.innerHTML = "";
+      upcomingContainer.innerHTML = "";
+      pastContainer.innerHTML = "";
+
+      const snapshot = await getDocs(collection(db, "birthdays"));
+      const today = new Date();
+
+      snapshot.forEach(docSnap => {
+        const person = docSnap.data();
+        // Hide private birthdays of other users
+        if (person.visibility === "private" && person.uid !== currentUser.uid) return;
+
+        const dob = new Date(person.dob);
+        const thisYear = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+        const age = today.getFullYear() - dob.getFullYear();
+
+        if (thisYear.toDateString() === today.toDateString()) {
+          updateCard(person, docSnap.id, todayContainer, age, thisYear);
+        } else if (thisYear > today) {
+          updateCard(person, docSnap.id, upcomingContainer, age, thisYear);
+        } else {
+          updateCard(person, docSnap.id, pastContainer, age, thisYear);
+        }
+      });
+    }
+
+    // Create card
+    function updateCard(person, id, container, age, date) {
+      const target = (date instanceof Date) ? date : new Date(date);
+      const card = document.createElement("div");
+      card.className = "birthday-card";
+
+      let dobDisplay = target.toDateString();
+      let ageDisplay = `(${age} yrs)`;
+
+      card.innerHTML = `<div><b>${person.name}</b> 🎂 ${ageDisplay} - ${dobDisplay}</div><div class="countdown" aria-live="polite"></div>`;
+      container.appendChild(card);
+
+      const countdownEl = card.querySelector('.countdown');
+      function tick() {
+        const now = new Date();
+        const dist = target - now;
+        if (dist > 0) {
+          const days = Math.floor(dist / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((dist % (1000 * 60)) / 1000);
+          countdownEl.textContent = `⏳ ${days}d ${hours}h ${minutes}m ${seconds}s left`;
+          card.classList.remove('today-card');
+        } else if (target.toDateString() === now.toDateString()) {
+          countdownEl.textContent = `🎉 Today!`;
+          card.classList.add('today-card');
+        } else {
+          countdownEl.textContent = `✅ Already celebrated this year`;
+          card.classList.remove('today-card');
+        }
+      }
+      tick();
+      countdownIntervals.push(setInterval(tick, 1000));
+    }
+
+    // Show dashboard with prefilled user data
+    async function showDashboard() {
+      document.getElementById("signupContainer").style.display = "none";
+      document.getElementById("loginContainer").style.display = "none";
+      document.getElementById("dashboardContainer").style.display = "block";
+
+      if (currentUser) {
+        const usersSnapshot = await getDocs(collection(db, "users"));
+        const userDoc = usersSnapshot.docs.find(doc => doc.data().uid === currentUser.uid);
+        if (userDoc) {
+          const data = userDoc.data();
+          document.getElementById("name").value = data.username || "";
+          document.getElementById("dob").value = data.dob || "";
+          document.getElementById("dobVisibility").value = data.visibility || "public";
+        }
+      }
+
+      loadBirthdays();
+    }
+  </script>
+</body>
+</html>
