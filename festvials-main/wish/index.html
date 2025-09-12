@@ -10,16 +10,17 @@
       background: #f9f9f9;
       margin: 0;
       padding: 20px;
+      transition: background 0.3s, color 0.3s;
     }
     .container {
-      max-width: 450px;
+      max-width: 500px;
       margin: auto;
       background: #fff;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    h2 {
+    h2, h3 {
       text-align: center;
       color: #333;
     }
@@ -63,6 +64,33 @@
       font-weight: 500;
       color: #444;
     }
+    /* Dark theme */
+    body.dark {
+      background: #181818;
+      color: #f0f0f0;
+    }
+    body.dark .container {
+      background: #242424;
+      color: #f0f0f0;
+    }
+    body.dark input, body.dark select {
+      background: #333;
+      color: #fff;
+      border: 1px solid #555;
+    }
+    body.dark .birthday-card {
+      background: #2d2d2d;
+      color: #f0f0f0;
+    }
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #555;
+    }
+    body.dark footer {
+      color: #aaa;
+    }
   </style>
 </head>
 <body>
@@ -74,13 +102,13 @@
     <input type="password" id="signupPassword" placeholder="Password" />
     <input type="date" id="signupDob" placeholder="Date of Birth" />
     <select id="signupDobVisibility">
+      <option value="private" selected>Private</option>
       <option value="public">Public</option>
-      <option value="private">Private</option>
     </select>
     
     <label>
-      <input type="checkbox" id="termsCheckbox" />
-      I agree to the <a href="terms.html" target="_blank">Terms and Conditions</a>
+      <center><input type="checkbox" id="termsCheckbox" /></center>
+      <center>I agree to the <a href="terms.html" target="_blank">Terms and Conditions</a></center>
     </label>
 
     <button id="signupBtn">Sign Up</button>
@@ -98,15 +126,9 @@
 
   <!-- Dashboard -->
   <div class="container" id="dashboardContainer" style="display:none;">
-    <h2>Dashboard</h2>
-    <button id="logoutBtn">Logout</button>
-    <input type="text" id="name" placeholder="Name" />
-    <input type="date" id="dob" />
-    <select id="dobVisibility">
-      <option value="public">Public</option>
-      <option value="private">Private</option>
-    </select>
-    <button id="addBtn">Add Birthday</button>
+    <h2 id="welcomeMsg">Dashboard</h2>
+
+    <button id="themeToggle">🌙 Toggle Theme</button>
 
     <h3>🎂 Today</h3>
     <div id="today"></div>
@@ -114,12 +136,27 @@
     <div id="upcoming"></div>
     <h3>✅ Past</h3>
     <div id="past"></div>
+
+    <h3>Add Birthday</h3>
+    <input type="text" id="name" placeholder="Name" />
+    <input type="date" id="dob" />
+    <select id="dobVisibility">
+      <option value="private" selected>Private</option>
+      <option value="public">Public</option>
+    </select>
+    <button id="addBtn">Add Birthday</button>
+
+    <button id="logoutBtn">Logout</button>
   </div>
+
+  <footer>
+    © <span id="year"></span> Arirama Selvam - <span id="todayDate"></span>
+  </footer>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA5dtwCn09lEtrAOP3ih_Iq9YDFSKB181w",
@@ -136,6 +173,7 @@
     const db = getFirestore(app);
 
     let currentUser = null;
+    let currentUsername = null;
     let countdownIntervals = [];
 
     function clearCountdownIntervals() {
@@ -149,6 +187,11 @@
     }
     window.toggleView = toggleView;
     toggleView("login");
+
+    // Theme toggle
+    document.getElementById("themeToggle").addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+    });
 
     // Sign up
     document.getElementById("signupBtn").addEventListener("click", async () => {
@@ -168,8 +211,8 @@
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         currentUser = userCredential.user;
+        currentUsername = username;
 
-        // Save user profile in Firestore
         await addDoc(collection(db, "users"), {
           uid: currentUser.uid,
           username,
@@ -177,7 +220,6 @@
           visibility
         });
 
-        // Automatically add own birthday
         await addDoc(collection(db, "birthdays"), {
           uid: currentUser.uid,
           name: username,
@@ -185,8 +227,7 @@
           visibility
         });
 
-        // Show dashboard and prefill data
-        showDashboard();
+        showDashboard(username);
       } catch (error) {
         alert(error.message);
       }
@@ -209,6 +250,7 @@
     document.getElementById("logoutBtn").addEventListener("click", async () => {
       await signOut(auth);
       currentUser = null;
+      currentUsername = null;
       toggleView("login");
       document.getElementById("dashboardContainer").style.display = "none";
     });
@@ -218,7 +260,12 @@
       if (!currentUser) return;
       const name = document.getElementById("name").value;
       const dob = document.getElementById("dob").value;
-      const visibility = document.getElementById("dobVisibility").value;
+      let visibility = "private";
+
+      if (currentUsername === "admin") {
+        visibility = document.getElementById("dobVisibility").value;
+      }
+
       if (!name || !dob) { alert("Enter both name and date"); return; }
 
       await addDoc(collection(db, "birthdays"), {
@@ -247,7 +294,6 @@
 
       snapshot.forEach(docSnap => {
         const person = docSnap.data();
-        // Hide private birthdays of other users
         if (person.visibility === "private" && person.uid !== currentUser.uid) return;
 
         const dob = new Date(person.dob);
@@ -255,18 +301,17 @@
         const age = today.getFullYear() - dob.getFullYear();
 
         if (thisYear.toDateString() === today.toDateString()) {
-          updateCard(person, docSnap.id, todayContainer, age, thisYear);
+          updateCard(person, todayContainer, age, thisYear);
         } else if (thisYear > today) {
-          updateCard(person, docSnap.id, upcomingContainer, age, thisYear);
+          updateCard(person, upcomingContainer, age, thisYear);
         } else {
-          updateCard(person, docSnap.id, pastContainer, age, thisYear);
+          updateCard(person, pastContainer, age, thisYear);
         }
       });
     }
 
-    // Create card
-    function updateCard(person, id, container, age, date) {
-      const target = (date instanceof Date) ? date : new Date(date);
+    function updateCard(person, container, age, date) {
+      const target = new Date(date);
       const card = document.createElement("div");
       card.className = "birthday-card";
 
@@ -299,8 +344,7 @@
       countdownIntervals.push(setInterval(tick, 1000));
     }
 
-    // Show dashboard with prefilled user data
-    async function showDashboard() {
+    async function showDashboard(username=null) {
       document.getElementById("signupContainer").style.display = "none";
       document.getElementById("loginContainer").style.display = "none";
       document.getElementById("dashboardContainer").style.display = "block";
@@ -310,14 +354,29 @@
         const userDoc = usersSnapshot.docs.find(doc => doc.data().uid === currentUser.uid);
         if (userDoc) {
           const data = userDoc.data();
+          currentUsername = data.username;
+          document.getElementById("welcomeMsg").textContent = `👋 Welcome, ${data.username}!`;
           document.getElementById("name").value = data.username || "";
           document.getElementById("dob").value = data.dob || "";
-          document.getElementById("dobVisibility").value = data.visibility || "public";
+
+          // Show/hide visibility option based on admin
+          if (data.username === "admin") {
+            document.getElementById("dobVisibility").style.display = "block";
+          } else {
+            document.getElementById("dobVisibility").style.display = "none";
+          }
+        } else if (username) {
+          currentUsername = username;
+          document.getElementById("welcomeMsg").textContent = `👋 Welcome, ${username}!`;
         }
       }
 
       loadBirthdays();
     }
+
+    // Footer date
+    document.getElementById("year").textContent = new Date().getFullYear();
+    document.getElementById("todayDate").textContent = new Date().toDateString();
   </script>
 </body>
 </html>
