@@ -1,318 +1,367 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Birthday Reminder</title>
-<style>
-  /* Reset and base */
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f0f0; transition: background 0.3s, color 0.3s; color: #333; }
-  a { text-decoration: none; color: inherit; }
-  h2, h3 { text-align: center; margin-bottom: 10px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Reminder</title>
+  <style>
+    /* Reset and base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #181818; color: #f0f0f0; transition: background 0.3s, color 0.3s; }
+    a { text-decoration: none; color: inherit; }
+    h2, h3 { text-align: center; margin-bottom: 10px; }
 
-  /* Containers */
-  .container { max-width: 800px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: background 0.3s, color 0.3s; }
-  input, select, button { width: 100%; margin: 8px 0; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; transition: background 0.3s, color 0.3s, border 0.3s; }
-  button { background: #4DA6FF; color: #fff; border: none; cursor: pointer; transition: background 0.3s; }
-  button:hover { background: #3399FF; }
+    /* Containers */
+    .container { max-width: 800px; margin: 20px auto; background: #242424; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: background 0.3s, color 0.3s; }
+    input, select, button { width: 100%; margin: 8px 0; padding: 10px; border-radius: 6px; border: 1px solid #555; font-size: 14px; background: #333; color: #f0f0f0; transition: background 0.3s, color 0.3s, border 0.3s; }
+    button { background: #4DA6FF; color: #fff; border: none; cursor: pointer; transition: background 0.3s; }
+    button:hover { background: #3399FF; }
 
-  /* Links */
-  .link { text-align: center; margin-top: 10px; color: #4DA6FF; cursor: pointer; }
+    /* Links */
+    .link { text-align: center; margin-top: 10px; color: #4DA6FF; cursor: pointer; }
 
-  /* Birthday cards */
-  .birthday-card { background: #fff; margin: 10px 0; padding: 12px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.3s, color 0.3s; color: #333; }
-  .today-card { background: #e6f3ff; border-left: 4px solid #4DA6FF; }
-  .countdown { margin-top: 6px; font-weight: 500; color: #555; }
+    /* Birthday cards */
+    .birthday-card { background: #2d2d2d; margin: 10px 0; padding: 12px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.3s, color 0.3s; color: #f0f0f0; }
+    .today-card { background: #3e3f3e; border-left: 4px solid #4DA6FF; }
+    .countdown { margin-top: 6px; font-weight: 500; color: #aaa; }
 
-  /* Navbar */
-  .navbar { display: flex; justify-content: space-between; align-items: center; background: #4DA6FF; padding: 10px 15px; border-radius: 10px; position: relative; z-index: 10; color: #fff; }
-  .nav-links { display: flex; gap: 15px; }
-  .nav-links a { color: #fff; font-weight: bold; }
-  .nav-toggle { display: none; cursor: pointer; font-size: 24px; color: #fff; }
+    /* Navbar */
+    .navbar { display: flex; justify-content: space-between; align-items: center; background: #3399FF; padding: 10px 15px; border-radius: 10px; position: relative; z-index: 10; color: #fff; }
+    .nav-links { display: flex; gap: 15px; }
+    .nav-links a { color: #fff; font-weight: bold; }
+    .nav-toggle { display: none; cursor: pointer; font-size: 24px; color: #fff; }
 
-  /* Footer */
-  footer { text-align: center; margin: 20px 0; font-size: 13px; color: #555; transition: color 0.3s; }
+    /* Footer */
+    footer { text-align: center; margin: 20px 0; font-size: 13px; color: #aaa; transition: color 0.3s; }
 
-  /* Theme toggle button */
-  #themeToggle { position: fixed; top: 15px; left: 15px; width: 40px; height: 40px; border-radius: 50%; padding: 0; font-size: 20px; z-index: 20; }
+    /* Theme toggle button */
+    #themeToggle { position: fixed; top: 15px; left: 15px; width: 40px; height: 40px; border-radius: 50%; padding: 0; font-size: 20px; z-index: 20; }
 
-  /* Dark theme */
-  body.dark { background: #181818; color: #f0f0f0; }
-  body.dark .container { background: #242424; color: #f0f0f0; }
-  body.dark input, body.dark select { background: #333; color: #f0f0f0; border: 1px solid #555; }
-  body.dark .birthday-card { background: #2d2d2d; color: #f0f0f0; }
-  body.dark .today-card { background: #3e3f3e; border-left: 4px solid #4DA6FF; }
-  body.dark .navbar { background: #3399FF; }
-  body.dark footer { color: #aaa; }
-  body.dark .link { color: #4DA6FF; }
-
-  /* Responsive mobile */
-  @media (max-width: 800px) {
-    .container { max-width: 90%; }
-    .nav-links { 
-      display: none; 
-      flex-direction: column; 
-      gap: 10px; 
-      background: #4DA6FF; 
-      position: absolute; 
-      top: 55px; 
-      right: 0; 
-      width: 180px;
-      padding: 10px; 
-      border-radius: 10px; 
-      z-index: 15;
+    /* Responsive mobile */
+    @media (max-width: 800px) {
+      .container { max-width: 90%; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        background: #4DA6FF;
+        position: absolute;
+        top: 55px;
+        right: 0;
+        width: 180px;
+        padding: 10px;
+        border-radius: 10px;
+        z-index: 15;
+      }
+      .nav-links.show { display: flex; }
+      .nav-toggle { display: block; }
+      #themeToggle.menu-open { left: 190px; }
     }
-    .nav-links.show { display: flex; }
-    .nav-toggle { display: block; }
-
-    #themeToggle.menu-open { left: 190px; }
-  }
-</style>
+  </style>
 </head>
-<body>
+<body class="dark">
+  <!-- Theme toggle -->
+  <button id="themeToggle">🌙</button>
 
-<!-- Theme toggle -->
-<button id="themeToggle">🌙</button>
-
-<!-- Signup -->
-<div class="container" id="signupContainer" style="display:none;">
-  <h2>Create Account</h2>
-  <input type="text" id="signupUsername" placeholder="Username" />
-  <input type="email" id="signupEmail" placeholder="Email" />
-  <input type="password" id="signupPassword" placeholder="Password" />
-  <input type="date" id="signupDob" />
-  <select id="signupDobVisibility">
-    <option value="public" selected>Public</option>
-    <option value="private">Private</option>
-  </select>
-  <label>
-   <center>
-  <input type="checkbox" id="termsCheckbox" />
-</center>
-<center>
-  I agree to the 
-  <a href="terms.html" target="_blank" style="color: blue; text-decoration: underline;">
-    Terms and Conditions
-  </a>
-</center>
-
-  </label>
-  <button id="signupBtn">Sign Up</button>
-  <div class="link" onclick="toggleView('login')">Already have an account? Login</div>
-</div>
-
-<!-- Login -->
-<div class="container" id="loginContainer">
-  <h2>Login</h2>
-  <input type="email" id="loginEmail" placeholder="Email" />
-  <input type="password" id="loginPassword" placeholder="Password" />
-  <button id="loginBtn">Login</button>
-  <div class="link" onclick="toggleView('signup')">New user? Sign Up</div>
-</div>
-
-<!-- Dashboard -->
-<div class="container" id="dashboardContainer" style="display:none;">
-
-  <!-- Navbar -->
-  <div class="navbar">
-    <div class="brand">Birthday Reminder</div>
-    <div class="nav-toggle" id="navToggle">☰</div>
-    <div class="nav-links" id="navLinks">
-      <a href="#" class="nav-link">Home</a>
-      <a href="about.html"  target="_blank"class="nav-link">About</a>
-      <a href="https://ariproject9787.github.io/portfolio/" target="_blank" class="nav-link">Developer</a>
-      <a href="terms.html" target="_blank" class="nav-link">Terms</a>
-      <a href="contact.html" target="_blank" class="nav-link">Contact</a>
-    </div>
+  <!-- Signup -->
+  <div class="container" id="signupContainer" style="display:none;">
+    <h2>Create Account</h2>
+    <input type="text" id="signupUsername" placeholder="Username" />
+    <input type="email" id="signupEmail" placeholder="Email" />
+    <input type="password" id="signupPassword" placeholder="Password" />
+    <input type="date" id="signupDob" />
+    <select id="signupDobVisibility">
+      <option value="public" selected>Public</option>
+      <option value="private">Private</option>
+    </select>
+    <label>
+      <center><input type="checkbox" id="termsCheckbox" /></center>
+      <center>I agree to the <a class="link" href="terms.html" target="_blank">Terms and Conditions</a></center>
+    </label>
+    <button id="signupBtn">Sign Up</button>
+    <div class="link" onclick="toggleView('login')">Already have an account? Login</div>
   </div>
 
-  <h2 id="welcomeMsg">Dashboard</h2>
+  <!-- Login -->
+  <div class="container" id="loginContainer">
+    <h2>Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email" />
+    <input type="password" id="loginPassword" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+    <div class="link" onclick="toggleView('signup')">New user? Sign Up</div>
+  </div>
 
-  <h3>🎂 Today</h3>
-  <div id="today"></div>
-  <h3>📅 Upcoming</h3>
-  <div id="upcoming"></div>
-  <h3>✅ Past</h3>
-  <div id="past"></div>
+  <!-- Dashboard -->
+  <div class="container" id="dashboardContainer" style="display:none;">
+    <!-- Navbar -->
+    <div class="navbar">
+      <div class="brand">Birthday Reminder</div>
+      <div class="nav-toggle" id="navToggle">☰</div>
+      <div class="nav-links" id="navLinks">
+        <a href="#" class="nav-link">Home</a>
+        <a href="about.html" target="_blank" class="nav-link">About</a>
+        <a href="https://ariproject9787.github.io/portfolio/" target="_blank" class="nav-link">Developer</a>
+        <a href="terms.html" target="_blank" class="nav-link">Terms</a>
+        <a href="contact.html" target="_blank" class="nav-link">Contact</a>
+      </div>
+    </div>
 
-  <h3>Add Birthday</h3>
-  <input type="text" id="name" placeholder="Name" />
-  <input type="date" id="dob" />
-  <select id="dobVisibility">
-    <option value="public" selected>Public</option>
-    <option value="private">Private</option>
-  </select>
-  <button id="addBtn">Add Birthday</button>
+    <h2 id="welcomeMsg">Dashboard</h2>
 
-  <button id="logoutBtn">Logout</button>
-</div>
+    <h3>🎂 Today</h3>
+    <div id="today"></div>
+    <h3>📅 Upcoming</h3>
+    <div id="upcoming"></div>
+    <h3>✅ Past</h3>
+    <div id="past"></div>
 
-<footer>
-  © <span id="year"></span> Arirama Selvam - <span id="todayDate"></span>
-</footer>
+    <h3>Add Birthday</h3>
+    <input type="text" id="name" placeholder="Name" />
+    <input type="date" id="dob" />
+    <select id="dobVisibility">
+      <option value="public" selected>Public</option>
+      <option value="private">Private</option>
+    </select>
+    <button id="addBtn">Add Birthday</button>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    <button id="logoutBtn">Logout</button>
+  </div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA5dtwCn09lEtrAOP3ih_Iq9YDFSKB181w",
-  authDomain: "birthdaycountdown9787.firebaseapp.com",
-  projectId: "birthdaycountdown9787",
-  storageBucket: "birthdaycountdown9787.firebasestorage.app",
-  messagingSenderId: "1057605732413",
-  appId: "1:1057605732413:web:18768b4a6bb5a7c2f64254",
-  measurementId: "G-M3914S92YP"
-};
+  <footer>
+    © <span id="year"></span> Arirama Selvam - <span id="todayDate"></span>
+  </footer>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-let currentUser = null;
-let currentUsername = null;
-let countdownIntervals = [];
+    const firebaseConfig = {
+      apiKey: "AIzaSyA5dtwCn09lEtrAOP3ih_Iq9YDFSKB181w",
+      authDomain: "birthdaycountdown9787.firebaseapp.com",
+      projectId: "birthdaycountdown9787",
+      storageBucket: "birthdaycountdown9787.firebasestorage.app",
+      messagingSenderId: "1057605732413",
+      appId: "1:1057605732413:web:18768b4a6bb5a7c2f64254",
+      measurementId: "G-M3914S92YP"
+    };
 
-function clearCountdownIntervals() { countdownIntervals.forEach(id=>clearInterval(id)); countdownIntervals=[]; }
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-function toggleView(view) {
-  document.getElementById("signupContainer").style.display = view==='signup'?'block':'none';
-  document.getElementById("loginContainer").style.display = view==='login'?'block':'none';
-}
-window.toggleView = toggleView;
-toggleView('login');
+    let currentUser = null;
+    let currentUsername = null;
+    let countdownIntervals = [];
+    let inactivityTimer;
 
-// Theme toggle
-const themeBtn = document.getElementById("themeToggle");
-themeBtn.addEventListener("click", ()=>{ document.body.classList.toggle("dark"); });
-
-// Navbar toggle for mobile
-const navToggle = document.getElementById('navToggle');
-const navLinks = document.getElementById('navLinks');
-navToggle.addEventListener('click', ()=>{
-  navLinks.classList.toggle('show');
-  themeBtn.classList.toggle('menu-open');
-});
-
-// Close menu when link clicked (mobile)
-document.querySelectorAll('.nav-link').forEach(link=>{
-  link.addEventListener('click', ()=>{
-    if(navLinks.classList.contains('show')){
-      navLinks.classList.remove('show');
-      themeBtn.classList.remove('menu-open');
+    function clearCountdownIntervals() {
+      countdownIntervals.forEach(id=>clearInterval(id));
+      countdownIntervals=[];
     }
-  });
-});
 
-// Signup
-document.getElementById("signupBtn").addEventListener("click", async ()=>{
-  const username = document.getElementById("signupUsername").value;
-  const email = document.getElementById("signupEmail").value;
-  const password = document.getElementById("signupPassword").value;
-  const dob = document.getElementById("signupDob").value;
-  const visibility = document.getElementById("signupDobVisibility").value;
-  const termsChecked = document.getElementById("termsCheckbox").checked;
+    function toggleView(view) {
+      document.getElementById("signupContainer").style.display = view==='signup'?'block':'none';
+      document.getElementById("loginContainer").style.display = view==='login'?'block':'none';
+    }
+    window.toggleView = toggleView;
 
-  if(!username||!email||!password||!dob){ alert("All fields are required"); return; }
-  if(!termsChecked){ alert("Please accept Terms"); return; }
+    toggleView('login');
 
-  try{
-    const userCredential = await createUserWithEmailAndPassword(auth,email,password);
-    currentUser = userCredential.user; currentUsername = username;
+    // Theme toggle
+    const themeBtn = document.getElementById("themeToggle");
+    themeBtn.addEventListener("click", ()=>{
+      document.body.classList.toggle("dark");
+    });
 
-    await addDoc(collection(db,"users"),{ uid:currentUser.uid, username, dob, visibility });
-    await addDoc(collection(db,"birthdays"),{ uid:currentUser.uid, name:username, dob, visibility });
+    // Navbar toggle for mobile
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    navToggle.addEventListener('click', ()=>{
+      navLinks.classList.toggle('show');
+      themeBtn.classList.toggle('menu-open');
+    });
 
-    showDashboard(username);
-  }catch(err){ alert(err.message); }
-});
+    // Close menu when link clicked (mobile)
+    document.querySelectorAll('.nav-link').forEach(link=>{
+      link.addEventListener('click', ()=>{
+        if(navLinks.classList.contains('show')){
+          navLinks.classList.remove('show');
+          themeBtn.classList.remove('menu-open');
+        }
+      });
+    });
 
-// Login
-document.getElementById("loginBtn").addEventListener("click", async ()=>{
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-  try{ const userCredential = await signInWithEmailAndPassword(auth,email,password); currentUser=userCredential.user; showDashboard(); }
-  catch(err){ alert(err.message); }
-});
+    // Notification permission
+    if ("Notification" in window && Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
 
-// Logout
-document.getElementById("logoutBtn").addEventListener("click", async ()=>{
-  await signOut(auth); currentUser=null; currentUsername=null; toggleView('login'); document.getElementById("dashboardContainer").style.display='none';
-});
+    // Function to show birthday notification
+    function sendBirthdayNotification(name) {
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("🎉 Birthday Reminder", {
+          body: `Admin Arirama Selvam M wishes Happy Birthday to ${name}! 🎂`,
+          icon: "https://cdn-icons-png.flaticon.com/512/744/744502.png"
+        });
+      }
+    }
 
-// Add birthday
-document.getElementById("addBtn").addEventListener("click", async ()=>{
-  if(!currentUser) return;
-  const name = document.getElementById("name").value;
-  const dob = document.getElementById("dob").value;
-  let visibility="public";
-  if(currentUsername==="admin") visibility=document.getElementById("dobVisibility").value;
-  if(!name||!dob){ alert("Enter both name and date"); return; }
-  await addDoc(collection(db,"birthdays"),{ uid:currentUser.uid, name, dob, visibility });
-  loadBirthdays();
-});
+    // Signup
+    document.getElementById("signupBtn").addEventListener("click", async ()=>{
+      const username = document.getElementById("signupUsername").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      const dob = document.getElementById("signupDob").value;
+      const visibility = document.getElementById("signupDobVisibility").value;
+      const termsChecked = document.getElementById("termsCheckbox").checked;
 
-// Load birthdays
-async function loadBirthdays(){
-  if(!currentUser) return;
-  const todayContainer=document.getElementById('today');
-  const upcomingContainer=document.getElementById('upcoming');
-  const pastContainer=document.getElementById('past');
-  clearCountdownIntervals();
-  todayContainer.innerHTML=''; upcomingContainer.innerHTML=''; pastContainer.innerHTML='';
-  const snapshot = await getDocs(collection(db,"birthdays"));
-  const today = new Date();
+      if(!username||!email||!password||!dob){ alert("All fields are required"); return; }
+      if(!termsChecked){ alert("Please accept Terms"); return; }
 
-  snapshot.forEach(docSnap=>{
-    const person=docSnap.data();
-    if(person.visibility==='private' && person.uid!==currentUser.uid) return;
-    const dob=new Date(person.dob);
-    const thisYear=new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
-    const age = today.getFullYear()-dob.getFullYear();
-    if(thisYear.toDateString()===today.toDateString()) updateCard(person,todayContainer,age,thisYear);
-    else if(thisYear>today) updateCard(person,upcomingContainer,age,thisYear);
-    else updateCard(person,pastContainer,age,thisYear);
-  });
-}
+      try{
+        const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+        currentUser = userCredential.user; currentUsername = username;
 
-function updateCard(person,container,age,date){
-  const target = new Date(date);
-  const card = document.createElement("div"); card.className="birthday-card";
-  card.innerHTML=`<div><b>${person.name}</b> 🎂 (${age} yrs) - ${target.toDateString()}</div><div class="countdown" aria-live="polite"></div>`;
-  container.appendChild(card);
-  const countdownEl = card.querySelector('.countdown');
-  function tick(){
-    const now=new Date(); const dist=target-now;
-    if(dist>0){ const days=Math.floor(dist/(1000*60*60*24)); const hours=Math.floor((dist%(1000*60*60*24))/(1000*60*60)); const minutes=Math.floor((dist%(1000*60*60))/(1000*60)); const seconds=Math.floor((dist%(1000*60))/1000); countdownEl.textContent=`⏳ ${days}d ${hours}h ${minutes}m ${seconds}s left`; card.classList.remove('today-card'); }
-    else if(target.toDateString()===now.toDateString()){ countdownEl.textContent=`🎉 Today!`; card.classList.add('today-card'); }
-    else { countdownEl.textContent=`✅ Already celebrated this year`; card.classList.remove('today-card'); }
-  }
-  tick(); countdownIntervals.push(setInterval(tick,1000));
-}
+        await addDoc(collection(db,"users"),{ uid:currentUser.uid, username, dob, visibility });
+        await addDoc(collection(db,"birthdays"),{ uid:currentUser.uid, name:username, dob, visibility });
 
-async function showDashboard(username=null){
-  document.getElementById("signupContainer").style.display='none';
-  document.getElementById("loginContainer").style.display='none';
-  document.getElementById("dashboardContainer").style.display='block';
-  if(currentUser){
-    const usersSnapshot = await getDocs(collection(db,"users"));
-    const userDoc = usersSnapshot.docs.find(doc=>doc.data().uid===currentUser.uid);
-    if(userDoc){
-      const data=userDoc.data(); currentUsername=data.username;
-      document.getElementById("welcomeMsg").textContent=`👋 Welcome, ${data.username}!`;
-      document.getElementById("name").value=data.username||"";
-      document.getElementById("dob").value=data.dob||"";
-      document.getElementById("dobVisibility").style.display=(data.username==="admin")?"block":"none";
-    }else if(username){ currentUsername=username; document.getElementById("welcomeMsg").textContent=`👋 Welcome, ${username}!`; }
-  }
-  loadBirthdays();
-}
+        showDashboard(username);
+      }catch(err){ alert(err.message); }
+    });
 
-// Footer
-document.getElementById("year").textContent=new Date().getFullYear();
-document.getElementById("todayDate").textContent=new Date().toDateString();
-</script>
+    // Login
+    document.getElementById("loginBtn").addEventListener("click", async ()=>{
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+      try{
+        await setPersistence(auth, browserLocalPersistence);
+        const userCredential = await signInWithEmailAndPassword(auth,email,password);
+        currentUser=userCredential.user;
+        showDashboard();
+        resetInactivityTimer();
+      }
+      catch(err){ alert(err.message); }
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", async ()=>{
+      await signOut(auth);
+      currentUser=null; currentUsername=null;
+      toggleView('login');
+      document.getElementById("dashboardContainer").style.display='none';
+    });
+
+    // Auto-logout after 10 minutes of inactivity
+    function resetInactivityTimer() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(async ()=>{
+        alert("Session expired due to inactivity. Logging out...");
+        await signOut(auth);
+        currentUser=null; currentUsername=null;
+        toggleView('login');
+        document.getElementById("dashboardContainer").style.display='none';
+      }, 10 * 60 * 1000); // 10 minutes
+    }
+    document.addEventListener("mousemove", resetInactivityTimer);
+    document.addEventListener("keydown", resetInactivityTimer);
+
+    // Add birthday
+    document.getElementById("addBtn").addEventListener("click", async ()=>{
+      if(!currentUser) return;
+      const name = document.getElementById("name").value;
+      const dob = document.getElementById("dob").value;
+      let visibility="public";
+      if(currentUsername==="admin") visibility=document.getElementById("dobVisibility").value;
+      if(!name||!dob){ alert("Enter both name and date"); return; }
+      await addDoc(collection(db,"birthdays"),{ uid:currentUser.uid, name, dob, visibility });
+      loadBirthdays();
+    });
+
+    // Load birthdays
+    async function loadBirthdays(){
+      if(!currentUser) return;
+      const todayContainer=document.getElementById('today');
+      const upcomingContainer=document.getElementById('upcoming');
+      const pastContainer=document.getElementById('past');
+      clearCountdownIntervals();
+      todayContainer.innerHTML=''; upcomingContainer.innerHTML=''; pastContainer.innerHTML='';
+      const snapshot = await getDocs(collection(db,"birthdays"));
+      const today = new Date();
+
+      snapshot.forEach(docSnap=>{
+        const person=docSnap.data();
+        if(person.visibility==='private' && person.uid!==currentUser.uid) return;
+        const dob=new Date(person.dob);
+        const thisYear=new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+        const age = today.getFullYear()-dob.getFullYear();
+        if(thisYear.toDateString()===today.toDateString()) {
+          updateCard(person,todayContainer,age,thisYear);
+          sendBirthdayNotification(person.name);
+        }
+        else if(thisYear>today) updateCard(person,upcomingContainer,age,thisYear);
+        else updateCard(person,pastContainer,age,thisYear);
+      });
+    }
+
+    function updateCard(person,container,age,date){
+      const target = new Date(date);
+      const card = document.createElement("div"); card.className="birthday-card";
+      card.innerHTML=`<div><b>${person.name}</b> 🎂 (${age} yrs) - ${target.toDateString()}</div><div class="countdown" aria-live="polite"></div>`;
+      container.appendChild(card);
+      const countdownEl = card.querySelector('.countdown');
+      function tick(){
+        const now=new Date(); const dist=target-now;
+        if(dist>0){
+          const days=Math.floor(dist/(1000*60*60*24));
+          const hours=Math.floor((dist%(1000*60*60*24))/(1000*60*60));
+          const minutes=Math.floor((dist%(1000*60*60))/(1000*60));
+          const seconds=Math.floor((dist%(1000*60))/1000);
+          countdownEl.textContent=`⏳ ${days}d ${hours}h ${minutes}m ${seconds}s left`;
+          card.classList.remove('today-card');
+        }
+        else if(target.toDateString()===now.toDateString()){
+          countdownEl.textContent=`🎉 Today!`; card.classList.add('today-card');
+        }
+        else {
+          countdownEl.textContent=`✅ Already celebrated this year`; card.classList.remove('today-card');
+        }
+      }
+      tick(); countdownIntervals.push(setInterval(tick,1000));
+    }
+
+    async function showDashboard(username=null){
+      document.getElementById("signupContainer").style.display='none';
+      document.getElementById("loginContainer").style.display='none';
+      document.getElementById("dashboardContainer").style.display='block';
+      if(currentUser){
+        const usersSnapshot = await getDocs(collection(db,"users"));
+        const userDoc = usersSnapshot.docs.find(doc=>doc.data().uid===currentUser.uid);
+        if(userDoc){
+          const data=userDoc.data(); currentUsername=data.username;
+          document.getElementById("welcomeMsg").textContent=`👋 Welcome, ${data.username}!`;
+          document.getElementById("name").value=data.username||"";
+          document.getElementById("dob").value=data.dob||"";
+          document.getElementById("dobVisibility").style.display=(data.username==="admin")?"block":"none";
+        }else if(username){ currentUsername=username; document.getElementById("welcomeMsg").textContent=`👋 Welcome, ${username}!`; }
+      }
+      loadBirthdays();
+    }
+
+    // Auth state listener
+    onAuthStateChanged(auth, (user)=>{
+      if(user){
+        currentUser=user;
+        showDashboard();
+        resetInactivityTimer();
+      }else{
+        toggleView('login');
+      }
+    });
+
+    // Footer
+    document.getElementById("year").textContent=new Date().getFullYear();
+    document.getElementById("todayDate").textContent=new Date().toDateString();
+  </script>
 </body>
 </html>
