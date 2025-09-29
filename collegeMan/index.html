@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>College Management System - Prototype</title>
+  <style>
+    :root{--accent:#2563eb;--muted:#6b7280;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{font-family:var(--font);margin:0;background:#f8fafc;color:#0f172a}
+    header{background:#fff;padding:12px 20px;box-shadow:0 1px 3px rgba(2,6,23,0.06);display:flex;justify-content:space-between;align-items:center}
+    main{max-width:1100px;margin:24px auto;padding:20px}
+    .card{background:#fff;border-radius:10px;padding:16px;margin-bottom:16px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
+    input, select, textarea, button{font-size:14px;padding:8px;border-radius:6px;border:1px solid #e6edf3;width:100%;box-sizing:border-box}
+    label{display:block;margin:8px 0 4px;font-weight:600}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .hidden{display:none}
+    nav button{margin-left:8px}
+    table{width:100%;border-collapse:collapse}
+    th,td{border-bottom:1px solid #e6edf3;padding:8px;text-align:left}
+    .role-badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef2ff;color:var(--accent);font-weight:700}
+    .muted { color: var(--muted); font-size:13px }
+    .small { font-size:13px }
+    .row { display:flex; gap:8px; align-items:center }
+    #users-list > div, #attendance-list > div, #notes-list > div, #events-list > div { padding:8px 0; border-bottom:1px dashed #eef2ff }
+  </style>
+</head>
+<body>
+<header>
+  <div><strong>College Management System — Prototype</strong></div>
+  <div id="nav" aria-hidden>
+    <span id="user-email" style="margin-right:12px;color:var(--muted)"></span>
+    <button id="btn-signout" class="card hidden">Sign out</button>
+  </div>
+</header>
+
+<main>
+  <!-- Authentication / Role selection -->
+  <section id="auth-section" class="card">
+    <h3>Sign in / Register</h3>
+    <div class="grid">
+      <div>
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="user@example.com">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="password">
+        <label for="role">Role</label>
+        <select id="role">
+          <option value="student">Student</option>
+          <option value="staff">Staff</option>
+          <option value="admin">Admin</option>
+        </select>
+        <div style="margin-top:12px" class="row">
+          <button id="btn-signup">Register</button>
+          <button id="btn-signin">Sign in</button>
+        </div>
+        <p class="muted small">Register button is shown only when "Student" is selected. Admins can add users from the dashboard (client-side create will also create an Auth user).</p>
+      </div>
+      <div>
+        <h4>Quick notes</h4>
+        <ul>
+          <li>Admin can manage users, events, fees, and view all records.</li>
+          <li>Staff can mark attendance, upload notes, and view students in their classes.</li>
+          <li>Students can view attendance, marks, pay fees (placeholder), and join events.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dashboards -->
+  <section id="dashboard" class="card hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 id="dash-title">Dashboard</h3>
+      <div>
+        <span id="role-badge" class="role-badge"></span>
+        <button id="btn-signout-2">Sign out</button>
+      </div>
+    </div>
+
+    <!-- Admin controls -->
+    <div id="admin-panel" class="hidden">
+      <h4>Admin — User Management</h4>
+      <div class="grid">
+        <div>
+          <label for="new-user-email">New user email</label>
+          <input id="new-user-email" type="email">
+          <label for="new-user-password">Password</label>
+          <input id="new-user-password" type="password">
+          <label for="new-user-role">Role</label>
+          <select id="new-user-role">
+            <option value="student">Student</option>
+            <option value="staff">Staff</option>
+            <option value="admin">Admin</option>
+          </select>
+          <button id="btn-create-user" style="margin-top:8px">Create user</button>
+        </div>
+        <div>
+          <h5>All users</h5>
+          <div id="users-list">Loading users...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Staff controls -->
+    <div id="staff-panel" class="hidden">
+      <h4>Staff — Attendance & Notes</h4>
+      <div class="grid">
+        <div>
+          <label for="class-select">Class / Batch</label>
+          <input id="class-select" placeholder="e.g. CSE-3A">
+          <label for="date-att">Date</label>
+          <input id="date-att" type="date" value="">
+          <label>Students (comma-separated emails)</label>
+          <textarea id="students-list" placeholder="student1@example.com, student2@example.com" rows="5"></textarea>
+          <button id="btn-mark-att" style="margin-top:8px">Mark Attendance</button>
+        </div>
+        <div>
+          <label for="note-title">Note title</label>
+          <input id="note-title">
+          <label for="note-body">Note body</label>
+          <textarea id="note-body" rows="6"></textarea>
+          <button id="btn-upload-note" style="margin-top:8px">Upload Note</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <h5>Attendance Records</h5>
+        <div id="attendance-list">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Student controls -->
+    <div id="student-panel" class="hidden">
+      <h4>Student — My Profile</h4>
+      <div>
+        <p><strong>Attendance summary</strong></p>
+        <div id="my-attendance">Loading...</div>
+      </div>
+      <div style="margin-top:12px">
+        <p><strong>Fees</strong></p>
+        <div id="my-fees">Loading...</div>
+        <button id="btn-pay-fee">Pay (placeholder)</button>
+      </div>
+      <div style="margin-top:12px">
+        <p><strong>Notes & Events</strong></p>
+        <div id="notes-list">Loading notes...</div>
+        <div id="events-list">Loading events...</div>
+      </div>
+    </div>
+
+    <!-- Events creation (admin/staff) -->
+    <div id="event-panel" class="hidden">
+      <h4>Create Event</h4>
+      <label for="event-title">Title</label>
+      <input id="event-title">
+      <label for="event-date">Date</label>
+      <input id="event-date" type="date">
+      <label for="event-desc">Description</label>
+      <textarea id="event-desc" rows="4"></textarea>
+      <button id="btn-create-event" style="margin-top:8px">Create Event</button>
+    </div>
+  </section>
+</main>
+
+<script>
+  // ==== CONFIG ==== (replace GAS_URL if needed)
+  const firebaseConfig = {
+    apiKey: "AIzaSyA5dtwCn09lEtrAOP3ih_Iq9YDFSKB181w",
+    authDomain: "birthdaycountdown9787.firebaseapp.com",
+    projectId: "birthdaycountdown9787",
+    storageBucket: "birthdaycountdown9787.firebasestorage.app",
+    messagingSenderId: "1057605732413",
+    appId: "1:1057605732413:web:18768b4a6bb5a7c2f64254",
+    measurementId: "G-M3914S92YP"
+  };
+  const GAS_URL = 'REPLACE_WITH_YOUR_APPS_SCRIPT_URL';
+
+  // Load compat scripts and initialize
+  (function loadFirebase(){
+    const s1 = document.createElement('script'); s1.src = 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js';
+    const s2 = document.createElement('script'); s2.src = 'https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js';
+    const s3 = document.createElement('script'); s3.src = 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js';
+    document.head.appendChild(s1); document.head.appendChild(s2); document.head.appendChild(s3);
+    s3.onload = () => {
+      firebase.initializeApp(firebaseConfig);
+      window.auth = firebase.auth();
+      window.db = firebase.firestore();
+      setupApp();
+    };
+  })();
+
+  const $ = id => document.getElementById(id);
+
+  function setupApp(){
+    // Elements
+    const email = $('email'); const password = $('password'); const roleSel = $('role');
+    const btnSignup = $('btn-signup'); const btnSignin = $('btn-signin');
+    const authSection = $('auth-section'); const dashboard = $('dashboard');
+    const dashTitle = $('dash-title'); const roleBadge = $('role-badge');
+    const adminPanel = $('admin-panel'); const staffPanel = $('staff-panel'); const studentPanel = $('student-panel');
+    const eventPanel = $('event-panel');
+    const userEmailSpan = $('user-email'); const btnSignout = $('btn-signout'); const btnSignout2 = $('btn-signout-2');
+
+    // make date-att default to today
+    const dateAttEl = $('date-att');
+    const todayISO = new Date().toISOString().substr(0,10);
+    dateAttEl.value = todayISO;
+    $('event-date').value = todayISO;
+
+    // Show register only for students
+    function updateSignupVisibility() {
+      btnSignup.style.display = roleSel.value === 'student' ? 'inline-block' : 'none';
+    }
+    updateSignupVisibility();
+    roleSel.addEventListener('change', updateSignupVisibility);
+
+    // Register (client-side)
+    btnSignup.onclick = async () => {
+      const r = roleSel.value; const e = email.value.trim(); const p = password.value;
+      if(!e||!p) return alert('Enter email and password');
+      try{
+        const cred = await auth.createUserWithEmailAndPassword(e,p);
+        const uid = cred.user.uid;
+        // Save profile to "users" collection (consistent name)
+        await db.collection('user').doc(uid).set({email:e,role:r,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        alert('User registered. Now sign in.');
+      }catch(err){ console.error(err); alert(err.message || 'Registration failed'); }
+    };
+
+    // Sign in
+    btnSignin.onclick = async () => {
+      const e = email.value.trim(); const p = password.value;
+      if(!e||!p) return alert('Enter email/password');
+      try{ await auth.signInWithEmailAndPassword(e,p); }
+      catch(err){ console.error(err); alert(err.message || 'Sign-in failed'); }
+    };
+
+    // Sign out (both buttons)
+    btnSignout.onclick = btnSignout2.onclick = async () => { try { await auth.signOut(); location.reload(); } catch(e) { console.warn(e); location.reload(); } };
+
+    // Admin create user (from dashboard) - NOTE: this will create a new Auth user from the client.
+    $('btn-create-user').onclick = async () => {
+      const e = $('new-user-email').value.trim(); const p = $('new-user-password').value; const r = $('new-user-role').value;
+      if(!e||!p) return alert('Enter details');
+      try{
+        const cred = await auth.createUserWithEmailAndPassword(e,p);
+        const uid = cred.user.uid;
+        await db.collection('user').doc(uid).set({email:e,role:r,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        alert('User added to Firestore and Auth (client-side).');
+        loadUsersList();
+      }catch(err){ console.error(err); alert(err.message || 'Create user failed'); }
+    };
+
+    // Listen for auth state changes
+    auth.onAuthStateChanged(async user => {
+      if(!user){
+        authSection.classList.remove('hidden');
+        dashboard.classList.add('hidden');
+        $('user-email').textContent='';
+        return;
+      }
+
+      authSection.classList.add('hidden');
+      dashboard.classList.remove('hidden');
+      $('user-email').textContent = user.email;
+      $('btn-signout').classList.remove('hidden');
+
+      // fetch profile from consistent 'users' collection
+      let profile = {role:'student', email:user.email};
+      try{
+        const doc = await db.collection('user').doc(user.uid).get();
+        if(doc.exists) profile = Object.assign(profile, doc.data());
+      }catch(e){ console.warn('Failed to read profile', e); }
+
+      const role = profile.role || 'student';
+      dashTitle.textContent = `Dashboard — Welcome ${user.email}`;
+      roleBadge.textContent = role.toUpperCase();
+
+      adminPanel.classList.toggle('hidden', role!=='admin');
+      staffPanel.classList.toggle('hidden', role!=='staff');
+      studentPanel.classList.toggle('hidden', role!=='student');
+      // events visible for admin & staff
+      eventPanel.classList.toggle('hidden', role==='student');
+
+      // load data
+      await Promise.all([
+        loadUsersList(),
+        loadAttendanceList(),
+        loadNotes(),
+        loadEvents(),
+        loadMyAttendance(user.email)
+      ]);
+    });
+
+    // MARK ATTENDANCE
+    $('btn-mark-att').onclick = async () => {
+      try{
+        const klass = $('class-select').value.trim();
+        const date = $('date-att').value; // YYYY-MM-DD
+        const studentsRaw = $('students-list').value;
+        const students = studentsRaw.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+        if(!klass || !date || students.length === 0) return alert('Complete fields (class, date, students)');
+
+        const batchId = `${klass}|${date}`;
+        const dateObj = new Date(date + 'T00:00:00'); // ensure timezone-safe parse
+        const payload = {
+          class: klass,
+          date: date,
+          dateTimestamp: firebase.firestore.Timestamp.fromDate(dateObj),
+          students: students,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          by: auth.currentUser ? auth.currentUser.email : 'unknown'
+        };
+
+        // store using set() so same class+date replaces if needed
+        await db.collection('attendance').doc(batchId).set(payload, { merge: true });
+        alert('Attendance recorded successfully.');
+        // optionally notify GAS
+        if(GAS_URL !== 'REPLACE_WITH_YOUR_APPS_SCRIPT_URL'){
+          try {
+            await fetch(GAS_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ type:'attendance', payload })});
+          } catch(e) { console.warn('GAS sync failed', e); }
+        }
+        await loadAttendanceList();
+      }catch(err){ console.error(err); alert(err.message || 'Failed to mark attendance'); }
+    };
+
+    // Load attendance list (sorted by dateTimestamp desc)
+    async function loadAttendanceList() {
+  const el = document.getElementById('attendance-list');
+  el.innerHTML = 'Loading...';
+
+  try {
+    // ✅ Use string date field instead of Timestamp (no custom index needed)
+    const snap = await db.collection('attendance')
+      .orderBy('date', 'desc')
+      .limit(100)
+      .get();
+
+    console.log("QuerySnapshot size:", snap.size);
+
+    el.innerHTML = '';
+
+    if (snap.empty) {
+      el.textContent = 'No attendance records yet.';
+      return;
+    }
+
+    snap.forEach(doc => {
+      const d = doc.data();
+      console.log("Doc:", doc.id, d);
+
+      const dateStr = d.date || 'unknown';
+
+      const row = document.createElement('div');
+      row.innerHTML = `
+        <strong>${d.class || '(no class)'}</strong>
+        — ${dateStr}
+        — by ${d.by || 'unknown'}
+        — students: ${Array.isArray(d.students) ? d.students.length : 0}
+      `;
+      el.appendChild(row);
+    });
+  } catch (err) {
+    console.error("Error loading attendance:", err);
+    el.textContent = 'Failed to load attendance.';
+  }
+}
+
+
+
+    // Upload notes
+    $('btn-upload-note').onclick = async () => {
+      try{
+        const title = $('note-title').value.trim(); const body = $('note-body').value.trim();
+        if(!title || !body) return alert('Enter note title and body');
+        await db.collection('notes').add({ title, body, by: auth.currentUser ? auth.currentUser.email : 'unknown', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        alert('Note uploaded');
+        $('note-title').value = ''; $('note-body').value = '';
+        loadNotes();
+      }catch(err){ console.error(err); alert(err.message || 'Failed to upload note'); }
+    };
+
+    // Load notes
+    async function loadNotes(){
+      const el = $('notes-list'); el.innerHTML = 'Loading notes...';
+      try{
+        const snap = await db.collection('notes').orderBy('createdAt','desc').limit(50).get();
+        el.innerHTML = '';
+        if(snap.empty){ el.textContent = 'No notes'; return; }
+        snap.forEach(doc => {
+          const d = doc.data();
+          const created = d.createdAt ? new Date(d.createdAt.toMillis()).toLocaleString() : '';
+          const div = document.createElement('div');
+          div.innerHTML = `<strong>${d.title}</strong> — <em class="muted">${d.by || 'unknown'} ${created ? ' — ' + created : ''}</em><div>${d.body}</div>`;
+          el.appendChild(div);
+        });
+      }catch(err){ console.error(err); el.textContent = 'Failed to load notes'; }
+    }
+
+    // Create event (admin/staff)
+    $('btn-create-event').onclick = async () => {
+      try{
+        const title = $('event-title').value.trim(); const date = $('event-date').value; const desc = $('event-desc').value.trim();
+        if(!title || !date) return alert('Enter event title and date');
+        const dateObj = new Date(date + 'T00:00:00');
+        const payload = { title, date, dateTimestamp: firebase.firestore.Timestamp.fromDate(dateObj), desc, by: auth.currentUser ? auth.currentUser.email : 'unknown', createdAt: firebase.firestore.FieldValue.serverTimestamp() };
+        await db.collection('events').add(payload);
+        alert('Event created');
+        $('event-title').value=''; $('event-desc').value='';
+        if(GAS_URL !== 'REPLACE_WITH_YOUR_APPS_SCRIPT_URL'){
+          try { await fetch(GAS_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ type:'event', payload }) }); } catch(e) { console.warn('GAS sync failed', e); }
+        }
+        loadEvents();
+      }catch(err){ console.error(err); alert(err.message || 'Failed to create event'); }
+    };
+
+    // Load events sorted ascending by date
+    async function loadEvents(){
+      const el = $('events-list'); el.innerHTML = 'Loading...';
+      try{
+        const snap = await db.collection('events').orderBy('dateTimestamp','asc').limit(100).get();
+        el.innerHTML = '';
+        if(snap.empty){ el.textContent = 'No events'; return; }
+        snap.forEach(doc => {
+          const d = doc.data();
+          const dateStr = d.date || (d.dateTimestamp && d.dateTimestamp.toDate().toISOString().substr(0,10)) || '';
+          const item = document.createElement('div');
+          item.innerHTML = `<strong>${d.title}</strong> — ${dateStr}<div>${d.desc || ''} <em class="muted">(${d.by || 'unknown'})</em></div>`;
+          el.appendChild(item);
+        });
+      }catch(err){ console.error(err); el.textContent = 'Failed to load events'; }
+    }
+
+    // Load users list (admin panel)
+    async function loadUsersList(){
+      const el = $('users-list'); el.innerHTML = 'Loading...';
+      try{
+        // order by createdAt if exists, fallback to email sort by client-side
+        const snap = await db.collection('user').orderBy('createdAt','desc').limit(100).get();
+        el.innerHTML = '';
+        if(snap.empty){ el.textContent = 'No users found'; return; }
+        snap.forEach(doc => {
+          const d = doc.data();
+          const row = document.createElement('div');
+          row.innerHTML = `<strong>${d.email || '(no email)'}</strong> — ${d.role || 'student'}`;
+          el.appendChild(row);
+        });
+      }catch(err){
+        // If ordering by createdAt fails (no index or missing field), fallback to simple fetch
+        console.warn('loadUsersList ordering failed, falling back', err);
+        try{
+          const snap2 = await db.collection('user').get();
+          el.innerHTML = '';
+          const arr = [];
+          snap2.forEach(doc => arr.push(doc.data()));
+          arr.sort((a,b) => ('' + (b.createdAt ? b.createdAt.toMillis() : '')).localeCompare('' + (a.createdAt ? a.createdAt.toMillis() : '')));
+          if(arr.length === 0) { el.textContent = 'No users found'; return; }
+          arr.forEach(d => { const row = document.createElement('div'); row.innerHTML = `<strong>${d.email || '(no email)'}</strong> — ${d.role || 'student'}`; el.appendChild(row); });
+        }catch(e){
+          console.error(e);
+          el.textContent = 'Failed to load users';
+        }
+      }
+    }
+
+    // Load my attendance for signed-in user
+    async function loadMyAttendance(emailAddr){
+      const el = $('my-attendance'); el.innerHTML = 'Loading...';
+      try{
+        if(!emailAddr) { el.textContent = 'Not signed in'; return; }
+        const emailLower = emailAddr.toLowerCase();
+        const snap = await db.collection('attendance').where('students','array-contains', emailLower).orderBy('dateTimestamp','desc').limit(100).get();
+        el.innerHTML = '';
+        if(snap.empty){ el.textContent = 'No attendance records found.'; return; }
+        snap.forEach(d => {
+          const p = d.data();
+          const dateStr = p.date || (p.dateTimestamp && p.dateTimestamp.toDate().toISOString().substr(0,10)) || '';
+          const div = document.createElement('div');
+          div.innerHTML = `<div>${dateStr} — ${p.class || 'unknown'} — marked by ${p.by || 'staff'}</div>`;
+          el.appendChild(div);
+        });
+        $('my-fees').innerHTML = 'Fees record feature: sample only.';
+      }catch(err){ console.error(err); el.textContent = 'Failed to load your attendance'; }
+    }
+  }
+</script>
+</body>
+</html>
