@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cracker Sky Show</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: radial-gradient(circle at bottom, #000010, #000000 70%);
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+      text-align: center;
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    h4 {
+      position: absolute;
+      top: 5%;
+      width: 100%;
+      font-size: 2rem;
+      text-shadow: 0 0 20px gold;
+      z-index: 10;
+    }
+
+    .control-panel {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      z-index: 10;
+    }
+
+    button {
+      background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+      border: none;
+      padding: 10px 20px;
+      margin: 0 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+      transition: transform 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <h4>🎆 Advanced Happy Diwali 2025!🎇</h4>
+  <canvas id="sky"></canvas>
+  <div class="control-panel">
+    <button onclick="launchFirework()">Launch Firework</button>
+    <button onclick="toggleAutoShow()">Auto Show On/Off</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('sky');
+    const ctx = canvas.getContext('2d');
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    window.addEventListener('resize', () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    });
+
+    const fireworks = [];
+    const particles = [];
+    let autoInterval = null;
+
+    class Firework {
+      constructor(x, y, targetY, color) {
+        this.x = x;
+        this.y = y;
+        this.targetY = targetY;
+        this.color = color;
+        this.speed = 8;
+        this.trail = [];
+      }
+
+      update() {
+        this.trail.push({ x: this.x, y: this.y });
+        if (this.trail.length > 10) this.trail.shift();
+        this.y -= this.speed;
+
+        if (this.y <= this.targetY) {
+          this.explode();
+          return true;
+        }
+        return false;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.moveTo(this.trail[0]?.x || this.x, this.trail[0]?.y || this.y);
+        for (let i = 1; i < this.trail.length; i++) {
+          ctx.lineTo(this.trail[i].x, this.trail[i].y);
+        }
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      explode() {
+        const count = 80 + Math.random() * 40;
+        for (let i = 0; i < count; i++) {
+          const angle = (Math.PI * 2 * i) / count;
+          const speed = Math.random() * 6 + 2;
+          const hueShift = Math.random() * 60 - 30;
+          particles.push(new Particle(this.x, this.y, Math.cos(angle) * speed, Math.sin(angle) * speed, `hsl(${Math.random() * 360 + hueShift}, 100%, 60%)`));
+        }
+      }
+    }
+
+    class Particle {
+      constructor(x, y, vx, vy, color) {
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+        this.color = color;
+        this.alpha = 1;
+        this.life = 120;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.05;
+        this.alpha -= 0.008;
+        this.life--;
+      }
+
+      draw() {
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    function launchFirework() {
+      const x = Math.random() * width;
+      const y = height;
+      const targetY = Math.random() * height / 2 + height / 4;
+      const color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+      fireworks.push(new Firework(x, y, targetY, color));
+    }
+
+    function toggleAutoShow() {
+      if (autoInterval) {
+        clearInterval(autoInterval);
+        autoInterval = null;
+      } else {
+        autoInterval = setInterval(() => {
+          launchFirework();
+        }, 700);
+      }
+    }
+
+    function animate() {
+      ctx.fillStyle = 'rgba(0, 0, 20, 0.2)';
+      ctx.fillRect(0, 0, width, height);
+
+      for (let i = fireworks.length - 1; i >= 0; i--) {
+        fireworks[i].draw();
+        if (fireworks[i].update()) fireworks.splice(i, 1);
+      }
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].draw();
+        particles[i].update();
+        if (particles[i].life <= 0 || particles[i].alpha <= 0) particles.splice(i, 1);
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>

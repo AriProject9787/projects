@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diwali Festival Countdown</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-image: url('https://www.icnnational.com/wp-content/uploads/Diwali-2.webp');
+            background-size: cover;
+            background-color: rgba(0.0, 0.0, 0.0, 0.5);
+            background-blend-mode: overlay;
+            background-position: center;
+            color: #d2691e;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 60px;
+            animation: bounce 2s infinite;
+            color: #ff4500;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-top: 20%;
+        }
+
+        h3 {
+            animation: pulse 5s infinite;
+            color: chartreuse;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin: 5%;
+        }
+
+        .countdown {
+            font-size: 50px;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .celebrate {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .celebrate img {
+            width: 90%;
+            height: auto;
+            animation: zoomIn 2s ease-in-out;
+            margin-bottom: 30%;
+            animation: pulse 1.5s infinite;
+        }
+        span{
+            color: aqua;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 5px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        small {
+            color: orange;
+        }
+
+        /* Animations */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes zoomIn {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 40px;
+                margin-top: 15%;
+            }
+
+            h3 {
+                font-size: 20px;
+            }
+
+            .countdown {
+                font-size: 30px;
+                padding: 15px;
+            }
+
+            .celebrate img {
+                width: 90%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 30px;
+                margin-top: 10%;
+            }
+
+            h3 {
+                font-size: 18px;
+            }
+
+            .countdown {
+                font-size: 24px;
+                padding: 10px;
+            }
+
+            .celebrate img {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body id="hi" >
+    <h1 id="title">Diwali 2025!</h1>
+    <div class="countdown" id="countdown"></div>
+    <h3 id="advance">Advanced Happy Diwali 2025!</h3>
+
+    <div class="celebrate" id="celebrate">
+        <img src="https://www.creativepoint.in/wp-content/uploads/2023/11/deepavali-greetings-in-tamil-wishes-1024x536.png" alt="Celebration Image">
+    </div>
+
+    <script>
+        // Set the date we're counting down to
+        var countDownDate = new Date("Oct 20, 2025 00:00:00").getTime();
+
+        // Update the countdown every 1 second
+        var countdownFunction = setInterval(function() {
+            // Get today's date and time
+            var now = new Date().getTime();
+
+            // Find the distance between now and the countdown date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display the result in the element with id="countdown"
+            document.getElementById("countdown").innerHTML = days + "d " + hours + "h "
+            + minutes + "m " + seconds + "s ";
+
+            // If the countdown is over, display celebration image and message
+            if (distance < 0) {
+                const name = prompt("Enter your name:");
+                clearInterval(countdownFunction);
+                document.getElementById("countdown").innerHTML = `Happy Diwali ${name},<br> by <span>Arirama Selvam</span>`;
+                document.getElementById("advance").innerHTML = `Happy Diwali 2025 ${name}, by Arirama Selvam`;
+
+                document.getElementById("celebrate").style.display = "block";
+                  }
+        }, 1000);
+    </script>
+    <footer>
+        <p>&copy; 2025 My Website. All rights reserved.</p>
+        <p><a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a></p>
+        <small>by Arirama Selvam M</small>
+    </footer>
+  <!-- <style>
+  .bottom-cracker {
+    position: fixed;
+    width: 2px;
+    height: 10px;
+    border-radius: 50%;
+    z-index: 30;
+    pointer-events: none;
+    background: radial-gradient(circle, #fff, orange, red);
+    box-shadow: 0 0 5px yellow, 0 0 10px orange;
+    animation: rise 1s ease-out forwards;
+  }
+
+  @keyframes rise {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    30% { transform: translateY(-120px) scale(1.2); opacity: 1; }
+    60% { transform: translateY(-250px) scale(1); opacity: 0.8; }
+    90% { transform: translateY(-350px) scale(0.7); opacity: 0.5; }
+    100% { transform: translateY(-400px) scale(0.5); opacity: 0; }
+  }
+</style>
+
+<script>
+  function launchBottomCrackers() {
+    function createBottomCracker() {
+      const cracker = document.createElement('div');
+      cracker.className = 'bottom-cracker';
+      cracker.style.left = Math.random() * 100 + 'vw';
+      cracker.style.bottom = '0';
+      cracker.style.animationDuration = (0.8 + Math.random() * 0.7) + 's';
+      
+      // Add spark effect
+      const sparksCount = 5 + Math.floor(Math.random() * 5);
+      for (let i = 0; i < sparksCount; i++) {
+        const spark = document.createElement('div');
+        spark.style.position = 'absolute';
+        spark.style.width = '2px';
+        spark.style.height = '2px';
+        spark.style.background = `hsl(${Math.random()*360}, 100%, 60%)`;
+        spark.style.left = '0';
+        spark.style.bottom = '0';
+        spark.style.borderRadius = '50%';
+        spark.style.opacity = 0.8;
+        const angle = Math.random() * Math.PI - Math.PI/2; // spread left/right
+        const distance = 50 + Math.random()*50;
+        spark.style.transform = `translate(${Math.cos(angle)*distance}px, ${-Math.sin(angle)*distance}px)`;
+        spark.style.transition = 'transform 0.8s ease-out, opacity 0.8s ease-out';
+        cracker.appendChild(spark);
+        setTimeout(() => spark.style.opacity = '0', 50);
+      }
+
+      document.body.appendChild(cracker);
+      setTimeout(() => cracker.remove(), 2000);
+    }
+
+    // Initial burst
+    for (let i = 0; i < 25; i++) createBottomCracker();
+    // Continue periodically
+    setInterval(createBottomCracker, 400);
+  }
+  launchBottomCrackers();
+</script> -->
+<style>
+  .cracker, .particle {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 30;
+  }
+
+  .cracker {
+    width: 4px;
+    height: 14px;
+    background: radial-gradient(circle, #fff, #ffea00, #ff6f00, #ff0000);
+    box-shadow: 0 0 10px #fff, 0 0 18px #ffea00, 0 0 25px #ff6f00, 0 0 30px #ff0000;
+    animation: rise 1s ease-out forwards;
+  }
+
+  .particle {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 30;
+    animation: explode 0.8s ease-out forwards;
+    box-shadow: 0 0 6px #fff, 0 0 12px #ff0, 0 0 18px #f00, 0 0 24px #0f0, 0 0 30px #00f, 0 0 36px #f0f;
+  }
+
+  @keyframes rise {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    20% { transform: translateY(-120px) scale(1.2); opacity: 1; }
+    50% { transform: translateY(-250px) scale(1); opacity: 0.9; }
+    80% { transform: translateY(-350px) scale(0.8); opacity: 0.7; }
+    100% { transform: translateY(-450px) scale(0.5); opacity: 0; }
+  }
+
+  @keyframes explode {
+    0% { transform: translate(0,0) scale(1); opacity: 1; }
+    20% { transform: translate(0,0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) scale(0.7); opacity: 0; }
+  }
+</style>
+
+<script>
+  function launchFireworks() {
+    function getRandomColor() {
+      const colors = ['#ff0000','#ff6f00','#ffea00','#00f','#0f0','#f0f','#0ff','#f80','#fff'];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function createCracker() {
+      const cracker = document.createElement('div');
+      cracker.className = 'cracker';
+      cracker.style.left = Math.random() * 100 + 'vw';
+      cracker.style.bottom = '0';
+      cracker.style.background = `radial-gradient(circle, #fff, ${getRandomColor()}, ${getRandomColor()}, ${getRandomColor()})`;
+      cracker.style.animationDuration = (0.9 + Math.random() * 0.8) + 's';
+      document.body.appendChild(cracker);
+
+      setTimeout(() => {
+        const particleCount = 25 + Math.floor(Math.random() * 30);
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          particle.style.left = cracker.style.left;
+          particle.style.bottom = '450px';
+          const angle = Math.random() * 2 * Math.PI;
+          const distance = 60 + Math.random() * 120;
+          particle.style.setProperty('--x', distance * Math.cos(angle) + 'px');
+          particle.style.setProperty('--y', -distance * Math.sin(angle) + 'px');
+          const c1 = getRandomColor();
+          const c2 = getRandomColor();
+          const c3 = getRandomColor();
+          particle.style.background = `radial-gradient(circle, ${c1}, ${c2}, ${c3})`;
+          particle.style.width = particle.style.height = (4 + Math.random() * 4) + 'px';
+          particle.style.animationDuration = (0.8 + Math.random() * 1) + 's';
+          document.body.appendChild(particle);
+          setTimeout(() => particle.remove(), 1800);
+        }
+        cracker.remove();
+      }, 1000);
+    }
+
+    for (let i = 0; i < 35; i++) createCracker();
+    setInterval(createCracker, 400);
+  }
+  launchFireworks();
+</script>
+
+
+
+</body>
+</html>
