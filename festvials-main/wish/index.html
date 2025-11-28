@@ -1,64 +1,412 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Birthday Reminder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     /* Reset and base */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #181818; color: #f0f0f0; transition: background 0.3s, color 0.3s; }
-    a { text-decoration: none; color: inherit; }
-    h2, h3 { text-align: center; margin-bottom: 10px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6C63FF;
+      --primary-hover: #5a52d5;
+      --bg-light: #F0F2F5;
+      --surface-light: #FFFFFF;
+      --text-light: #333333;
+      --text-muted-light: #666666;
+
+      --bg-dark: #121212;
+      --surface-dark: #1E1E1E;
+      --text-dark: #E0E0E0;
+      --text-muted-dark: #AAAAAA;
+
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      --radius: 16px;
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-light);
+      color: var(--text-light);
+      transition: var(--transition);
+      line-height: 1.6;
+      padding-bottom: 40px;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: var(--transition);
+    }
+
+    h2,
+    h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    h2 {
+      font-size: 2rem;
+      color: var(--primary);
+    }
+
+    h4 {
+      font-weight: 500;
+      margin-top: 15px;
+      color: var(--text-muted-light);
+    }
 
     /* Containers */
-    .container { max-width: 1000px; margin: 20px auto; background: #242424; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: background 0.3s, color 0.3s; }
-    input, select, button { width: 100%; margin: 8px 0; padding: 10px; border-radius: 6px; border: 1px solid #555; font-size: 14px; background: #333; color: #f0f0f0; transition: background 0.3s, color 0.3s, border 0.3s; }
-    button { background: #4DA6FF; color: #fff; border: none; cursor: pointer; transition: background 0.3s; }
-    button:hover { background: #3399FF; }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: var(--surface-light);
+      padding: 40px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Inputs & Buttons */
+    input,
+    select,
+    button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 14px;
+      border-radius: 12px;
+      border: 2px solid transparent;
+      background: #F8F9FA;
+      font-size: 15px;
+      font-family: inherit;
+      transition: var(--transition);
+      color: var(--text-light);
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.1);
+    }
+
+    button {
+      background: linear-gradient(135deg, var(--primary), #8B85FF);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
 
     /* Links */
-    .link { text-align: center; margin-top: 10px; color: #4DA6FF; cursor: pointer; }
+    .link {
+      text-align: center;
+      margin-top: 15px;
+      color: var(--primary);
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
 
     /* Birthday cards */
-    .birthday-card { background: #2d2d2d; margin: 10px 0; padding: 12px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.3s, color 0.3s; color: #f0f0f0; }
-    .today-card { background: #3e3f3e; border-left: 4px solid #4DA6FF; }
-    .countdown { margin-top: 6px; font-weight: 500; color: #aaa; }
+    .birthday-card {
+      background: var(--surface-light);
+      margin: 15px 0;
+      padding: 20px;
+      border-radius: 12px;
+      border-left: 5px solid transparent;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+      transition: var(--transition);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .birthday-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .today-card {
+      background: linear-gradient(to right, rgba(108, 99, 255, 0.05), transparent);
+      border-left-color: var(--primary);
+    }
+
+    .countdown {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--primary);
+      background: rgba(108, 99, 255, 0.1);
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
 
     /* Navbar */
-    .navbar { display: flex; justify-content: space-between; align-items: center; background: #3399FF; padding: 10px 15px; border-radius: 10px; position: relative; z-index: 10; color: #fff; }
-    .nav-links { display: flex; gap: 15px; }
-    .nav-links a { color: #fff; font-weight: bold; }
-    .nav-toggle { display: none; cursor: pointer; font-size: 24px; color: #fff; }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 15px 25px;
+      border-radius: var(--radius);
+      margin-bottom: 30px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 20px;
+      z-index: 100;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
 
-    /* Footer */
-    footer { text-align: center; margin: 20px 0; font-size: 13px; color: #aaa; transition: color 0.3s; }
+    .brand {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+    }
 
-    /* Theme toggle button */
-    #themeToggle { position: fixed; top: 15px; left: 15px; width: 40px; height: 40px; border-radius: 50%; padding: 0; font-size: 20px; z-index: 20; }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
 
-    /* Responsive mobile */
-    @media (max-width: 800px) {
-      .container { max-width: 90%; }
-      .nav-links {
-        display: none;
-        flex-direction: column;
-        gap: 10px;
-        background: #4DA6FF;
-        position: absolute;
-        top: 55px;
-        right: 0;
-        width: 180px;
-        padding: 10px;
-        border-radius: 10px;
-        z-index: 15;
+    .nav-link {
+      color: var(--text-muted-light);
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .nav-link:hover {
+      background: rgba(108, 99, 255, 0.1);
+      color: var(--primary);
+    }
+
+    .logout-btn {
+      width: auto;
+      margin: 0;
+      padding: 8px 20px;
+      font-size: 0.9rem;
+      background: #FF6B6B;
+      box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+    }
+
+    .logout-btn:hover {
+      background: #FF5252;
+      box-shadow: 0 6px 15px rgba(255, 107, 107, 0.4);
+    }
+
+    /* Sections */
+    .section-container {
+      background: #fff;
+      padding: 25px;
+      border-radius: var(--radius);
+      margin-bottom: 30px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .section-header {
+      font-size: 1.3rem;
+      color: var(--text-light);
+      border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Dark Mode */
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    body.dark .container,
+    body.dark .section-container {
+      background: var(--surface-dark);
+      border-color: #333;
+    }
+
+    body.dark input,
+    body.dark select {
+      background: #2C2C2C;
+      color: var(--text-dark);
+      border-color: #333;
+    }
+
+    body.dark input:focus {
+      border-color: var(--primary);
+      background: #333;
+    }
+
+    body.dark .birthday-card {
+      background: #252525;
+      color: var(--text-dark);
+      border-color: #333;
+    }
+
+    body.dark .today-card {
+      background: linear-gradient(to right, rgba(108, 99, 255, 0.15), transparent);
+    }
+
+    body.dark .navbar {
+      background: rgba(30, 30, 30, 0.8);
+      border-color: #333;
+    }
+
+    body.dark .nav-link {
+      color: var(--text-muted-dark);
+    }
+
+    body.dark .nav-link:hover {
+      color: var(--primary);
+      background: rgba(108, 99, 255, 0.1);
+    }
+
+    body.dark h4 {
+      color: var(--text-muted-dark);
+    }
+
+    body.dark .section-header {
+      color: var(--text-dark);
+      border-bottom-color: #333;
+    }
+
+    /* Theme Toggle */
+    #themeToggle {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      top: auto;
+      left: auto;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+    }
+
+    /* Mobile */
+    .nav-toggle {
+      display: none;
+      font-size: 24px;
+      color: var(--text-light);
+      cursor: pointer;
+    }
+
+    body.dark .nav-toggle {
+      color: var(--text-dark);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 95%;
+        padding: 20px;
+        margin: 20px auto;
       }
-      .nav-links.show { display: flex; }
-      .nav-toggle { display: block; }
-      #themeToggle.menu-open { left: 190px; }
+
+      .navbar {
+        padding: 15px;
+      }
+
+      .nav-links {
+        position: absolute;
+        top: 70px;
+        right: 0;
+        background: var(--surface-light);
+        flex-direction: column;
+        width: 200px;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        display: none;
+        align-items: stretch;
+      }
+
+      body.dark .nav-links {
+        background: var(--surface-dark);
+        border: 1px solid #333;
+      }
+
+      .nav-links.show {
+        display: flex;
+        animation: slideDown 0.3s ease;
+      }
+
+      .nav-toggle {
+        display: block;
+      }
+
+      .birthday-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .countdown {
+        align-self: flex-start;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
+
 <body class="dark">
   <!-- Theme toggle -->
   <button id="themeToggle">🌙</button>
@@ -104,19 +452,36 @@
         <a href="terms.html" target="_blank" class="nav-link">Terms</a>
         <a href="contact.html" target="_blank" class="nav-link">Contact</a>
         <a href="b-day.apk" download class="nav-link">⬇ Download APK</a>
-        <button id="logoutBtn">Logout</button>
+        <button class="logout-btn">Logout</button>
 
       </div>
     </div>
 
     <h2 id="welcomeMsg">Dashboard</h2>
 
-    <h3>🎂 Today</h3>
-    <div id="today"></div>
-    <h3>📅 Upcoming</h3>
-    <div id="upcoming"></div>
-    <h3>✅ Past</h3>
-    <div id="past"></div>
+    <div class="section-container">
+      <h3 class="section-header">� Public Birthdays</h3>
+      <div class="subsection">
+        <h4>🎂 Today</h4>
+        <div id="public-today"></div>
+        <h4>📅 Upcoming</h4>
+        <div id="public-upcoming"></div>
+        <h4>✅ Past</h4>
+        <div id="public-past"></div>
+      </div>
+    </div>
+
+    <div class="section-container">
+      <h3 class="section-header">🔒 My Private Birthdays</h3>
+      <div class="subsection">
+        <h4>🎂 Today</h4>
+        <div id="private-today"></div>
+        <h4>📅 Upcoming</h4>
+        <div id="private-upcoming"></div>
+        <h4>✅ Past</h4>
+        <div id="private-past"></div>
+      </div>
+    </div>
 
     <h3>Add Birthday</h3>
     <input type="text" id="name" placeholder="Name" />
@@ -127,7 +492,7 @@
     </select>
     <button id="addBtn">Add Birthday</button>
 
-    <button id="logoutBtn">Logout</button>
+    <button class="logout-btn">Logout</button>
   </div>
 
   <footer>
@@ -159,13 +524,13 @@
     let inactivityTimer;
 
     function clearCountdownIntervals() {
-      countdownIntervals.forEach(id=>clearInterval(id));
-      countdownIntervals=[];
+      countdownIntervals.forEach(id => clearInterval(id));
+      countdownIntervals = [];
     }
 
     function toggleView(view) {
-      document.getElementById("signupContainer").style.display = view==='signup'?'block':'none';
-      document.getElementById("loginContainer").style.display = view==='login'?'block':'none';
+      document.getElementById("signupContainer").style.display = view === 'signup' ? 'block' : 'none';
+      document.getElementById("loginContainer").style.display = view === 'login' ? 'block' : 'none';
     }
     window.toggleView = toggleView;
 
@@ -173,22 +538,23 @@
 
     // Theme toggle
     const themeBtn = document.getElementById("themeToggle");
-    themeBtn.addEventListener("click", ()=>{
+    themeBtn.addEventListener("click", () => {
       document.body.classList.toggle("dark");
+      themeBtn.textContent = document.body.classList.contains("dark") ? "🌙" : "☀️";
     });
 
     // Navbar toggle for mobile
     const navToggle = document.getElementById('navToggle');
     const navLinks = document.getElementById('navLinks');
-    navToggle.addEventListener('click', ()=>{
+    navToggle.addEventListener('click', () => {
       navLinks.classList.toggle('show');
       themeBtn.classList.toggle('menu-open');
     });
 
     // Close menu when link clicked (mobile)
-    document.querySelectorAll('.nav-link').forEach(link=>{
-      link.addEventListener('click', ()=>{
-        if(navLinks.classList.contains('show')){
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        if (navLinks.classList.contains('show')) {
           navLinks.classList.remove('show');
           themeBtn.classList.remove('menu-open');
         }
@@ -210,8 +576,8 @@
       }
     }
 
-    // Signup
-    document.getElementById("signupBtn").addEventListener("click", async ()=>{
+    // Signup 5QUNROpvdrVlKQgu3V04wpOEmzp1
+    document.getElementById("signupBtn").addEventListener("click", async () => {
       const username = document.getElementById("signupUsername").value;
       const email = document.getElementById("signupEmail").value;
       const password = document.getElementById("signupPassword").value;
@@ -219,152 +585,190 @@
       const visibility = document.getElementById("signupDobVisibility").value;
       const termsChecked = document.getElementById("termsCheckbox").checked;
 
-      if(!username||!email||!password||!dob){ alert("All fields are required"); return; }
-      if(!termsChecked){ alert("Please accept Terms"); return; }
+      if (!username || !email || !password || !dob) { alert("All fields are required"); return; }
+      if (!termsChecked) { alert("Please accept Terms"); return; }
 
-      try{
-        const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         currentUser = userCredential.user; currentUsername = username;
 
-        await addDoc(collection(db,"users"),{ uid:currentUser.uid, username, dob, visibility });
-        await addDoc(collection(db,"birthdays"),{ uid:currentUser.uid, name:username, dob, visibility });
+        await addDoc(collection(db, "users"), { uid: currentUser.uid, username, dob, visibility });
+        // Add addedBy field
+        await addDoc(collection(db, "birthdays"), { uid: currentUser.uid, name: username, dob, visibility, addedBy: username });
 
-        showDashboard(username);
-      }catch(err){ alert(err.message); }
+        // Manually update welcome message to avoid duplicate loadBirthdays call
+        document.getElementById("welcomeMsg").textContent = `👋 Welcome, ${username}!`;
+        document.getElementById("name").value = username;
+        document.getElementById("dob").value = dob;
+      } catch (err) { alert(err.message); }
     });
 
     // Login
-    document.getElementById("loginBtn").addEventListener("click", async ()=>{
+    document.getElementById("loginBtn").addEventListener("click", async () => {
       const email = document.getElementById("loginEmail").value;
       const password = document.getElementById("loginPassword").value;
-      try{
+      try {
         await setPersistence(auth, browserLocalPersistence);
-        const userCredential = await signInWithEmailAndPassword(auth,email,password);
-        currentUser=userCredential.user;
-        showDashboard();
-        resetInactivityTimer();
+        await signInWithEmailAndPassword(auth, email, password);
+        // onAuthStateChanged will handle UI update
       }
-      catch(err){ alert(err.message); }
+      catch (err) { alert(err.message); }
     });
 
     // Logout
-    document.getElementById("logoutBtn").addEventListener("click", async ()=>{
-      await signOut(auth);
-      currentUser=null; currentUsername=null;
-      toggleView('login');
-      document.getElementById("dashboardContainer").style.display='none';
+    document.querySelectorAll(".logout-btn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        await signOut(auth);
+        currentUser = null; currentUsername = null;
+        toggleView('login');
+        document.getElementById("dashboardContainer").style.display = 'none';
+      });
     });
 
     // Auto-logout after 10 minutes of inactivity
     function resetInactivityTimer() {
       clearTimeout(inactivityTimer);
-      inactivityTimer = setTimeout(async ()=>{
+      inactivityTimer = setTimeout(async () => {
         alert("Session expired due to inactivity. Logging out...");
         await signOut(auth);
-        currentUser=null; currentUsername=null;
+        currentUser = null; currentUsername = null;
         toggleView('login');
-        document.getElementById("dashboardContainer").style.display='none';
+        document.getElementById("dashboardContainer").style.display = 'none';
       }, 10 * 60 * 1000); // 10 minutes
     }
     document.addEventListener("mousemove", resetInactivityTimer);
     document.addEventListener("keydown", resetInactivityTimer);
 
     // Add birthday
-    document.getElementById("addBtn").addEventListener("click", async ()=>{
-      if(!currentUser) return;
+    document.getElementById("addBtn").addEventListener("click", async () => {
+      if (!currentUser) return;
       const name = document.getElementById("name").value;
       const dob = document.getElementById("dob").value;
-      let visibility="public";
-      if(currentUsername==="admin") visibility=document.getElementById("dobVisibility").value;
-      if(!name||!dob){ alert("Enter both name and date"); return; }
-      await addDoc(collection(db,"birthdays"),{ uid:currentUser.uid, name, dob, visibility });
+      let visibility = "private";
+      if (currentUsername === "admin") visibility = document.getElementById("dobVisibility").value;
+      if (!name || !dob) { alert("Enter both name and date"); return; }
+      // Add addedBy field
+      await addDoc(collection(db, "birthdays"), { uid: currentUser.uid, name, dob, visibility, addedBy: currentUsername });
       loadBirthdays();
     });
 
     // Load birthdays
-    async function loadBirthdays(){
-      if(!currentUser) return;
-      const todayContainer=document.getElementById('today');
-      const upcomingContainer=document.getElementById('upcoming');
-      const pastContainer=document.getElementById('past');
+    async function loadBirthdays() {
+      if (!currentUser) return;
+
+      // Clear all containers
+      const containers = ['public-today', 'public-upcoming', 'public-past', 'private-today', 'private-upcoming', 'private-past'];
+      containers.forEach(id => document.getElementById(id).innerHTML = '');
+
       clearCountdownIntervals();
-      todayContainer.innerHTML=''; upcomingContainer.innerHTML=''; pastContainer.innerHTML='';
-      const snapshot = await getDocs(collection(db,"birthdays"));
-      const today = new Date();
 
-      snapshot.forEach(docSnap=>{
-        const person=docSnap.data();
-        if(person.visibility==='private' && person.uid!==currentUser.uid) return;
-        const dob=new Date(person.dob);
-        const thisYear=new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
-        const age = today.getFullYear()-dob.getFullYear();
-        if(thisYear.toDateString()===today.toDateString()) {
-          updateCard(person,todayContainer,age,thisYear);
-          sendBirthdayNotification(person.name);
-        }
-        else if(thisYear>today) updateCard(person,upcomingContainer,age,thisYear);
-        else updateCard(person,pastContainer,age,thisYear);
-      });
-    }
+      try {
+        const snapshot = await getDocs(collection(db, "birthdays"));
+        const today = new Date();
 
-    function updateCard(person,container,age,date){
-      const target = new Date(date);
-      const card = document.createElement("div"); card.className="birthday-card";
-      card.innerHTML=`<div><b>${person.name}</b> 🎂 (${age} yrs) - ${target.toDateString()}</div><div class="countdown" aria-live="polite"></div>`;
-      container.appendChild(card);
-      const countdownEl = card.querySelector('.countdown');
-      function tick(){
-        const now=new Date(); const dist=target-now;
-        if(dist>0){
-          const days=Math.floor(dist/(1000*60*60*24));
-          const hours=Math.floor((dist%(1000*60*60*24))/(1000*60*60));
-          const minutes=Math.floor((dist%(1000*60*60))/(1000*60));
-          const seconds=Math.floor((dist%(1000*60))/1000);
-          countdownEl.textContent=`⏳ ${days}d ${hours}h ${minutes}m ${seconds}s left`;
-          card.classList.remove('today-card');
-        }
-        else if(target.toDateString()===now.toDateString()){
-          countdownEl.textContent=`🎉 Today!`; card.classList.add('today-card');
-        }
-        else {
-          countdownEl.textContent=`✅ Already celebrated this year`; card.classList.remove('today-card');
+        snapshot.forEach(docSnap => {
+          const person = docSnap.data();
+
+          // Visibility Logic
+          const isPrivate = person.visibility === 'private';
+          if (isPrivate && person.uid !== currentUser.uid) return; // Skip others' private data
+
+          if (!person.dob || !person.dob.includes('-')) return; // Safety check
+
+          const parts = person.dob.split('-');
+          const dob = new Date(parts[0], parts[1] - 1, parts[2]);
+          const thisYear = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+          const age = today.getFullYear() - dob.getFullYear();
+
+          // Determine target container prefix
+          const prefix = isPrivate ? 'private' : 'public';
+          let suffix = '';
+
+          if (thisYear.toDateString() === today.toDateString()) {
+            suffix = 'today';
+            sendBirthdayNotification(person.name);
+          }
+          else if (thisYear > today) suffix = 'upcoming';
+          else suffix = 'past';
+
+          const containerId = `${prefix}-${suffix}`;
+          const container = document.getElementById(containerId);
+
+          if (container) {
+            updateCard(person, container, age, thisYear);
+          }
+        });
+      } catch (error) {
+        console.error("Error loading birthdays:", error);
+        if (error.code === 'permission-denied') {
+          alert("Permission Error: Please check your Firestore Security Rules in the Firebase Console.");
         }
       }
-      tick(); countdownIntervals.push(setInterval(tick,1000));
     }
 
-    async function showDashboard(username=null){
-      document.getElementById("signupContainer").style.display='none';
-      document.getElementById("loginContainer").style.display='none';
-      document.getElementById("dashboardContainer").style.display='block';
-      if(currentUser){
-        const usersSnapshot = await getDocs(collection(db,"users"));
-        const userDoc = usersSnapshot.docs.find(doc=>doc.data().uid===currentUser.uid);
-        if(userDoc){
-          const data=userDoc.data(); currentUsername=data.username;
-          document.getElementById("welcomeMsg").textContent=`👋 Welcome, ${data.username}!`;
-          document.getElementById("name").value=data.username||"";
-          document.getElementById("dob").value=data.dob||"";
-          document.getElementById("dobVisibility").style.display=(data.username==="admin")?"block":"none";
-        }else if(username){ currentUsername=username; document.getElementById("welcomeMsg").textContent=`👋 Welcome, ${username}!`; }
+    function updateCard(person, container, age, date) {
+      const target = new Date(date);
+      const card = document.createElement("div"); card.className = "birthday-card";
+
+      // Added By text
+      const addedByText = person.addedBy ? `<br><small style="color:#888;">Added by: ${person.addedBy}</small>` : '';
+
+      card.innerHTML = `<div><b>${person.name}</b> 🎂 (${age} yrs) - ${target.toDateString()}${addedByText}</div><div class="countdown" aria-live="polite"></div>`;
+      container.appendChild(card);
+      const countdownEl = card.querySelector('.countdown');
+      function tick() {
+        const now = new Date(); const dist = target - now;
+        if (dist > 0) {
+          const days = Math.floor(dist / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((dist % (1000 * 60)) / 1000);
+          countdownEl.textContent = `⏳ ${days}d ${hours}h ${minutes}m ${seconds}s left`;
+          card.classList.remove('today-card');
+        }
+        else if (target.toDateString() === now.toDateString()) {
+          countdownEl.textContent = `🎉 Today!`; card.classList.add('today-card');
+        }
+        else {
+          countdownEl.textContent = `✅ Already celebrated this year`; card.classList.remove('today-card');
+        }
+      }
+      tick(); countdownIntervals.push(setInterval(tick, 1000));
+    }
+
+    async function showDashboard(username = null) {
+      document.getElementById("signupContainer").style.display = 'none';
+      document.getElementById("loginContainer").style.display = 'none';
+      document.getElementById("dashboardContainer").style.display = 'block';
+      if (currentUser) {
+        const usersSnapshot = await getDocs(collection(db, "users"));
+        const userDoc = usersSnapshot.docs.find(doc => doc.data().uid === currentUser.uid);
+        if (userDoc) {
+          const data = userDoc.data(); currentUsername = data.username;
+          document.getElementById("welcomeMsg").textContent = `👋 Welcome, ${data.username}!`;
+          document.getElementById("name").value = data.username || "";
+          document.getElementById("dob").value = data.dob || "";
+          document.getElementById("dobVisibility").style.display = (data.username === "admin") ? "block" : "none";
+        } else if (username) { currentUsername = username; document.getElementById("welcomeMsg").textContent = `👋 Welcome, ${username}!`; }
       }
       loadBirthdays();
     }
 
     // Auth state listener
-    onAuthStateChanged(auth, (user)=>{
-      if(user){
-        currentUser=user;
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
         showDashboard();
         resetInactivityTimer();
-      }else{
+      } else {
         toggleView('login');
       }
     });
 
     // Footer
-    document.getElementById("year").textContent=new Date().getFullYear();
-    document.getElementById("todayDate").textContent=new Date().toDateString();
+    document.getElementById("year").textContent = new Date().getFullYear();
+    document.getElementById("todayDate").textContent = new Date().toDateString();
   </script>
 </body>
+
 </html>
