@@ -1,198 +1,497 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diwali Festival Countdown</title>
-    <style>
-        /* General Styles */
-        body {
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            background-image: url('https://www.icnnational.com/wp-content/uploads/Diwali-2.webp');
-            background-size: cover;
-            background-color: rgba(0.0, 0.0, 0.0, 0.5);
-            background-blend-mode: overlay;
-            background-position: center;
-            color: #d2691e;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pongal Festival Countdown</title>
+  <style>
+    /* General Styles */
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --text-color: #FFD700;
+      --accent-color: #FF4500;
+    }
 
-        h1 {
-            font-size: 60px;
-            animation: bounce 2s infinite;
-            color: #ff4500;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            margin-top: 20%;
-        }
+    body {
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      background-image: url('pongal_bg.png');
+      background-size: cover;
+      background-color: #000;
+      background-position: center;
+      background-attachment: fixed;
+      /* Parallax effect base */
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
 
-        h3 {
-            animation: pulse 5s infinite;
-            color: chartreuse;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            margin: 5%;
-        }
+    /* Glassmorphism Container */
+    .glass-container {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 30px;
+      margin: 20px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      max-width: 800px;
+      width: 90%;
+    }
 
-        .countdown {
-            font-size: 50px;
-            font-weight: bold;
-            color: #ffffff;
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 20px;
-            border-radius: 10px;
-            animation: pulse 1.5s infinite;
-        }
+    h1 {
+      font-size: 3.5rem;
+      animation: bounce 2s infinite;
+      color: var(--accent-color);
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      margin-top: 20px;
+    }
 
-        .celebrate {
-            display: none;
-            margin-top: 20px;
-        }
+    h3 {
+      animation: pulse 5s infinite;
+      color: #76FF03;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      margin: 10px;
+    }
 
-        .celebrate img {
-            width: 90%;
-            height: auto;
-            animation: zoomIn 2s ease-in-out;
-            margin-bottom: 30%;
-            animation: pulse 1.5s infinite;
-        }
-        span{
-            color: aqua;
-        }
+    .countdown {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #ffffff;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 20px;
+      border-radius: 15px;
+      animation: pulse 1.5s infinite;
+      margin: 20px 0;
+      display: inline-block;
+    }
 
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 5px 0;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
+    /* Pongal Pot Animation */
+    .pot-container {
+      position: relative;
+      width: 150px;
+      height: 180px;
+      margin: 20px auto;
+    }
 
-        footer a {
-            color: #4CAF50;
-            text-decoration: none;
-        }
+    .pot {
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 30%, #8B4513, #5D4037);
+      border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%;
+      position: relative;
+      z-index: 2;
+    }
 
-        footer a:hover {
-            text-decoration: underline;
-        }
+    .pot::before {
+      /* Neck */
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 15%;
+      width: 70%;
+      height: 30px;
+      background: #5D4037;
+      border-radius: 5px;
+    }
 
-        small {
-            color: orange;
-        }
+    .milk {
+      position: absolute;
+      top: -10px;
+      left: 20%;
+      width: 60%;
+      height: 10px;
+      background: #FFF;
+      border-radius: 50%;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
 
-        /* Animations */
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
+    .milk-overflow {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: 100%;
+      background: transparent;
+      z-index: 4;
+      display: none;
+    }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
+    .milk-drip {
+      position: absolute;
+      background: #FFF;
+      width: 10px;
+      height: 20px;
+      border-radius: 10px;
+      animation: drip 1s infinite;
+    }
 
-        @keyframes zoomIn {
-            0% { transform: scale(0); }
-            100% { transform: scale(1); }
-        }
+    @keyframes drip {
+      0% {
+        top: 0;
+        opacity: 1;
+        height: 10px;
+      }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 40px;
-                margin-top: 15%;
-            }
+      100% {
+        top: 100%;
+        opacity: 0;
+        height: 50px;
+      }
+    }
 
-            h3 {
-                font-size: 20px;
-            }
+    /* Festival Guide */
+    .festival-guide {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
 
-            .countdown {
-                font-size: 30px;
-                padding: 15px;
-            }
+    .day-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+      width: 150px;
+      text-align: center;
+      transition: transform 0.3s, background 0.3s;
+    }
 
-            .celebrate img {
-                width: 90%;
-            }
-        }
+    .day-card.active {
+      background: rgba(255, 215, 0, 0.3);
+      border: 2px solid gold;
+      transform: scale(1.05);
+    }
 
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 30px;
-                margin-top: 10%;
-            }
+    .day-card h4 {
+      margin: 5px 0;
+      color: orange;
+    }
 
-            h3 {
-                font-size: 18px;
-            }
+    .day-card p {
+      font-size: 0.8rem;
+      color: #ddd;
+    }
 
-            .countdown {
-                font-size: 24px;
-                padding: 10px;
-            }
+    /* Greeting Generator */
+    .greeting-form {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
 
-            .celebrate img {
-                width: 90%;
-            }
-        }
-    </style>
+    input {
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      width: 80%;
+      max-width: 300px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: none;
+      background: linear-gradient(45deg, #FF4500, #FFD700);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    .secondary-btn {
+      background: transparent;
+      border: 2px solid #FFD700;
+      margin-top: 10px;
+    }
+
+    .whatsapp-btn {
+      background: #25D366;
+      color: white;
+      margin-top: 10px;
+      display: none;
+      /* Hidden by default */
+    }
+
+    .top-wish {
+      font-size: 1.5rem;
+      color: #FFD700;
+      margin-top: 20px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      z-index: 10;
+      animation: pulse 3s infinite;
+    }
+
+    .music-control {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 1px solid white;
+    }
+
+    /* Animations */
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    @keyframes zoomIn {
+      0% {
+        transform: scale(0);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      .countdown {
+        font-size: 2rem;
+      }
+
+      .glass-container {
+        width: 95%;
+        padding: 15px;
+      }
+    }
+  </style>
 </head>
-<body id="hi" >
-    <h1 id="title">Pongal 2026</h1>
+
+<body id="hi">
+  <button class="music-control" onclick="toggleMusic()">🎵</button>
+  <audio id="bgMusic" loop>
+    <source src="nadaswaram.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="pongalAudio">
+    <source src="pongalo_pongal.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="top-wish">✨Happy Pongal Wish by Arirama Selvam M ✨</div>
+
+  <div class="glass-container">
+    <h1 id="title">Pongal 2026!</h1>
     <div class="countdown" id="countdown"></div>
     <h3 id="advance">Advanced Happy Pongal 2026!</h3>
 
-    <div class="celebrate" id="celebrate">
-        <img src="https://www.creativepoint.in/wp-content/uploads/2023/11/deepavali-greetings-in-tamil-wishes-1024x536.png" alt="Celebration Image">
+    <div id="main-content" style="display: none;">
+      <!-- Pongalo Pongal Moment -->
+      <div class="pot-container">
+        <div class="pot"></div>
+        <div class="milk" id="milk"></div>
+        <div class="milk-overflow" id="milkOverflow">
+          <div class="milk-drip" style="left: 10%; animation-delay: 0s;"></div>
+          <div class="milk-drip" style="left: 30%; animation-delay: 0.2s;"></div>
+          <div class="milk-drip" style="left: 60%; animation-delay: 0.4s;"></div>
+          <div class="milk-drip" style="left: 80%; animation-delay: 0.1s;"></div>
+        </div>
+      </div>
+      <button onclick="boilMilk()">🔥 Boil Milk & Say Pongalo Pongal!</button>
+
+      <!-- Festival Guide -->
+      <div class="festival-guide" id="festivalGuide">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Greeting Generator -->
+      <div class="greeting-form" id="greetingForm">
+        <h3>Send a Wish</h3>
+        <input type="text" id="yourName" placeholder="Your Name">
+        <input type="text" id="friendName" placeholder="Friend's Name">
+        <button onclick="generateLink()">Generate Link</button>
+        <p id="generatedLink" style="word-break: break-all; color: cyan;"></p>
+        <button id="whatsappShare" class="whatsapp-btn" onclick="shareOnWhatsApp()">Share on WhatsApp 💬</button>
+      </div>
+
+      <div id="createOwnSection" style="display: none; margin-top: 20px;">
+        <button class="secondary-btn" onclick="showGreetingForm()">✨ Create Your Own Wish</button>
+      </div>
+
+      <div class="celebrate" id="celebrate">
+        <img src="https://www.wallsnapy.com/img_gallery/pongal-wishes-images-in-tamil-1341431.png"
+          alt="Celebration Image">
+      </div>
     </div>
+  </div>
 
-    <script>
-        // Set the date we're counting down to
-        var countDownDate = new Date("Jan 15, 2026 00:00:00").getTime();
+  <script>
+    // Parallax Effect
+    document.addEventListener('mousemove', (e) => {
+      const x = (window.innerWidth - e.pageX * 2) / 100;
+      const y = (window.innerHeight - e.pageY * 2) / 100;
+      document.body.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`;
+    });
 
-        // Update the countdown every 1 second
-        var countdownFunction = setInterval(function() {
-            // Get today's date and time
-            var now = new Date().getTime();
+    // Music Toggle
+    const bgMusic = document.getElementById('bgMusic');
+    let isMusicPlaying = false;
+    function toggleMusic() {
+      if (isMusicPlaying) {
+        bgMusic.pause();
+        document.querySelector('.music-control').innerText = '🎵';
+      } else {
+        bgMusic.play().catch(e => console.log("Audio play failed (user interaction needed):", e));
+        document.querySelector('.music-control').innerText = '⏸️';
+      }
+      isMusicPlaying = !isMusicPlaying;
+    }
 
-            // Find the distance between now and the countdown date
-            var distance = countDownDate - now;
+    // Pongalo Pongal Moment
+    function boilMilk() {
+      const milk = document.getElementById('milk');
+      const overflow = document.getElementById('milkOverflow');
+      const audio = document.getElementById('pongalAudio');
 
-            // Time calculations for days, hours, minutes and seconds
-            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      milk.style.opacity = '1';
+      setTimeout(() => {
+        overflow.style.display = 'block';
+        audio.play();
+        alert("Pongalo Pongal! 🌾🍯");
+      }, 1000);
+    }
 
-            // Display the result in the element with id="countdown"
-            document.getElementById("countdown").innerHTML = days + "d " + hours + "h "
-            + minutes + "m " + seconds + "s ";
+    // Festival Guide
+    const days = [
+      // { date: '2026-01-14', title: 'Bhogi Pongal', desc: 'Burning old things' },
+      { date: '2026-01-15', title: 'Thai Pongal', desc: 'Main Festival, Surya Pongal' },
+      { date: '2026-01-16', title: 'Mattu Pongal', desc: 'Worshipping Cattle' },
+      { date: '2026-01-17', title: 'Kaanum Pongal', desc: 'Family Reunion' }
+    ];
 
-            // If the countdown is over, display celebration image and message
-            if (distance < 0) {
-                const name = prompt("Enter your name:");
-                clearInterval(countdownFunction);
-                document.getElementById("countdown").innerHTML = `Happy Diwali ${name},<br> by <span>Arirama Selvam</span>`;
-                document.getElementById("advance").innerHTML = `Happy Diwali 2025 ${name}, by Arirama Selvam`;
+    const guideContainer = document.getElementById('festivalGuide');
+    const today = new Date().toISOString().split('T')[0];
 
-                document.getElementById("celebrate").style.display = "block";
-                  }
-        }, 1000);
-    </script>
-    <footer>
-        <p>&copy; 2025 My Website. All rights reserved.</p>
-        <p><a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a></p>
-        <small>by Arirama Selvam M</small>
-    </footer>
+    days.forEach(day => {
+      const card = document.createElement('div');
+      card.className = `day-card ${day.date === today ? 'active' : ''}`;
+      card.innerHTML = `<h4>${day.title}</h4><p>${day.date}</p><p>${day.desc}</p>`;
+      guideContainer.appendChild(card);
+    });
+
+    // Greeting Generator Logic
+    function generateLink() {
+      const from = document.getElementById('yourName').value;
+      const to = document.getElementById('friendName').value;
+      if (from && to) {
+        const url = `${window.location.origin}${window.location.pathname}?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+        document.getElementById('generatedLink').innerHTML = `<a href="${url}" style="color:cyan;">${url}</a>`;
+
+        // Show WhatsApp Button
+        const whatsappBtn = document.getElementById('whatsappShare');
+        whatsappBtn.style.display = 'block';
+        whatsappBtn.dataset.url = url;
+      } else {
+        alert("Please enter both names!");
+      }
+    }
+
+    function shareOnWhatsApp() {
+      const url = document.getElementById('whatsappShare').dataset.url;
+      const text = `Happy Pongal! Check out this special wish for you: ${url}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    function showGreetingForm() {
+      document.getElementById('greetingForm').style.display = 'flex';
+      document.getElementById('createOwnSection').style.display = 'none';
+      document.getElementById('greetingForm').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Check for Greeting Params
+    const urlParams = new URLSearchParams(window.location.search);
+    const fromParam = urlParams.get('from');
+    const toParam = urlParams.get('to');
+    if (fromParam && toParam) {
+      document.getElementById('title').innerText = `Happy Pongal ${toParam}!`;
+      document.getElementById('advance').innerHTML = `Wishes from ${fromParam}`;
+      document.getElementById('greetingForm').style.display = 'none'; // Hide form if viewing a greeting
+      document.getElementById('createOwnSection').style.display = 'block'; // Show "Create Your Own" button
+    }
+
+    // Set the date we're counting down to
+    var countDownDate = new Date("Jan 15, 2026 00:00:00").getTime();
+
+    // Update the countdown every 1 second
+    var countdownFunction = setInterval(function () {
+      // Get today's date and time
+      var now = new Date().getTime();
+
+      // Find the distance between now and the countdown date
+      var distance = countDownDate - now;
+
+      // Time calculations for days, hours, minutes and seconds
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      // Display the result in the element with id="countdown"
+      document.getElementById("countdown").innerHTML = days + "d " + hours + "h "
+        + minutes + "m " + seconds + "s ";
+
+      // If the countdown is over, display celebration image and message
+      if (distance < 0) {
+        clearInterval(countdownFunction);
+        const name = toParam || "Friend"; // Use URL param if available
+        document.getElementById("countdown").innerHTML = `Happy Pongal ${name}!`;
+        document.getElementById("main-content").style.display = "block";
+        document.getElementById("advance").style.display = "none";
+      }
+    }, 1000);
+  </script>
+  <footer>
+    <p>&copy; 2025 My Website. All rights reserved.</p>
+    <p><a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a></p>
+    <small>by Arirama Selvam M</small>
+  </footer>
   <!-- <style>
   .bottom-cracker {
     position: fixed;
@@ -255,94 +554,126 @@
   }
   launchBottomCrackers();
 </script> -->
-<style>
-  .cracker, .particle {
-    position: fixed;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 30;
-  }
-
-  .cracker {
-    width: 4px;
-    height: 14px;
-    background: radial-gradient(circle, #fff, #ffea00, #ff6f00, #ff0000);
-    box-shadow: 0 0 10px #fff, 0 0 18px #ffea00, 0 0 25px #ff6f00, 0 0 30px #ff0000;
-    animation: rise 1s ease-out forwards;
-  }
-
-  .particle {
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 30;
-    animation: explode 0.8s ease-out forwards;
-    box-shadow: 0 0 6px #fff, 0 0 12px #ff0, 0 0 18px #f00, 0 0 24px #0f0, 0 0 30px #00f, 0 0 36px #f0f;
-  }
-
-  @keyframes rise {
-    0% { transform: translateY(0) scale(1); opacity: 1; }
-    20% { transform: translateY(-120px) scale(1.2); opacity: 1; }
-    50% { transform: translateY(-250px) scale(1); opacity: 0.9; }
-    80% { transform: translateY(-350px) scale(0.8); opacity: 0.7; }
-    100% { transform: translateY(-450px) scale(0.5); opacity: 0; }
-  }
-
-  @keyframes explode {
-    0% { transform: translate(0,0) scale(1); opacity: 1; }
-    20% { transform: translate(0,0) scale(1); opacity: 1; }
-    100% { transform: translate(var(--x), var(--y)) scale(0.7); opacity: 0; }
-  }
-</style>
-
-<script>
-  function launchFireworks() {
-    function getRandomColor() {
-      const colors = ['#ff0000','#ff6f00','#ffea00','#00f','#0f0','#f0f','#0ff','#f80','#fff'];
-      return colors[Math.floor(Math.random() * colors.length)];
+  <style>
+    .cracker,
+    .particle {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 30;
     }
 
-    function createCracker() {
-      const cracker = document.createElement('div');
-      cracker.className = 'cracker';
-      cracker.style.left = Math.random() * 100 + 'vw';
-      cracker.style.bottom = '0';
-      cracker.style.background = `radial-gradient(circle, #fff, ${getRandomColor()}, ${getRandomColor()}, ${getRandomColor()})`;
-      cracker.style.animationDuration = (0.9 + Math.random() * 0.8) + 's';
-      document.body.appendChild(cracker);
-
-      setTimeout(() => {
-        const particleCount = 25 + Math.floor(Math.random() * 30);
-        for (let i = 0; i < particleCount; i++) {
-          const particle = document.createElement('div');
-          particle.className = 'particle';
-          particle.style.left = cracker.style.left;
-          particle.style.bottom = '450px';
-          const angle = Math.random() * 2 * Math.PI;
-          const distance = 60 + Math.random() * 120;
-          particle.style.setProperty('--x', distance * Math.cos(angle) + 'px');
-          particle.style.setProperty('--y', -distance * Math.sin(angle) + 'px');
-          const c1 = getRandomColor();
-          const c2 = getRandomColor();
-          const c3 = getRandomColor();
-          particle.style.background = `radial-gradient(circle, ${c1}, ${c2}, ${c3})`;
-          particle.style.width = particle.style.height = (4 + Math.random() * 4) + 'px';
-          particle.style.animationDuration = (0.8 + Math.random() * 1) + 's';
-          document.body.appendChild(particle);
-          setTimeout(() => particle.remove(), 1800);
-        }
-        cracker.remove();
-      }, 1000);
+    .cracker {
+      width: 4px;
+      height: 14px;
+      background: radial-gradient(circle, #fff, #ffea00, #ff6f00, #ff0000);
+      box-shadow: 0 0 10px #fff, 0 0 18px #ffea00, 0 0 25px #ff6f00, 0 0 30px #ff0000;
+      animation: rise 1s ease-out forwards;
     }
 
-    for (let i = 0; i < 35; i++) createCracker();
-    setInterval(createCracker, 400);
-  }
-  launchFireworks();
-</script>
+    .particle {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 30;
+      animation: explode 0.8s ease-out forwards;
+      box-shadow: 0 0 6px #fff, 0 0 12px #ff0, 0 0 18px #f00, 0 0 24px #0f0, 0 0 30px #00f, 0 0 36px #f0f;
+    }
+
+    @keyframes rise {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+
+      20% {
+        transform: translateY(-120px) scale(1.2);
+        opacity: 1;
+      }
+
+      50% {
+        transform: translateY(-250px) scale(1);
+        opacity: 0.9;
+      }
+
+      80% {
+        transform: translateY(-350px) scale(0.8);
+        opacity: 0.7;
+      }
+
+      100% {
+        transform: translateY(-450px) scale(0.5);
+        opacity: 0;
+      }
+    }
+
+    @keyframes explode {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+
+      20% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(var(--x), var(--y)) scale(0.7);
+        opacity: 0;
+      }
+    }
+  </style>
+
+  <script>
+    function launchFireworks() {
+      function getRandomColor() {
+        const colors = ['#ff0000', '#ff6f00', '#ffea00', '#00f', '#0f0', '#f0f', '#0ff', '#f80', '#fff'];
+        return colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      function createCracker() {
+        const cracker = document.createElement('div');
+        cracker.className = 'cracker';
+        cracker.style.left = Math.random() * 100 + 'vw';
+        cracker.style.bottom = '0';
+        cracker.style.background = `radial-gradient(circle, #fff, ${getRandomColor()}, ${getRandomColor()}, ${getRandomColor()})`;
+        cracker.style.animationDuration = (0.9 + Math.random() * 0.8) + 's';
+        document.body.appendChild(cracker);
+
+        setTimeout(() => {
+          const particleCount = 25 + Math.floor(Math.random() * 30);
+          for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = cracker.style.left;
+            particle.style.bottom = '450px';
+            const angle = Math.random() * 2 * Math.PI;
+            const distance = 60 + Math.random() * 120;
+            particle.style.setProperty('--x', distance * Math.cos(angle) + 'px');
+            particle.style.setProperty('--y', -distance * Math.sin(angle) + 'px');
+            const c1 = getRandomColor();
+            const c2 = getRandomColor();
+            const c3 = getRandomColor();
+            particle.style.background = `radial-gradient(circle, ${c1}, ${c2}, ${c3})`;
+            particle.style.width = particle.style.height = (4 + Math.random() * 4) + 'px';
+            particle.style.animationDuration = (0.8 + Math.random() * 1) + 's';
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 1800);
+          }
+          cracker.remove();
+        }, 1000);
+      }
+
+      for (let i = 0; i < 35; i++) createCracker();
+      setInterval(createCracker, 400);
+    }
+    launchFireworks();
+  </script>
 
 
 
 </body>
+
 </html>
