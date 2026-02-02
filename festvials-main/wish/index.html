@@ -460,7 +460,22 @@
     <h2 id="welcomeMsg">Dashboard</h2>
 
     <div class="section-container">
-      <h3 class="section-header">� Public Birthdays</h3>
+      <h3 class="section-header">🔍 Filter & Sort</h3>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <input type="text" id="searchInput" placeholder="Search by name..." style="flex: 2; margin: 0;" />
+        <select id="sortSelect" style="flex: 1; margin: 0;">
+          <option value="name-asc" selected>Name (A-Z)</option>
+          <option value="name-desc">Name (Z-A)</option>
+          <option value="dob-asc">DOB (Jan - Dec)</option>
+          <option value="dob-desc">DOB (Dec - Jan)</option>
+          <option value="age-young">Age (Youngest First)</option>
+          <option value="age-old">Age (Oldest First)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-container">
+      <h3 class="section-header">🌍 Public Birthdays</h3>
       <div class="subsection">
         <h4>🎂 Today</h4>
         <div id="public-today"></div>
@@ -522,6 +537,7 @@
     let currentUsername = null;
     let countdownIntervals = [];
     let inactivityTimer;
+    let allBirthdaysData = []; // Store fetched data
 
     function clearCountdownIntervals() {
       countdownIntervals.forEach(id => clearInterval(id));
@@ -652,58 +668,109 @@
       loadBirthdays();
     });
 
+    // Wire up filter inputs
+    document.getElementById("searchInput").addEventListener("input", renderBirthdays);
+    document.getElementById("sortSelect").addEventListener("change", renderBirthdays);
+
     // Load birthdays
     async function loadBirthdays() {
       if (!currentUser) return;
 
-      // Clear all containers
-      const containers = ['public-today', 'public-upcoming', 'public-past', 'private-today', 'private-upcoming', 'private-past'];
-      containers.forEach(id => document.getElementById(id).innerHTML = '');
-
-      clearCountdownIntervals();
-
       try {
         const snapshot = await getDocs(collection(db, "birthdays"));
-        const today = new Date();
+        allBirthdaysData = []; // Reset local store
 
         snapshot.forEach(docSnap => {
-          const person = docSnap.data();
-
-          // Visibility Logic
-          const isPrivate = person.visibility === 'private';
-          if (isPrivate && person.uid !== currentUser.uid) return; // Skip others' private data
-
-          if (!person.dob || !person.dob.includes('-')) return; // Safety check
-
-          const parts = person.dob.split('-');
-          const dob = new Date(parts[0], parts[1] - 1, parts[2]);
-          const thisYear = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
-          const age = today.getFullYear() - dob.getFullYear();
-
-          // Determine target container prefix
-          const prefix = isPrivate ? 'private' : 'public';
-          let suffix = '';
-
-          if (thisYear.toDateString() === today.toDateString()) {
-            suffix = 'today';
-            sendBirthdayNotification(person.name);
-          }
-          else if (thisYear > today) suffix = 'upcoming';
-          else suffix = 'past';
-
-          const containerId = `${prefix}-${suffix}`;
-          const container = document.getElementById(containerId);
-
-          if (container) {
-            updateCard(person, container, age, thisYear);
-          }
+          allBirthdaysData.push(docSnap.data());
         });
+
+        renderBirthdays();
+
       } catch (error) {
         console.error("Error loading birthdays:", error);
         if (error.code === 'permission-denied') {
           alert("Permission Error: Please check your Firestore Security Rules in the Firebase Console.");
         }
       }
+    }
+
+    function renderBirthdays() {
+      // Clear all containers
+      const containers = ['public-today', 'public-upcoming', 'public-past', 'private-today', 'private-upcoming', 'private-past'];
+      containers.forEach(id => document.getElementById(id).innerHTML = '');
+
+      clearCountdownIntervals();
+
+      // Get Filter/Sort Values
+      const searchQuery = document.getElementById("searchInput").value.toLowerCase();
+      const sortValue = document.getElementById("sortSelect").value; // e.g. "name-asc"
+
+      const today = new Date();
+
+      // 1. Filter
+      let filteredData = allBirthdaysData.filter(person => {
+        // Visibility Logic
+        const isPrivate = person.visibility === 'private';
+        if (isPrivate && person.uid !== currentUser.uid) return false;
+        if (!person.dob || !person.dob.includes('-')) return false;
+
+        // Search Logic
+        if (searchQuery && !person.name.toLowerCase().includes(searchQuery)) return false;
+
+        return true;
+      });
+
+      // 2. Sort
+      filteredData.sort((a, b) => {
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
+
+        // Calculate objects for DOB sort
+        const dateA = new Date(a.dob);
+        const dateB = new Date(b.dob);
+
+        // For DOB (Month-Day) sort, we need to compare month/day independent of year
+        // We can set them all to the same year (e.g. 2000) for comparison
+        const mmddA = new Date(2000, dateA.getMonth(), dateA.getDate());
+        const mmddB = new Date(2000, dateB.getMonth(), dateB.getDate());
+
+        switch (sortValue) {
+          case 'name-asc': return nameA.localeCompare(nameB);
+          case 'name-desc': return nameB.localeCompare(nameA);
+          case 'dob-asc': return mmddA - mmddB;
+          case 'dob-desc': return mmddB - mmddA;
+          case 'age-young': return dateB - dateA; // Younger = later birthdate
+          case 'age-old': return dateA - dateB; // Older = earlier birthdate
+          default: return 0;
+        }
+      });
+
+      // 3. Render
+      filteredData.forEach(person => {
+        const parts = person.dob.split('-');
+        const dob = new Date(parts[0], parts[1] - 1, parts[2]);
+        const thisYear = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+        const age = today.getFullYear() - dob.getFullYear();
+
+        // Determine target container prefix
+        const isPrivate = person.visibility === 'private';
+        const prefix = isPrivate ? 'private' : 'public';
+        let suffix = '';
+
+        if (thisYear.toDateString() === today.toDateString()) {
+          suffix = 'today';
+          sendBirthdayNotification(person.name);
+        }
+        else if (thisYear > today) suffix = 'upcoming';
+        else suffix = 'past';
+
+        const containerId = `${prefix}-${suffix}`;
+        const container = document.getElementById(containerId);
+
+        if (container) {
+          updateCard(person, container, age, thisYear);
+        }
+      });
     }
 
     function updateCard(person, container, age, date) {
