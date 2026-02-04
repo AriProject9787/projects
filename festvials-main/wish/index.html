@@ -244,6 +244,31 @@
       gap: 10px;
     }
 
+    /* Calendar Button */
+    .calendar-btn {
+      background: rgba(108, 99, 255, 0.1);
+      color: var(--primary);
+      border: none;
+      padding: 5px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      margin-left: 10px;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+      box-shadow: none;
+      width: auto;
+    }
+
+    .calendar-btn:hover {
+      background: rgba(108, 99, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: none;
+    }
+
     /* Dark Mode */
     body.dark {
       background: var(--bg-dark);
@@ -773,6 +798,24 @@
       });
     }
 
+    function generateGoogleCalendarLink(name, date) {
+      const start = new Date(date);
+      const end = new Date(date);
+      end.setDate(end.getDate() + 1);
+
+      const formatDate = (d) => {
+        return d.toISOString().replace(/-|:|\.\d\d\d/g, "").split("T")[0];
+      };
+
+      const startStr = formatDate(start);
+      const endStr = formatDate(end);
+
+      const title = encodeURIComponent(`🎂 Birthday: ${name}`);
+      const details = encodeURIComponent(`Wish ${name} a Happy Birthday!`);
+
+      return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startStr}/${endStr}&details=${details}`;
+    }
+
     function updateCard(person, container, age, date) {
       const target = new Date(date);
       const card = document.createElement("div"); card.className = "birthday-card";
@@ -780,7 +823,17 @@
       // Added By text
       const addedByText = person.addedBy ? `<br><small style="color:#888;">Added by: ${person.addedBy}</small>` : '';
 
-      card.innerHTML = `<div><b>${person.name}</b> 🎂 (${age} yrs) - ${target.toDateString()}${addedByText}</div><div class="countdown" aria-live="polite"></div>`;
+      // Calendar Link
+      const calendarLink = generateGoogleCalendarLink(person.name, target);
+
+      card.innerHTML = `<div><b>${person.name}</b> 🎂 (${age} yrs) - ${target.toDateString()} 
+        <a href="${calendarLink}" target="_blank" class="calendar-btn" title="Add to Google Calendar">
+          📅 Add
+        </a>
+        ${addedByText}
+      </div>
+      <div class="countdown" aria-live="polite"></div>`;
+
       container.appendChild(card);
       const countdownEl = card.querySelector('.countdown');
       function tick() {
