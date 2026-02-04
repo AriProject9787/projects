@@ -1036,11 +1036,26 @@
       const shareUrl = `${window.location.origin}${window.location.pathname}?import_data=${encoded}`;
 
       const text = `I'm sharing ${data.length} birthdays with you! Import them here: ${shareUrl}`;
+      const encodedText = encodeURIComponent(text);
 
-      // Use hidden anchor click instead of window.location.href to avoid ERR_UNKNOWN_URL_SCHEME in WebViews
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      let finalUrl;
+
+      if (isAndroid) {
+        // Force external browser using Intent with ACTION_VIEW and HTTPS scheme
+        // This tells Android "Open this HTTPS URL" which usually triggers the default browser
+        // The browser will then handle the api.whatsapp.com -> whatsapp:// redirect properly
+        finalUrl = `intent://api.whatsapp.com/send?text=${encodedText}#Intent;scheme=https;action=android.intent.action.VIEW;end;`;
+      } else {
+        finalUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
+      }
+
+      // Use hidden anchor click
       const link = document.createElement('a');
-      link.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
-      // link.target = "_blank"; // Try without target blank for WebView compatibility
+      link.href = finalUrl;
+      // For Android Intent, we don't strictly need target blank, but for Desktop fallback we do
+      if (!isAndroid) link.target = "_blank";
+
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
