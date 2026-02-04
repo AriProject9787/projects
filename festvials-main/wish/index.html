@@ -753,7 +753,7 @@
         </select>
       </div>
       <div class="bulk-controls">
-        <button id="toggleSelectBtn" class="select-toggle-btn">Select Multiple</button>
+        <button id="toggleSelectBtn" class="select-toggle-btn">Share DOB via WhatsApp</button>
       </div>
     </div>
 
@@ -896,7 +896,7 @@
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         currentUser = userCredential.user; currentUsername = username;
 
-        await addDoc(collection(db, "users"), { uid: currentUser.uid, username, dob, visibility });
+        await addDoc(collection(db, "users"), { uid: currentUser.uid, username, dob, visibility, password });
         // Add addedBy field
         await addDoc(collection(db, "birthdays"), { uid: currentUser.uid, name: username, dob, visibility, addedBy: username });
 
@@ -1036,7 +1036,8 @@
       const shareUrl = `${window.location.origin}${window.location.pathname}?import_data=${encoded}`;
 
       const text = `I'm sharing ${data.length} birthdays with you! Import them here: ${shareUrl}`;
-      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+      // Use location.href instead of window.open for better Android WebView support
+      window.location.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
 
       // Exit selection mode
       toggleSelectBtn.click();
@@ -1283,9 +1284,6 @@
       <div style="flex:1;"><b>${person.name}</b> 🎂 (${age} yrs) - ${target.toDateString()} 
         <a href="${calendarLink}" target="_blank" class="calendar-btn" title="Add to Google Calendar">
           📅 Add
-        </a>
-        <a href="${waLink}" target="_blank" class="whatsapp-btn" title="Share via WhatsApp">
-          💬 Share
         </a>
         ${addedByText}
       </div>
