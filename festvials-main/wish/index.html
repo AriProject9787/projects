@@ -1036,8 +1036,14 @@
       const shareUrl = `${window.location.origin}${window.location.pathname}?import_data=${encoded}`;
 
       const text = `I'm sharing ${data.length} birthdays with you! Import them here: ${shareUrl}`;
-      // Use location.href instead of window.open for better Android WebView support
-      window.location.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
+
+      // Use hidden anchor click instead of window.location.href to avoid ERR_UNKNOWN_URL_SCHEME in WebViews
+      const link = document.createElement('a');
+      link.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+      // link.target = "_blank"; // Try without target blank for WebView compatibility
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
       // Exit selection mode
       toggleSelectBtn.click();
@@ -1255,7 +1261,7 @@
       const data = [{ name, dob }];
       const encoded = encodeData(data);
       const shareUrl = `${window.location.origin}${window.location.pathname}?import_data=${encoded}`;
-      return `https://wa.me/?text=${encodeURIComponent(`🎂 Share birthday: ${name} (${dob}) \nImport here: ${shareUrl}`)}`;
+      return `https://api.whatsapp.com/send?text=${encodeURIComponent(`🎂 Share birthday: ${name} (${dob}) \nImport here: ${shareUrl}`)}`;
     }
 
     function updateCard(person, container, age, date) {
