@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Birthday Reminder</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <style>
     /* Reset and base */
     * {
@@ -269,6 +270,32 @@
       box-shadow: none;
     }
 
+    /* Loading Skeleton */
+    .skeleton {
+      background: #f0f0f0;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    .skeleton-card {
+      height: 80px;
+      margin: 15px 0;
+      border-radius: 12px;
+      width: 100%;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
     /* Dark Mode */
     body.dark {
       background: var(--bg-dark);
@@ -286,6 +313,12 @@
       background: #2C2C2C;
       color: var(--text-dark);
       border-color: #333;
+    }
+
+    body.dark .skeleton {
+      background: #2C2C2C;
+      background: linear-gradient(90deg, #2C2C2C 25%, #3a3a3a 50%, #2C2C2C 75%);
+      background-size: 200% 100%;
     }
 
     body.dark input:focus {
@@ -429,12 +462,83 @@
         transform: translateY(0);
       }
     }
+
+    /* Birthday Overlay */
+    #birthdayOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 2000;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    #birthdayOverlay h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #FF6B6B, #FFD93D, #6BCB77, #4D96FF);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: scaleUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    #birthdayOverlay p {
+      font-size: 1.5rem;
+      margin-bottom: 40px;
+      max-width: 80%;
+    }
+
+    #birthdayOverlay .close-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 10px 30px;
+      font-size: 1.1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: auto;
+    }
+
+    #birthdayOverlay .close-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    @keyframes scaleUp {
+      from {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 
 <body class="dark">
   <!-- Theme toggle -->
   <button id="themeToggle">🌙</button>
+
+  <!-- Birthday Overlay -->
+  <div id="birthdayOverlay">
+    <h1>🎉 Happy Birthday! 🎂</h1>
+    <p id="bdayNames"></p>
+    <button class="close-btn" onclick="closeOverlay()">Thank You!</button>
+  </div>
 
   <!-- Signup -->
   <div class="container" id="signupContainer" style="display:none;">
@@ -575,6 +679,11 @@
     }
     window.toggleView = toggleView;
 
+    function closeOverlay() {
+      document.getElementById("birthdayOverlay").style.display = 'none';
+    }
+    window.closeOverlay = closeOverlay;
+
     toggleView('login');
 
     // Theme toggle
@@ -701,6 +810,8 @@
     async function loadBirthdays() {
       if (!currentUser) return;
 
+      showSkeletons(); // Show skeletons immediately
+
       try {
         const snapshot = await getDocs(collection(db, "birthdays"));
         allBirthdaysData = []; // Reset local store
@@ -719,8 +830,17 @@
       }
     }
 
+    function showSkeletons() {
+      const containers = ['public-today', 'public-upcoming', 'public-past', 'private-today', 'private-upcoming', 'private-past'];
+      const skeletonHTML = '<div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div>';
+      containers.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = skeletonHTML;
+      });
+    }
+
     function renderBirthdays() {
-      // Clear all containers
+      // Clear all containers (removes skeletons)
       const containers = ['public-today', 'public-upcoming', 'public-past', 'private-today', 'private-upcoming', 'private-past'];
       containers.forEach(id => document.getElementById(id).innerHTML = '');
 
@@ -731,6 +851,7 @@
       const sortValue = document.getElementById("sortSelect").value; // e.g. "name-asc"
 
       const today = new Date();
+      let hasBirthdayToday = false;
 
       // 1. Filter
       let filteredData = allBirthdaysData.filter(person => {
@@ -784,6 +905,7 @@
 
         if (thisYear.toDateString() === today.toDateString()) {
           suffix = 'today';
+          hasBirthdayToday = true;
           sendBirthdayNotification(person.name);
         }
         else if (thisYear > today) suffix = 'upcoming';
@@ -796,6 +918,16 @@
           updateCard(person, container, age, thisYear);
         }
       });
+
+      // Trigger confetti if there is a birthday today
+      if (hasBirthdayToday) {
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#6C63FF', '#FF6B6B', '#FFD93D', '#6BCB77']
+        });
+      }
     }
 
     function generateGoogleCalendarLink(name, date) {
