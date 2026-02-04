@@ -1038,21 +1038,15 @@
       const text = `I'm sharing ${data.length} birthdays with you! Import them here: ${shareUrl}`;
       const encodedText = encodeURIComponent(text);
 
-      // Check for Android
-      const isAndroid = /Android/i.test(navigator.userAgent);
-
-      let finalUrl;
-      if (isAndroid) {
-        // Use Intent scheme for Android WebViews (Recommended for preventing ERR_UNKNOWN_URL_SCHEME)
-        finalUrl = `intent://send?text=${encodedText}#Intent;scheme=whatsapp;package=com.whatsapp;end`;
-      } else {
-        // Fallback for Desktop/iOS
-        finalUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
-      }
+      // Use standard API link
+      // We MUST use target="_blank" for Android WebViews to allow the system browser to handle the protocol redirect.
+      // If we use _self, the WebView tries to handle "whatsapp://" and fails with ERR_UNKNOWN_URL_SCHEME.
+      const finalUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
 
       // Use hidden anchor click
       const link = document.createElement('a');
       link.href = finalUrl;
+      link.target = "_blank"; // Force open in new tab/window (System Browser)
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
