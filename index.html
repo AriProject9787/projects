@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Reminder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    /* Reset and base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6C63FF;
+      --primary-hover: #5a52d5;
+      --bg-light: #F0F2F5;
+      --surface-light: #FFFFFF;
+      --text-light: #333333;
+      --text-muted-light: #666666;
+
+      --bg-dark: #121212;
+      --surface-dark: #1E1E1E;
+      --text-dark: #E0E0E0;
+      --text-muted-dark: #AAAAAA;
+
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      --radius: 16px;
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-light);
+      color: var(--text-light);
+      transition: var(--transition);
+      line-height: 1.6;
+      padding-bottom: 40px;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: var(--transition);
+    }
+
+    h2,
+    h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    h2 {
+      font-size: 2rem;
+      color: var(--primary);
+    }
+
+    h4 {
+      font-weight: 500;
+      margin-top: 15px;
+      color: var(--text-muted-light);
+    }
+
+    /* Containers */
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: var(--surface-light);
+      padding: 40px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Inputs & Buttons */
+    input,
+    select,
+    button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 14px;
+      border-radius: 12px;
+      border: 2px solid transparent;
+      background: #F8F9FA;
+      font-size: 15px;
+      font-family: inherit;
+      transition: var(--transition);
+      color: var(--text-light);
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.1);
+    }
+
+    button {
+      background: linear-gradient(135deg, var(--primary), #8B85FF);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    /* Links */
+    .link {
+      text-align: center;
+      margin-top: 15px;
+      color: var(--primary);
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+
+    /* Birthday cards */
+    .birthday-card {
+      background: var(--surface-light);
+      margin: 15px 0;
+      padding: 20px;
+      border-radius: 12px;
+      border-left: 5px solid transparent;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+      transition: var(--transition);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .birthday-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .today-card {
+      background: linear-gradient(to right, rgba(108, 99, 255, 0.05), transparent);
+      border-left-color: var(--primary);
+    }
+
+    .countdown {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--primary);
+      background: rgba(108, 99, 255, 0.1);
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 15px 25px;
+      border-radius: var(--radius);
+      margin-bottom: 30px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 20px;
+      z-index: 100;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text-muted-light);
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .nav-link:hover {
+      background: rgba(108, 99, 255, 0.1);
+      color: var(--primary);
+    }
+
+    .logout-btn {
+      width: auto;
+      margin: 0;
+      padding: 8px 20px;
+      font-size: 0.9rem;
+      background: #FF6B6B;
+      box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+    }
+
+    .logout-btn:hover {
+      background: #FF5252;
+      box-shadow: 0 6px 15px rgba(255, 107, 107, 0.4);
+    }
+
+    /* Sections */
+    .section-container {
+      background: #fff;
+      padding: 25px;
+      border-radius: var(--radius);
+      margin-bottom: 30px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .section-header {
+      font-size: 1.3rem;
+      color: var(--text-light);
+      border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Calendar Button */
+    .calendar-btn {
+      background: rgba(108, 99, 255, 0.1);
+      color: var(--primary);
+      border: none;
+      padding: 5px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      margin-left: 10px;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+      box-shadow: none;
+      width: auto;
+    }
+
+    .calendar-btn:hover {
+      background: rgba(108, 99, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: none;
+    }
+
+    /* Loading Skeleton */
+    .skeleton {
+      background: #f0f0f0;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    .skeleton-card {
+      height: 80px;
+      margin: 15px 0;
+      border-radius: 12px;
+      width: 100%;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    /* Dark Mode */
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    body.dark .container,
+    body.dark .section-container {
+      background: var(--surface-dark);
+      border-color: #333;
+    }
+
+    body.dark input,
+    body.dark select {
+      background: #2C2C2C;
+      color: var(--text-dark);
+      border-color: #333;
+    }
+
+    body.dark .skeleton {
+      background: #2C2C2C;
+      background: linear-gradient(90deg, #2C2C2C 25%, #3a3a3a 50%, #2C2C2C 75%);
+      background-size: 200% 100%;
+    }
+
+    body.dark input:focus {
+      border-color: var(--primary);
+      background: #333;
+    }
+
+    body.dark .birthday-card {
+      background: #252525;
+      color: var(--text-dark);
+      border-color: #333;
+    }
+
+    body.dark .today-card {
+      background: linear-gradient(to right, rgba(108, 99, 255, 0.15), transparent);
+    }
+
+    body.dark .navbar {
+      background: rgba(30, 30, 30, 0.8);
+      border-color: #333;
+    }
+
+    body.dark .nav-link {
+      color: var(--text-muted-dark);
+    }
+
+    body.dark .nav-link:hover {
+      color: var(--primary);
+      background: rgba(108, 99, 255, 0.1);
+    }
+
+    body.dark h4 {
+      color: var(--text-muted-dark);
+    }
+
+    body.dark .section-header {
+      color: var(--text-dark);
+      border-bottom-color: #333;
+    }
+
+    /* Theme Toggle */
+    #themeToggle {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      top: auto;
+      left: auto;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+    }
+
+    /* Mobile */
+    .nav-toggle {
+      display: none;
+      font-size: 24px;
+      color: var(--text-light);
+      cursor: pointer;
+    }
+
+    body.dark .nav-toggle {
+      color: var(--text-dark);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 95%;
+        padding: 20px;
+        margin: 20px auto;
+      }
+
+      .navbar {
+        padding: 15px;
+      }
+
+      .nav-links {
+        position: absolute;
+        top: 70px;
+        right: 0;
+        background: var(--surface-light);
+        flex-direction: column;
+        width: 200px;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        display: none;
+        align-items: stretch;
+      }
+
+      body.dark .nav-links {
+        background: var(--surface-dark);
+        border: 1px solid #333;
+      }
+
+      .nav-links.show {
+        display: flex;
+        animation: slideDown 0.3s ease;
+      }
+
+      .nav-toggle {
+        display: block;
+      }
+
+      .birthday-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .countdown {
+        align-self: flex-start;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Birthday Overlay */
+    #birthdayOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 2000;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    #birthdayOverlay h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #FF6B6B, #FFD93D, #6BCB77, #4D96FF);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: scaleUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    #birthdayOverlay p {
+      font-size: 1.5rem;
+      margin-bottom: 40px;
+      max-width: 80%;
+    }
+
+    #birthdayOverlay .close-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 10px 30px;
+      font-size: 1.1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: auto;
+    }
+
+    #birthdayOverlay .close-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    /* Import Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s;
+    }
+
+    .modal-content {
+      background: var(--surface-light);
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    body.dark .modal-content {
+      background: var(--surface-dark);
+      border: 1px solid #333;
+    }
+
+    .modal-list {
+      max-height: 200px;
+      overflow-y: auto;
+      text-align: left;
+      margin: 20px 0;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+    }
+
+    body.dark .modal-list {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .import-btn {
+      background: #25D366;
+      margin-top: 10px;
+    }
+
+    .import-btn:hover {
+      background: #1faf53;
+    }
+
+    .cancel-btn {
+      background: #888;
+      margin-left: 10px;
+    }
+
+    /* Bulk Selection UI */
+    .bulk-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      align-items: center;
+    }
+
+    .select-toggle-btn {
+      background: var(--primary);
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      width: auto;
+    }
+
+    .share-selected-btn {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #25D366;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+      z-index: 2000;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      opacity: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .share-selected-btn.visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .checkbox-wrapper {
+      display: none;
+      margin-right: 15px;
+    }
+
+    body.selection-mode .checkbox-wrapper {
+      display: block;
+    }
+
+    .custom-checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--primary);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: transparent;
+      transition: all 0.2s;
+    }
+
+    .custom-checkbox.checked {
+      background: var(--primary);
+    }
+
+    .custom-checkbox.checked::after {
+      content: '✔';
+      color: white;
+      font-size: 14px;
+    }
+
+    .whatsapp-btn {
+      background: #25D366;
+      color: white;
+      width: auto;
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      margin-left: 5px;
+      box-shadow: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .whatsapp-btn:hover {
+      background: #1faf53;
+      box-shadow: none;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+
+<body class="dark">
+  <!-- Theme toggle -->
+  <button id="themeToggle">🌙</button>
+
+  <!-- Import Modal -->
+  <div id="importModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2>📥 Import Birthdays</h2>
+      <p>Someone shared these birthdays with you:</p>
+      <div id="importList" class="modal-list"></div>
+      <button id="confirmImportBtn" class="import-btn">Import All</button>
+      <button onclick="closeImportModal()" class="cancel-btn">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Share Selected Floating Button -->
+  <button id="shareSelectedBtn" class="share-selected-btn">
+    <span style="font-size: 1.2rem;">💬</span> Share <span id="selectedCount">0</span> Birthdays
+  </button>
+
+  <!-- Birthday Overlay -->
+  <div id="birthdayOverlay">
+    <h1>🎉 Happy Birthday! 🎂</h1>
+    <p id="bdayNames"></p>
+    <button class="close-btn" onclick="closeOverlay()">Thank You!</button>
+  </div>
+
+  <!-- Signup -->
+  <div class="container" id="signupContainer" style="display:none;">
+    <h2>Create Account</h2>
+    <input type="text" id="signupUsername" placeholder="Username" />
+    <input type="email" id="signupEmail" placeholder="Email" />
+    <input type="password" id="signupPassword" placeholder="Password" />
+    <input type="date" id="signupDob" />
+    <select id="signupDobVisibility">
+      <option value="public" selected>Public</option>
+      <option value="private">Private</option>
+    </select>
+    <label>
+      <center><input type="checkbox" id="termsCheckbox" /></center>
+      <center>I agree to the <a class="link" href="terms.html" target="_blank">Terms and Conditions</a></center>
+    </label>
+    <button id="signupBtn">Sign Up</button>
+    <div class="link" onclick="toggleView('login')">Already have an account? Login</div>
+  </div>
+
+  <!-- Login -->
+  <div class="container" id="loginContainer">
+    <h2>Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email" />
+    <input type="password" id="loginPassword" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+    <div class="link" onclick="toggleView('signup')">New user? Sign Up</div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="container" id="dashboardContainer" style="display:none;">
+    <!-- Navbar -->
+    <div class="navbar">
+      <div class="brand">Birthday Reminder</div>
+      <div class="nav-toggle" id="navToggle">☰</div>
+      <div class="nav-links" id="navLinks">
+        <a href="#" class="nav-link">Home</a>
+        <a href="about.html" target="_blank" class="nav-link">About</a>
+        <a href="https://ariproject9787.github.io/portfolio/" target="_blank" class="nav-link">Developer</a>
+        <a href="terms.html" target="_blank" class="nav-link">Terms</a>
+        <a href="contact.html" target="_blank" class="nav-link">Contact</a>
+        <a href="b-day.apk" download class="nav-link">⬇ Download APK</a>
+        <button class="logout-btn">Logout</button>
+
+      </div>
+    </div>
+
+    <h2 id="welcomeMsg">Dashboard</h2>
+
+    <div class="section-container">
+      <h3 class="section-header">🔍 Filter & Sort</h3>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
+        <input type="text" id="searchInput" placeholder="Search by name..." style="flex: 2; margin: 0;" />
+        <select id="sortSelect" style="flex: 1; margin: 0;">
+          <option value="name-asc" selected>Name (A-Z)</option>
+          <option value="name-desc">Name (Z-A)</option>
+          <option value="dob-asc">DOB (Jan - Dec)</option>
+          <option value="dob-desc">DOB (Dec - Jan)</option>
+          <option value="age-young">Age (Youngest First)</option>
+          <option value="age-old">Age (Oldest First)</option>
+        </select>
+      </div>
+      <div class="bulk-controls">
+        <button id="toggleSelectBtn" class="select-toggle-btn">Share DOB via WhatsApp</button>
+      </div>
+    </div>
+
+    <div class="section-container">
+      <h3 class="section-header">🌍 Public Birthdays</h3>
+      <div class="subsection">
+        <h4>🎂 Today</h4>
+        <div id="public-today"></div>
+        <h4>📅 Upcoming</h4>
+        <div id="public-upcoming"></div>
+        <h4>✅ Past</h4>
+        <div id="public-past"></div>
+      </div>
+    </div>
+
+    <div class="section-container">
+      <h3 class="section-header">🔒 My Private Birthdays</h3>
+      <div class="subsection">
+        <h4>🎂 Today</h4>
+        <div id="private-today"></div>
+        <h4>📅 Upcoming</h4>
+        <div id="private-upcoming"></div>
+        <h4>✅ Past</h4>
+        <div id="private-past"></div>
+      </div>
+    </div>
+
+    <h3>Add Birthday</h3>
+    <input type="text" id="name" placeholder="Name" />
+    <input type="date" id="dob" />
+    <select id="dobVisibility">
+      <option value="public" selected>Public</option>
+      <option value="private">Private</option>
+    </select>
+    <button id="addBtn">Add Birthday</button>
+
+    <button class="logout-btn">Logout</button>
+  </div>
+
+  <footer>
+    © <span id="year"></span> Arirama Selvam - <span id="todayDate"></span>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA5dtwCn09lEtrAOP3ih_Iq9YDFSKB181w",
+      authDomain: "birthdaycountdown9787.firebaseapp.com",
+      projectId: "birthdaycountdown9787",
+      storageBucket: "birthdaycountdown9787.firebasestorage.app",
+      messagingSenderId: "1057605732413",
+      appId: "1:1057605732413:web:18768b4a6bb5a7c2f64254",
+      measurementId: "G-M3914S92YP"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let currentUsername = null;
+    let countdownIntervals = [];
+    let inactivityTimer;
+    let allBirthdaysData = []; // Store fetched data
+
+    function clearCountdownIntervals() {
+      countdownIntervals.forEach(id => clearInterval(id));
+      countdownIntervals = [];
+    }
+
+    function toggleView(view) {
+      document.getElementById("signupContainer").style.display = view === 'signup' ? 'block' : 'none';
+      document.getElementById("loginContainer").style.display = view === 'login' ? 'block' : 'none';
+    }
+    window.toggleView = toggleView;
+
+    function closeOverlay() {
+      document.getElementById("birthdayOverlay").style.display = 'none';
+    }
+    window.closeOverlay = closeOverlay;
+
+    toggleView('login');
+
+    // Theme toggle
+    const themeBtn = document.getElementById("themeToggle");
+    themeBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      themeBtn.textContent = document.body.classList.contains("dark") ? "🌙" : "☀️";
+    });
+
+    // Navbar toggle for mobile
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('show');
+      themeBtn.classList.toggle('menu-open');
+    });
+
+    // Close menu when link clicked (mobile)
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        if (navLinks.classList.contains('show')) {
+          navLinks.classList.remove('show');
+          themeBtn.classList.remove('menu-open');
+        }
+      });
+    });
+
+    // Notification permission
+    if ("Notification" in window && Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+
+    // Function to show birthday notification
+    function sendBirthdayNotification(name) {
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("🎉 Birthday Reminder", {
+          body: `Admin Arirama Selvam M wishes Happy Birthday to ${name}! 🎂`,
+          icon: "https://cdn-icons-png.flaticon.com/512/744/744502.png"
+        });
+      }
+    }
+
+    // Signup 5QUNROpvdrVlKQgu3V04wpOEmzp1
+    document.getElementById("signupBtn").addEventListener("click", async () => {
+      const username = document.getElementById("signupUsername").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      const dob = document.getElementById("signupDob").value;
+      const visibility = document.getElementById("signupDobVisibility").value;
+      const termsChecked = document.getElementById("termsCheckbox").checked;
+
+      if (!username || !email || !password || !dob) { alert("All fields are required"); return; }
+      if (!termsChecked) { alert("Please accept Terms"); return; }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        currentUser = userCredential.user; currentUsername = username;
+
+        await addDoc(collection(db, "users"), { uid: currentUser.uid, username, dob, visibility, password });
+        // Add addedBy field
+        await addDoc(collection(db, "birthdays"), { uid: currentUser.uid, name: username, dob, visibility, addedBy: username });
+
+        // Manually update welcome message to avoid duplicate loadBirthdays call
+        document.getElementById("welcomeMsg").textContent = `👋 Welcome, ${username}!`;
+        document.getElementById("dob").value = dob; // Wait for loadBirthdays after adding?
+        // No, we will reload manually or let the listener handle it if we had one.
+        // Current implementation calls loadBirthdays manually.
+      } catch (err) { alert(err.message); }
+    });
+
+    // ---------------------------------------------------------
+    // WhatsApp Share & Import Logic
+    // ---------------------------------------------------------
+
+    // Base64 Helpers for URL safety
+    function encodeData(data) {
+      return btoa(JSON.stringify(data));
+    }
+
+    function decodeData(encoded) {
+      try {
+        return JSON.parse(atob(encoded));
+      } catch (e) {
+        console.error("Failed to decode data", e);
+        return null;
+      }
+    }
+
+    // Check for Import Data on Load
+    window.addEventListener('load', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const importData = urlParams.get('import_data');
+      if (importData) {
+        const birthdays = decodeData(importData);
+        if (birthdays && Array.isArray(birthdays)) {
+          showImportModal(birthdays);
+        }
+      }
+    });
+
+    const importModal = document.getElementById("importModal");
+    let pendingImportData = [];
+
+    function showImportModal(data) {
+      pendingImportData = data;
+      const list = document.getElementById("importList");
+      list.innerHTML = data.map(b => `<div style="padding: 5px; border-bottom: 1px solid #ccc;">
+        <b>${b.name}</b> - ${b.dob}
+      </div>`).join('');
+      importModal.style.display = "flex";
+    }
+
+    window.closeImportModal = function () {
+      importModal.style.display = "none";
+      // Clear query param
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    document.getElementById("confirmImportBtn").addEventListener("click", async () => {
+      if (!currentUser) {
+        alert("Please login to import birthdays.");
+        toggleView('login');
+        closeImportModal();
+        return;
+      }
+
+      let count = 0;
+      for (const b of pendingImportData) {
+        try {
+          // Check for duplicate (simple check)
+          // Ideally we query DB, but for now we just add.
+          await addDoc(collection(db, "birthdays"), {
+            uid: currentUser.uid,
+            name: b.name,
+            dob: b.dob,
+            visibility: 'private',
+            addedBy: currentUsername
+          });
+          count++;
+        } catch (e) {
+          console.error("Import error", e);
+        }
+      }
+      alert(`Successfully imported ${count} birthdays!`);
+      closeImportModal();
+      loadBirthdays();
+    });
+
+    // ---------------------------------------------------------
+    // Bulk Selection Logic
+    // ---------------------------------------------------------
+    let isSelectionMode = false;
+    let selectedBirthdays = new Set(); // Stores JSON strings of birthday objects
+
+    const toggleSelectBtn = document.getElementById("toggleSelectBtn");
+    const shareSelectedBtn = document.getElementById("shareSelectedBtn");
+    const selectedCountSpan = document.getElementById("selectedCount");
+
+    toggleSelectBtn.addEventListener("click", () => {
+      isSelectionMode = !isSelectionMode;
+      document.body.classList.toggle("selection-mode", isSelectionMode);
+      toggleSelectBtn.textContent = isSelectionMode ? "Cancel Selection" : "Select Multiple";
+      if (!isSelectionMode) {
+        selectedBirthdays.clear();
+        updateShareButton();
+        // Uncheck all visually
+        document.querySelectorAll('.custom-checkbox').forEach(cb => cb.classList.remove('checked'));
+      }
+    });
+
+    function toggleSelection(personData, checkboxEl) {
+      const dataStr = JSON.stringify({ name: personData.name, dob: personData.dob });
+      if (selectedBirthdays.has(dataStr)) {
+        selectedBirthdays.delete(dataStr);
+        checkboxEl.classList.remove('checked');
+      } else {
+        selectedBirthdays.add(dataStr);
+        checkboxEl.classList.add('checked');
+      }
+      updateShareButton();
+    }
+
+    function updateShareButton() {
+      const count = selectedBirthdays.size;
+      selectedCountSpan.textContent = count;
+      if (count > 0) {
+        shareSelectedBtn.classList.add('visible');
+      } else {
+        shareSelectedBtn.classList.remove('visible');
+      }
+    }
+
+    shareSelectedBtn.addEventListener("click", () => {
+      const data = Array.from(selectedBirthdays).map(s => JSON.parse(s));
+      const encoded = encodeData(data);
+      const shareUrl = `${window.location.origin}${window.location.pathname}?import_data=${encoded}`;
+
+      const text = `I'm sharing ${data.length} birthdays with you! Import them here: ${shareUrl}`;
+      const encodedText = encodeURIComponent(text);
+
+      // Check for Android
+      const isAndroid = /Android/i.test(navigator.userAgent);
+
+      let finalUrl;
+      if (isAndroid) {
+        // Use Intent scheme for Android WebViews (Recommended for preventing ERR_UNKNOWN_URL_SCHEME)
+        finalUrl = `intent://send?text=${encodedText}#Intent;scheme=whatsapp;package=com.whatsapp;end`;
+      } else {
+        // Fallback for Desktop/iOS
+        finalUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
+      }
+
+      // Use hidden anchor click
+      const link = document.createElement('a');
+      link.href = finalUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Exit selection mode
+      toggleSelectBtn.click();
+    });
+
+    // Login
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+      try {
+        await setPersistence(auth, browserLocalPersistence);
+        await signInWithEmailAndPassword(auth, email, password);
+        // onAuthStateChanged will handle UI update
+      }
+      catch (err) { alert(err.message); }
+    });
+
+    // Logout
+    document.querySelectorAll(".logout-btn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        await signOut(auth);
+        currentUser = null; currentUsername = null;
+        toggleView('login');
+        document.getElementById("dashboardContainer").style.display = 'none';
+      });
+    });
+
+    // Auto-logout after 10 minutes of inactivity
+    function resetInactivityTimer() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(async () => {
+        alert("Session expired due to inactivity. Logging out...");
+        await signOut(auth);
+        currentUser = null; currentUsername = null;
+        toggleView('login');
+        document.getElementById("dashboardContainer").style.display = 'none';
+      }, 10 * 60 * 1000); // 10 minutes
+    }
+    document.addEventListener("mousemove", resetInactivityTimer);
+    document.addEventListener("keydown", resetInactivityTimer);
+
+    // Add birthday
+    document.getElementById("addBtn").addEventListener("click", async () => {
+      if (!currentUser) return;
+      const name = document.getElementById("name").value;
+      const dob = document.getElementById("dob").value;
+      let visibility = "private";
+      if (currentUsername === "admin") visibility = document.getElementById("dobVisibility").value;
+      if (!name || !dob) { alert("Enter both name and date"); return; }
+      // Add addedBy field
+      await addDoc(collection(db, "birthdays"), { uid: currentUser.uid, name, dob, visibility, addedBy: currentUsername });
+      loadBirthdays();
+    });
+
+    // Wire up filter inputs
+    document.getElementById("searchInput").addEventListener("input", renderBirthdays);
+    document.getElementById("sortSelect").addEventListener("change", renderBirthdays);
+
+    // Load birthdays
+    async function loadBirthdays() {
+      if (!currentUser) return;
+
+      showSkeletons(); // Show skeletons immediately
+
+      try {
+        const snapshot = await getDocs(collection(db, "birthdays"));
+        allBirthdaysData = []; // Reset local store
+
+        snapshot.forEach(docSnap => {
+          allBirthdaysData.push(docSnap.data());
+        });
+
+        renderBirthdays();
+
+      } catch (error) {
+        console.error("Error loading birthdays:", error);
+        if (error.code === 'permission-denied') {
+          alert("Permission Error: Please check your Firestore Security Rules in the Firebase Console.");
+        }
+      }
+    }
+
+    function showSkeletons() {
+      const containers = ['public-today', 'public-upcoming', 'public-past', 'private-today', 'private-upcoming', 'private-past'];
+      const skeletonHTML = '<div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div>';
+      containers.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = skeletonHTML;
+      });
+    }
+
+    function renderBirthdays() {
+      // Clear all containers (removes skeletons)
+      const containers = ['public-today', 'public-upcoming', 'public-past', 'private-today', 'private-upcoming', 'private-past'];
+      containers.forEach(id => document.getElementById(id).innerHTML = '');
+
+      clearCountdownIntervals();
+
+      // Get Filter/Sort Values
+      const searchQuery = document.getElementById("searchInput").value.toLowerCase();
+      const sortValue = document.getElementById("sortSelect").value; // e.g. "name-asc"
+
+      const today = new Date();
+      let hasBirthdayToday = false;
+
+      // 1. Filter
+      let filteredData = allBirthdaysData.filter(person => {
+        // Visibility Logic
+        const isPrivate = person.visibility === 'private';
+        if (isPrivate && person.uid !== currentUser.uid) return false;
+        if (!person.dob || !person.dob.includes('-')) return false;
+
+        // Search Logic
+        if (searchQuery && !person.name.toLowerCase().includes(searchQuery)) return false;
+
+        return true;
+      });
+
+      // 2. Sort
+      filteredData.sort((a, b) => {
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
+
+        // Calculate objects for DOB sort
+        const dateA = new Date(a.dob);
+        const dateB = new Date(b.dob);
+
+        // For DOB (Month-Day) sort, we need to compare month/day independent of year
+        // We can set them all to the same year (e.g. 2000) for comparison
+        const mmddA = new Date(2000, dateA.getMonth(), dateA.getDate());
+        const mmddB = new Date(2000, dateB.getMonth(), dateB.getDate());
+
+        switch (sortValue) {
+          case 'name-asc': return nameA.localeCompare(nameB);
+          case 'name-desc': return nameB.localeCompare(nameA);
+          case 'dob-asc': return mmddA - mmddB;
+          case 'dob-desc': return mmddB - mmddA;
+          case 'age-young': return dateB - dateA; // Younger = later birthdate
+          case 'age-old': return dateA - dateB; // Older = earlier birthdate
+          default: return 0;
+        }
+      });
+
+      // 3. Render
+      filteredData.forEach(person => {
+        const parts = person.dob.split('-');
+        const dob = new Date(parts[0], parts[1] - 1, parts[2]);
+        const thisYear = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+        const age = today.getFullYear() - dob.getFullYear();
+
+        // Determine target container prefix
+        const isPrivate = person.visibility === 'private';
+        const prefix = isPrivate ? 'private' : 'public';
+        let suffix = '';
+
+        if (thisYear.toDateString() === today.toDateString()) {
+          suffix = 'today';
+          hasBirthdayToday = true;
+          sendBirthdayNotification(person.name);
+        }
+        else if (thisYear > today) suffix = 'upcoming';
+        else suffix = 'past';
+
+        const containerId = `${prefix}-${suffix}`;
+        const container = document.getElementById(containerId);
+
+        if (container) {
+          updateCard(person, container, age, thisYear);
+        }
+      });
+
+      // Re-apply selection state if in selection mode (persistence across searches)
+      // For simplicity, we might just clear selection on re-render or let it persist if IDs matched.
+      // Since we use exact object string matching, if the list re-renders, the checkbox elements are new.
+      // We need to re-check them if they are in the Set.
+      if (isSelectionMode) {
+        document.querySelectorAll('.birthday-card').forEach(card => {
+          // We need to match data. Ideally we store IDs. 
+          // But existing code doesn't easily expose IDs in the render loop without refactor.
+          // We'll rely on the click handler in updateCard.
+        });
+      }
+
+      // Trigger confetti if there is a birthday today
+      if (hasBirthdayToday) {
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#6C63FF', '#FF6B6B', '#FFD93D', '#6BCB77']
+        });
+      }
+    }
+
+    function generateGoogleCalendarLink(name, date) {
+      const start = new Date(date);
+      const end = new Date(date);
+      end.setDate(end.getDate() + 1);
+
+      const formatDate = (d) => {
+        return d.toISOString().replace(/-|:|\.\d\d\d/g, "").split("T")[0];
+      };
+
+      const startStr = formatDate(start);
+      const endStr = formatDate(end);
+
+      const title = encodeURIComponent(`🎂 Birthday: ${name}`);
+      const details = encodeURIComponent(`Wish ${name} a Happy Birthday!`);
+
+      return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startStr}/${endStr}&details=${details}`;
+    }
+
+    function generateSingleWhatsAppLink(name, dob) {
+      // Create an import link for just this one person
+      const data = [{ name, dob }];
+      const encoded = encodeData(data);
+      const shareUrl = `${window.location.origin}${window.location.pathname}?import_data=${encoded}`;
+      return `https://api.whatsapp.com/send?text=${encodeURIComponent(`🎂 Share birthday: ${name} (${dob}) \nImport here: ${shareUrl}`)}`;
+    }
+
+    function updateCard(person, container, age, date) {
+      const target = new Date(date);
+      const card = document.createElement("div"); card.className = "birthday-card";
+
+      // Added By text
+      const addedByText = person.addedBy ? `<br><small style="color:#888;">Added by: ${person.addedBy}</small>` : '';
+
+      // Calendar Link
+      const calendarLink = generateGoogleCalendarLink(person.name, target);
+
+      // WhatsApp Link
+      const waLink = generateSingleWhatsAppLink(person.name, person.dob);
+
+      // Checkbox for bulk selection
+      // We attach the data directly to the element for easier access
+      const isChecked = selectedBirthdays.has(JSON.stringify({ name: person.name, dob: person.dob }));
+
+      // We need to inject the checkbox wrapper
+      const checkboxHTML = `<div class="checkbox-wrapper">
+        <div class="custom-checkbox ${isChecked ? 'checked' : ''}"></div>
+      </div>`;
+
+      card.innerHTML = `${checkboxHTML}
+      <div style="flex:1;"><b>${person.name}</b> 🎂 (${age} yrs) - ${target.toDateString()} 
+        <a href="${calendarLink}" target="_blank" class="calendar-btn" title="Add to Google Calendar">
+          📅 Add
+        </a>
+        ${addedByText}
+      </div>
+      <div class="countdown" aria-live="polite"></div>`;
+
+      // Add click listener for selection
+      const checkbox = card.querySelector('.custom-checkbox');
+      if (checkbox) {
+        checkbox.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent card click if any
+          toggleSelection(person, checkbox);
+        });
+
+        // Also allow clicking the checkbox wrapper
+        card.querySelector('.checkbox-wrapper').addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleSelection(person, checkbox);
+        });
+      }
+
+      container.appendChild(card);
+      const countdownEl = card.querySelector('.countdown');
+      function tick() {
+        const now = new Date(); const dist = target - now;
+        if (dist > 0) {
+          const days = Math.floor(dist / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((dist % (1000 * 60)) / 1000);
+          countdownEl.textContent = `⏳ ${days}d ${hours}h ${minutes}m ${seconds}s left`;
+          card.classList.remove('today-card');
+        }
+        else if (target.toDateString() === now.toDateString()) {
+          countdownEl.textContent = `🎉 Today!`; card.classList.add('today-card');
+        }
+        else {
+          countdownEl.textContent = `✅ Already celebrated this year`; card.classList.remove('today-card');
+        }
+      }
+      tick(); countdownIntervals.push(setInterval(tick, 1000));
+    }
+
+    async function showDashboard(username = null) {
+      document.getElementById("signupContainer").style.display = 'none';
+      document.getElementById("loginContainer").style.display = 'none';
+      document.getElementById("dashboardContainer").style.display = 'block';
+      if (currentUser) {
+        const usersSnapshot = await getDocs(collection(db, "users"));
+        const userDoc = usersSnapshot.docs.find(doc => doc.data().uid === currentUser.uid);
+        if (userDoc) {
+          const data = userDoc.data(); currentUsername = data.username;
+          document.getElementById("welcomeMsg").textContent = `👋 Welcome, ${data.username}!`;
+          document.getElementById("name").value = data.username || "";
+          document.getElementById("dob").value = data.dob || "";
+          document.getElementById("dobVisibility").style.display = (data.username === "admin") ? "block" : "none";
+        } else if (username) { currentUsername = username; document.getElementById("welcomeMsg").textContent = `👋 Welcome, ${username}!`; }
+      }
+      loadBirthdays();
+    }
+
+    // Auth state listener
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        showDashboard();
+        resetInactivityTimer();
+      } else {
+        toggleView('login');
+      }
+    });
+
+    // Footer
+    document.getElementById("year").textContent = new Date().getFullYear();
+    document.getElementById("todayDate").textContent = new Date().toDateString();
+  </script>
+</body>
+
+</html>
