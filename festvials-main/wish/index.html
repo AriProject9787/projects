@@ -515,16 +515,151 @@
       transform: scale(1.05);
     }
 
-    @keyframes scaleUp {
-      from {
-        transform: scale(0.5);
-        opacity: 0;
-      }
+    /* Import Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s;
+    }
 
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
+    .modal-content {
+      background: var(--surface-light);
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    body.dark .modal-content {
+      background: var(--surface-dark);
+      border: 1px solid #333;
+    }
+
+    .modal-list {
+      max-height: 200px;
+      overflow-y: auto;
+      text-align: left;
+      margin: 20px 0;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+    }
+
+    body.dark .modal-list {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .import-btn {
+      background: #25D366;
+      margin-top: 10px;
+    }
+
+    .import-btn:hover {
+      background: #1faf53;
+    }
+
+    .cancel-btn {
+      background: #888;
+      margin-left: 10px;
+    }
+
+    /* Bulk Selection UI */
+    .bulk-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      align-items: center;
+    }
+
+    .select-toggle-btn {
+      background: var(--primary);
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      width: auto;
+    }
+
+    .share-selected-btn {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #25D366;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+      z-index: 2000;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      opacity: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .share-selected-btn.visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .checkbox-wrapper {
+      display: none;
+      margin-right: 15px;
+    }
+
+    body.selection-mode .checkbox-wrapper {
+      display: block;
+    }
+
+    .custom-checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--primary);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: transparent;
+      transition: all 0.2s;
+    }
+
+    .custom-checkbox.checked {
+      background: var(--primary);
+    }
+
+    .custom-checkbox.checked::after {
+      content: '✔';
+      color: white;
+      font-size: 14px;
+    }
+
+    .whatsapp-btn {
+      background: #25D366;
+      color: white;
+      width: auto;
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      margin-left: 5px;
+      box-shadow: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .whatsapp-btn:hover {
+      background: #1faf53;
+      box-shadow: none;
+      transform: translateY(-2px);
     }
   </style>
 </head>
@@ -532,6 +667,22 @@
 <body class="dark">
   <!-- Theme toggle -->
   <button id="themeToggle">🌙</button>
+
+  <!-- Import Modal -->
+  <div id="importModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2>📥 Import Birthdays</h2>
+      <p>Someone shared these birthdays with you:</p>
+      <div id="importList" class="modal-list"></div>
+      <button id="confirmImportBtn" class="import-btn">Import All</button>
+      <button onclick="closeImportModal()" class="cancel-btn">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Share Selected Floating Button -->
+  <button id="shareSelectedBtn" class="share-selected-btn">
+    <span style="font-size: 1.2rem;">💬</span> Share <span id="selectedCount">0</span> Birthdays
+  </button>
 
   <!-- Birthday Overlay -->
   <div id="birthdayOverlay">
@@ -590,7 +741,7 @@
 
     <div class="section-container">
       <h3 class="section-header">🔍 Filter & Sort</h3>
-      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
         <input type="text" id="searchInput" placeholder="Search by name..." style="flex: 2; margin: 0;" />
         <select id="sortSelect" style="flex: 1; margin: 0;">
           <option value="name-asc" selected>Name (A-Z)</option>
@@ -600,6 +751,9 @@
           <option value="age-young">Age (Youngest First)</option>
           <option value="age-old">Age (Oldest First)</option>
         </select>
+      </div>
+      <div class="bulk-controls">
+        <button id="toggleSelectBtn" class="select-toggle-btn">Select Multiple</button>
       </div>
     </div>
 
@@ -748,9 +902,144 @@
 
         // Manually update welcome message to avoid duplicate loadBirthdays call
         document.getElementById("welcomeMsg").textContent = `👋 Welcome, ${username}!`;
-        document.getElementById("name").value = username;
-        document.getElementById("dob").value = dob;
+        document.getElementById("dob").value = dob; // Wait for loadBirthdays after adding?
+        // No, we will reload manually or let the listener handle it if we had one.
+        // Current implementation calls loadBirthdays manually.
       } catch (err) { alert(err.message); }
+    });
+
+    // ---------------------------------------------------------
+    // WhatsApp Share & Import Logic
+    // ---------------------------------------------------------
+
+    // Base64 Helpers for URL safety
+    function encodeData(data) {
+      return btoa(JSON.stringify(data));
+    }
+
+    function decodeData(encoded) {
+      try {
+        return JSON.parse(atob(encoded));
+      } catch (e) {
+        console.error("Failed to decode data", e);
+        return null;
+      }
+    }
+
+    // Check for Import Data on Load
+    window.addEventListener('load', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const importData = urlParams.get('import_data');
+      if (importData) {
+        const birthdays = decodeData(importData);
+        if (birthdays && Array.isArray(birthdays)) {
+          showImportModal(birthdays);
+        }
+      }
+    });
+
+    const importModal = document.getElementById("importModal");
+    let pendingImportData = [];
+
+    function showImportModal(data) {
+      pendingImportData = data;
+      const list = document.getElementById("importList");
+      list.innerHTML = data.map(b => `<div style="padding: 5px; border-bottom: 1px solid #ccc;">
+        <b>${b.name}</b> - ${b.dob}
+      </div>`).join('');
+      importModal.style.display = "flex";
+    }
+
+    window.closeImportModal = function () {
+      importModal.style.display = "none";
+      // Clear query param
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    document.getElementById("confirmImportBtn").addEventListener("click", async () => {
+      if (!currentUser) {
+        alert("Please login to import birthdays.");
+        toggleView('login');
+        closeImportModal();
+        return;
+      }
+
+      let count = 0;
+      for (const b of pendingImportData) {
+        try {
+          // Check for duplicate (simple check)
+          // Ideally we query DB, but for now we just add.
+          await addDoc(collection(db, "birthdays"), {
+            uid: currentUser.uid,
+            name: b.name,
+            dob: b.dob,
+            visibility: 'private',
+            addedBy: currentUsername
+          });
+          count++;
+        } catch (e) {
+          console.error("Import error", e);
+        }
+      }
+      alert(`Successfully imported ${count} birthdays!`);
+      closeImportModal();
+      loadBirthdays();
+    });
+
+    // ---------------------------------------------------------
+    // Bulk Selection Logic
+    // ---------------------------------------------------------
+    let isSelectionMode = false;
+    let selectedBirthdays = new Set(); // Stores JSON strings of birthday objects
+
+    const toggleSelectBtn = document.getElementById("toggleSelectBtn");
+    const shareSelectedBtn = document.getElementById("shareSelectedBtn");
+    const selectedCountSpan = document.getElementById("selectedCount");
+
+    toggleSelectBtn.addEventListener("click", () => {
+      isSelectionMode = !isSelectionMode;
+      document.body.classList.toggle("selection-mode", isSelectionMode);
+      toggleSelectBtn.textContent = isSelectionMode ? "Cancel Selection" : "Select Multiple";
+      if (!isSelectionMode) {
+        selectedBirthdays.clear();
+        updateShareButton();
+        // Uncheck all visually
+        document.querySelectorAll('.custom-checkbox').forEach(cb => cb.classList.remove('checked'));
+      }
+    });
+
+    function toggleSelection(personData, checkboxEl) {
+      const dataStr = JSON.stringify({ name: personData.name, dob: personData.dob });
+      if (selectedBirthdays.has(dataStr)) {
+        selectedBirthdays.delete(dataStr);
+        checkboxEl.classList.remove('checked');
+      } else {
+        selectedBirthdays.add(dataStr);
+        checkboxEl.classList.add('checked');
+      }
+      updateShareButton();
+    }
+
+    function updateShareButton() {
+      const count = selectedBirthdays.size;
+      selectedCountSpan.textContent = count;
+      if (count > 0) {
+        shareSelectedBtn.classList.add('visible');
+      } else {
+        shareSelectedBtn.classList.remove('visible');
+      }
+    }
+
+    shareSelectedBtn.addEventListener("click", () => {
+      const data = Array.from(selectedBirthdays).map(s => JSON.parse(s));
+      const encoded = encodeData(data);
+      const shareUrl = `${window.location.origin}${window.location.pathname}?import_data=${encoded}`;
+
+      const text = `I'm sharing ${data.length} birthdays with you! Import them here: ${shareUrl}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+
+      // Exit selection mode
+      toggleSelectBtn.click();
     });
 
     // Login
@@ -919,6 +1208,18 @@
         }
       });
 
+      // Re-apply selection state if in selection mode (persistence across searches)
+      // For simplicity, we might just clear selection on re-render or let it persist if IDs matched.
+      // Since we use exact object string matching, if the list re-renders, the checkbox elements are new.
+      // We need to re-check them if they are in the Set.
+      if (isSelectionMode) {
+        document.querySelectorAll('.birthday-card').forEach(card => {
+          // We need to match data. Ideally we store IDs. 
+          // But existing code doesn't easily expose IDs in the render loop without refactor.
+          // We'll rely on the click handler in updateCard.
+        });
+      }
+
       // Trigger confetti if there is a birthday today
       if (hasBirthdayToday) {
         confetti({
@@ -948,6 +1249,14 @@
       return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startStr}/${endStr}&details=${details}`;
     }
 
+    function generateSingleWhatsAppLink(name, dob) {
+      // Create an import link for just this one person
+      const data = [{ name, dob }];
+      const encoded = encodeData(data);
+      const shareUrl = `${window.location.origin}${window.location.pathname}?import_data=${encoded}`;
+      return `https://wa.me/?text=${encodeURIComponent(`🎂 Share birthday: ${name} (${dob}) \nImport here: ${shareUrl}`)}`;
+    }
+
     function updateCard(person, container, age, date) {
       const target = new Date(date);
       const card = document.createElement("div"); card.className = "birthday-card";
@@ -958,13 +1267,44 @@
       // Calendar Link
       const calendarLink = generateGoogleCalendarLink(person.name, target);
 
-      card.innerHTML = `<div><b>${person.name}</b> 🎂 (${age} yrs) - ${target.toDateString()} 
+      // WhatsApp Link
+      const waLink = generateSingleWhatsAppLink(person.name, person.dob);
+
+      // Checkbox for bulk selection
+      // We attach the data directly to the element for easier access
+      const isChecked = selectedBirthdays.has(JSON.stringify({ name: person.name, dob: person.dob }));
+
+      // We need to inject the checkbox wrapper
+      const checkboxHTML = `<div class="checkbox-wrapper">
+        <div class="custom-checkbox ${isChecked ? 'checked' : ''}"></div>
+      </div>`;
+
+      card.innerHTML = `${checkboxHTML}
+      <div style="flex:1;"><b>${person.name}</b> 🎂 (${age} yrs) - ${target.toDateString()} 
         <a href="${calendarLink}" target="_blank" class="calendar-btn" title="Add to Google Calendar">
           📅 Add
+        </a>
+        <a href="${waLink}" target="_blank" class="whatsapp-btn" title="Share via WhatsApp">
+          💬 Share
         </a>
         ${addedByText}
       </div>
       <div class="countdown" aria-live="polite"></div>`;
+
+      // Add click listener for selection
+      const checkbox = card.querySelector('.custom-checkbox');
+      if (checkbox) {
+        checkbox.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent card click if any
+          toggleSelection(person, checkbox);
+        });
+
+        // Also allow clicking the checkbox wrapper
+        card.querySelector('.checkbox-wrapper').addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleSelection(person, checkbox);
+        });
+      }
 
       container.appendChild(card);
       const countdownEl = card.querySelector('.countdown');
