@@ -515,6 +515,58 @@
       transform: scale(1.05);
     }
 
+    /* Birthday person rows inside overlay */
+    #birthdayOverlay .bday-list {
+      max-height: 280px;
+      overflow-y: auto;
+      width: 90%;
+      max-width: 500px;
+      margin-bottom: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    #birthdayOverlay .bday-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      padding: 14px 20px;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    #birthdayOverlay .bday-row .bday-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      flex: 1;
+      text-align: left;
+    }
+
+    #birthdayOverlay .wish-btn {
+      background: linear-gradient(135deg, #7C3AED, #A855F7);
+      color: white;
+      border: none;
+      padding: 9px 20px;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      width: auto;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+    }
+
+    #birthdayOverlay .wish-btn:hover {
+      transform: scale(1.06);
+      box-shadow: 0 6px 18px rgba(124, 58, 237, 0.5);
+    }
+
     /* Import Modal */
     .modal-overlay {
       position: fixed;
@@ -687,8 +739,11 @@
   <!-- Birthday Overlay -->
   <div id="birthdayOverlay">
     <h1>🎉 Happy Birthday! 🎂</h1>
-    <p id="bdayNames"></p>
-    <button class="close-btn" onclick="closeOverlay()">Thank You!</button>
+    <p id="bdaySubtitle" style="font-size:1.1rem; margin-bottom: 20px; opacity: 0.85;">It's a special day for these
+      amazing people!</p>
+    <!-- Dynamic list of today's birthday people injected by JS -->
+    <div class="bday-list" id="bdayList"></div>
+    <button class="close-btn" onclick="closeOverlay()">Close 🎊</button>
   </div>
 
   <!-- Signup -->
@@ -1202,6 +1257,9 @@
         }
       });
 
+      // Collect today's birthday people for the wish overlay
+      const todayBirthdays = [];
+
       // 3. Render
       filteredData.forEach(person => {
         const parts = person.dob.split('-');
@@ -1217,6 +1275,7 @@
         if (thisYear.toDateString() === today.toDateString()) {
           suffix = 'today';
           hasBirthdayToday = true;
+          todayBirthdays.push({ name: person.name, dob: person.dob });
           sendBirthdayNotification(person.name);
         }
         else if (thisYear > today) suffix = 'upcoming';
@@ -1230,23 +1289,54 @@
         }
       });
 
-      // Re-apply selection state if in selection mode (persistence across searches)
-      // For simplicity, we might just clear selection on re-render or let it persist if IDs matched.
-      // Since we use exact object string matching, if the list re-renders, the checkbox elements are new.
-      // We need to re-check them if they are in the Set.
+      // Re-apply selection state if in selection mode
       if (isSelectionMode) {
         document.querySelectorAll('.birthday-card').forEach(card => {
-          // We need to match data. Ideally we store IDs. 
-          // But existing code doesn't easily expose IDs in the render loop without refactor.
-          // We'll rely on the click handler in updateCard.
+          // Rely on the click handler in updateCard for state restoration
         });
       }
 
-      // Trigger confetti if there is a birthday today
-      if (hasBirthdayToday) {
+      // ✨ Show Birthday Wish Overlay — only once per session load
+      if (hasBirthdayToday && !window._overlayShownThisSession) {
+        window._overlayShownThisSession = true;
+
+        // Build the list of birthday person rows
+        const bdayList = document.getElementById('bdayList');
+        bdayList.innerHTML = '';
+        todayBirthdays.forEach(person => {
+          const wishUrl = `wish1.html?name=${encodeURIComponent(person.name)}&from=${encodeURIComponent(currentUsername || 'A Friend')}`;
+          const row = document.createElement('div');
+          row.className = 'bday-row';
+          row.innerHTML = `
+            <span class="bday-name">🎂 ${person.name}</span>
+            <a href="${wishUrl}" target="_blank" class="wish-btn">Send Wish 🎉</a>
+          `;
+          bdayList.appendChild(row);
+        });
+
+        // Dynamic subtitle
+        const subtitle = document.getElementById('bdaySubtitle');
+        if (todayBirthdays.length === 1) {
+          subtitle.textContent = `Today is ${todayBirthdays[0].name}'s special day! 🎊`;
+        } else {
+          subtitle.textContent = `It's a special day for ${todayBirthdays.length} amazing people! 🎊`;
+        }
+
+        // Show the overlay
+        document.getElementById('birthdayOverlay').style.display = 'flex';
+
+        // Confetti
         confetti({
           particleCount: 150,
           spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#7C3AED', '#A855F7', '#FFD93D', '#6BCB77', '#FF6B6B']
+        });
+      } else if (hasBirthdayToday) {
+        // Re-render (filter/sort): lighter confetti only
+        confetti({
+          particleCount: 80,
+          spread: 60,
           origin: { y: 0.6 },
           colors: ['#6C63FF', '#FF6B6B', '#FFD93D', '#6BCB77']
         });
