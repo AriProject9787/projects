@@ -612,6 +612,40 @@
             }
         }
 
+        /* Share Section */
+        .share-section {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin: 40px 0;
+            border: 1px dashed var(--purple);
+        }
+
+        .share-btn {
+            background: #25D366;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            font-family: 'Fredoka', sans-serif;
+            text-decoration: none;
+        }
+
+        .share-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+        }
+
         /* Footer */
         footer {
             text-align: center;
@@ -688,12 +722,100 @@
             }
 
             document.addEventListener('DOMContentLoaded', function () {
+                const wishDataEncoded = params.get('wish_data');
+                let wishData = null;
+
+                if (wishDataEncoded) {
+                    try {
+                        wishData = JSON.parse(decodeURIComponent(escape(atob(wishDataEncoded))));
+                    } catch (e) {
+                        console.error("Failed to decode wish data", e);
+                    }
+                }
+
+                // If no wishData, use individual params (legacy/simple support)
+                const name = wishData ? wishData.name : params.get('name');
+                const from = wishData ? wishData.from : params.get('from');
+                const msg = wishData ? wishData.msg : params.get('msg');
+                const heroImg = wishData ? wishData.heroImg : params.get('img');
+
+                // Update Page Title
+                if (name) document.title = `Happy Birthday, ${name}! 🎂`;
+
+                // Update Letter
+                const letterText = document.querySelector('.letter-text');
+                if (letterText) {
+                    const bodyMsg = msg || `Happy Birthday! 🎂 On this special day, I want you to know just how amazing and wonderful you truly are. Every day you inspire those around you with your kindness, your energy, and your infectious laughter.<br><br>Another year has passed, and with it came so many beautiful memories. You've grown stronger, wiser, and more wonderful — and I truly feel blessed to share these moments with you.`;
+                    letterText.innerHTML = `
+                        Dearest ${name || '[Name]'},
+                        <br><br>
+                        ${bodyMsg.replace(/\n/g, '<br>')}
+                        <br><br>
+                        Wishing you the happiest of birthdays,<br>
+                        <span id="wisherNameLetter" class="wisher-highlight">${from || 'Someone Special'}</span> 🎈🎉
+                    `;
+                }
+
+                // Update Hero / First Memory
+                const photoCards = document.querySelectorAll('.photo-card');
+                if (photoCards.length > 0) {
+                    const firstImg = photoCards[0].querySelector('img');
+                    if (firstImg) {
+                        const imgUrl = heroImg || 'balloons.png';
+                        firstImg.src = imgUrl;
+                        if (heroImg) {
+                            photoCards[0].querySelector('.photo-content').classList.add('revealed');
+                            photoCards[0].querySelector('.photo-placeholder').style.display = 'none';
+                        }
+                    }
+                }
+
+                // Update Memories (up to 4)
+                if (wishData && wishData.memories && wishData.memories.length > 0) {
+                    wishData.memories.forEach((mem, i) => {
+                        if (photoCards[i]) {
+                            const img = photoCards[i].querySelector('img');
+                            const caption = photoCards[i].querySelector('.photo-caption');
+                            if (mem.img) img.src = mem.img;
+                            if (mem.cap) caption.textContent = mem.cap;
+                            // Auto-reveal if customized
+                            if (mem.img || mem.cap) {
+                                photoCards[i].querySelector('.photo-content').classList.add('revealed');
+                                photoCards[i].querySelector('.photo-placeholder').style.display = 'none';
+                            }
+                        }
+                    });
+                }
+
+                // Update Plans (up to 6)
+                if (wishData && wishData.plans && wishData.plans.length > 0) {
+                    const planItems = document.querySelectorAll('.date-item');
+                    wishData.plans.forEach((plan, i) => {
+                        if (planItems[i]) {
+                            const title = planItems[i].querySelector('h3');
+                            const desc = planItems[i].querySelector('p');
+                            if (plan.title) title.textContent = `🎁 ${plan.title}`;
+                            if (plan.desc) desc.textContent = plan.desc;
+                        }
+                    });
+                }
+
+                // Update Surprise Wishes (up to 6)
+                if (wishData && wishData.wishes && wishData.wishes.length > 0) {
+                    const surpriseMsgs = document.querySelectorAll('.surprise-message');
+                    wishData.wishes.forEach((wish, i) => {
+                        if (surpriseMsgs[i]) {
+                            surpriseMsgs[i].textContent = wish;
+                        }
+                    });
+                }
+
                 // Replace [Name] text nodes with birthday person's name
-                if (bdayName) {
+                if (name) {
                     function replaceInNode(node) {
                         if (node.nodeType === Node.TEXT_NODE) {
                             if (node.textContent.includes('[Name]')) {
-                                node.textContent = node.textContent.replaceAll('[Name]', bdayName);
+                                node.textContent = node.textContent.replaceAll('[Name]', name);
                             }
                         } else {
                             node.childNodes.forEach(replaceInNode);
@@ -702,13 +824,10 @@
                     replaceInNode(document.body);
                 }
 
-                // Fill wisher name in footer & letter sign-off with highlight styling
-                const fallbackName = 'Someone Special';
-                const resolvedWisher = wisherName || fallbackName;
+                // Fill wisher names
+                const resolvedWisher = from || 'Someone Special';
                 const wisherEl = document.getElementById('wisherName');
-                const wisherLetterEl = document.getElementById('wisherNameLetter');
                 if (wisherEl) wisherEl.textContent = resolvedWisher;
-                if (wisherLetterEl) wisherLetterEl.textContent = resolvedWisher;
             });
         })();
     </script>
@@ -939,6 +1058,237 @@
             </div>
         </section>
 
+        <!-- Share Section -->
+        <section class="share-section">
+            <h2 style="margin-bottom: 20px; font-family: 'Righteous', cursive; color: var(--deep-purple);">🎁 Ready to Send?</h2>
+            <p style="margin-bottom: 20px;">Forward this personalized wish to <span class="bday-name-inline" style="font-weight: 700;">[Name]</span>!</p>
+            <a href="#" class="share-btn" id="forwardWishBtn">
+                <span style="font-size: 1.5rem;">💬</span> Forward via WhatsApp
+            </a>
+        </section>
+
+        <!-- Firebase & Dynamic Content Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA5dtwCn09lEtrAOP3ih_Iq9YDFSKB181w",
+            authDomain: "birthdaycountdown9787.firebaseapp.com",
+            projectId: "birthdaycountdown9787",
+            storageBucket: "birthdaycountdown9787.firebasestorage.app",
+            messagingSenderId: "1057605732413",
+            appId: "1:1057605732413:web:18768b4a6bb5a7c2f64254",
+            measurementId: "G-M3914S92YP"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        (async function () {
+            const params = new URLSearchParams(window.location.search);
+            const wishId = params.get('wish_id');
+            const wishDataEncoded = params.get('wish_data');
+            let wishData = null;
+
+            // 1. Try fetching from Firestore by ID (New approach for uploads/persistence)
+            if (wishId) {
+                try {
+                    const docRef = doc(db, "sent_wishes", wishId);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        wishData = docSnap.data();
+                    } else {
+                        console.warn("No such wish found in Firestore!");
+                    }
+                } catch (e) {
+                    console.error("Error fetching wish from Firestore", e);
+                }
+            }
+            
+            // 2. Fallback to URL encoded data (Old approach)
+            if (!wishData && wishDataEncoded) {
+                try {
+                    wishData = JSON.parse(decodeURIComponent(escape(atob(wishDataEncoded))));
+                } catch (e) {
+                    console.error("Failed to decode wish data", e);
+                }
+            }
+
+            // 3. Fallback to individual params (Simple approach)
+            const name = wishData ? wishData.name : params.get('name');
+            const from = wishData ? wishData.from : params.get('from');
+            const msg = wishData ? wishData.msg : params.get('msg');
+            const heroImg = wishData ? wishData.heroImg : params.get('img');
+
+            // Apply Data to UI
+            if (name) document.title = `Happy Birthday, ${name}! 🎂`;
+
+            // Update Letter
+            const letterSection = document.querySelector('.love-letter');
+            if (wishData && !wishData.msg) {
+                letterSection.style.display = 'none';
+            } else {
+                const letterText = document.querySelector('.letter-text');
+                if (letterText) {
+                    const bodyMsg = (wishData && wishData.msg) || `Happy Birthday! 🎂 On this special day, I want you to know just how amazing and wonderful you truly are. Every day you inspire those around you with your kindness, your energy, and your infectious laughter.<br><br>Another year has passed, and with it came so many beautiful memories. You've grown stronger, wiser, and more wonderful — and I truly feel blessed to share these moments with you.`;
+                    letterText.innerHTML = `
+                        Dearest ${name || '[Name]'},
+                        <br><br>
+                        ${bodyMsg.replace(/\n/g, '<br>')}
+                        <br><br>
+                        Wishing you the happiest of birthdays,<br>
+                        <span id="wisherNameLetter" class="wisher-highlight">${from || 'Someone Special'}</span> 🎈🎉
+                    `;
+                }
+            }
+
+            // Update Hero / First Memory
+            const photoCards = document.querySelectorAll('.photo-card');
+            if (photoCards.length > 0) {
+                const firstImg = photoCards[0].querySelector('img');
+                if (firstImg) {
+                    const imgUrl = heroImg || 'balloons.png';
+                    firstImg.src = imgUrl;
+                    if (heroImg) {
+                        photoCards[0].querySelector('.photo-content').classList.add('revealed');
+                        photoCards[0].querySelector('.photo-placeholder').style.display = 'none';
+                    }
+                }
+            }
+
+            // Update Memories
+            const photoGrid = document.querySelector('.photo-grid');
+            const photoSection = document.querySelector('.photo-section');
+            const displayMemories = [...(wishData && wishData.memories ? wishData.memories : [])];
+            
+            // If heroImg exists, use it as the first memory if it's not already there
+            if (wishData && wishData.heroImg) {
+                const alreadyInMemories = displayMemories.some(m => m.img === wishData.heroImg);
+                if (!alreadyInMemories) {
+                    displayMemories.unshift({ img: wishData.heroImg, cap: 'A special moment!' });
+                }
+            }
+
+            if (displayMemories.length > 0) {
+                photoGrid.innerHTML = ''; // Clear defaults
+                displayMemories.forEach((mem, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'photo-card';
+                    card.onclick = () => revealPhoto(card);
+                    card.innerHTML = `
+                        <div class="photo-placeholder" style="display: none;">📷</div>
+                        <div class="photo-content revealed">
+                            <img src="${mem.img || 'balloons.png'}" alt="Memory ${i+1}">
+                            <div class="photo-caption">${mem.cap || ''}</div>
+                        </div>
+                    `;
+                    photoGrid.appendChild(card);
+                });
+                photoSection.style.display = 'block';
+            } else if (wishData) {
+                photoSection.style.display = 'none'; 
+            }
+
+            // Update Plans
+            const dateGrid = document.querySelector('.date-grid');
+            const dateSection = document.querySelector('.date-plans');
+            if (wishData && wishData.plans && wishData.plans.length > 0) {
+                dateGrid.innerHTML = ''; // Clear defaults
+                wishData.plans.forEach((plan, i) => {
+                    if (!plan.title && !plan.desc) return;
+                    const item = document.createElement('div');
+                    item.className = 'date-item';
+                    item.innerHTML = `
+                        <h3>🎁 ${plan.title || 'Special Plan'}</h3>
+                        <p>${plan.desc || ''}</p>
+                    `;
+                    item.onclick = () => {
+                        item.style.background = 'linear-gradient(135deg, var(--violet) 0%, var(--deep-purple) 100%)';
+                        item.style.color = 'white';
+                        item.querySelector('h3').style.color = 'white';
+                        setTimeout(() => {
+                            item.style.background = 'linear-gradient(135deg, var(--soft-purple) 0%, #FFF7ED 100%)';
+                            item.style.color = 'var(--text)';
+                            item.querySelector('h3').style.color = 'var(--deep-purple)';
+                        }, 300);
+                    };
+                    dateGrid.appendChild(item);
+                });
+                dateSection.style.display = 'block';
+            } else if (wishData) {
+                dateSection.style.display = 'none'; // Hide if custom data exists but no plans
+            }
+
+            // Update Surprise Wishes
+            const surpriseGrid = document.querySelector('.surprise-grid');
+            const surpriseSection = document.querySelector('.surprises');
+            if (wishData && wishData.wishes && wishData.wishes.length > 0) {
+                surpriseGrid.innerHTML = ''; // Clear defaults
+                wishData.wishes.forEach((wish, i) => {
+                    if (!wish) return;
+                    const div = document.createElement('div');
+                    div.innerHTML = `
+                        <button class="surprise-btn" onclick="toggleSurprise(${i+1})">Wish #${i+1} 🎂</button>
+                        <div class="surprise-message" id="surprise${i+1}">
+                            ${wish}
+                        </div>
+                    `;
+                    surpriseGrid.appendChild(div);
+                });
+                surpriseSection.style.display = 'block';
+            } else if (wishData) {
+                surpriseSection.style.display = 'none'; // Hide if custom data exists but no wishes
+            }
+            // End of the replaced block. The instruction had a trailing partial loop which is omitted.
+
+            // Replace [Name] text nodes
+            if (name) {
+                function replaceInNode(node) {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        if (node.textContent.includes('[Name]')) {
+                            node.textContent = node.textContent.replaceAll('[Name]', name);
+                        }
+                    } else {
+                        node.childNodes.forEach(replaceInNode);
+                    }
+                }
+                replaceInNode(document.body);
+            }
+
+            const wisherEl = document.getElementById('wisherName');
+            if (wisherEl) wisherEl.textContent = from || 'Someone Special';
+
+            // Forward Button Link
+            document.getElementById('forwardWishBtn').addEventListener('click', function (e) {
+                e.preventDefault();
+                const url = window.location.href;
+                const bdayName = name || 'Friend';
+                const text = `🎂 I've created a special birthday surprise for you, ${bdayName}! Check it out here: ${url}`;
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+            });
+        })();
+
+        // Floating background animation
+        window.createFloatingHearts = function() {
+            const container = document.getElementById('bgHearts');
+            if (!container) return;
+            const icons = ['🎈', '🎉', '🎊', '🌟', '✨', '🎂', '🎁', '⭐'];
+            setInterval(() => {
+                const icon = document.createElement('div');
+                icon.className = 'heart-float';
+                icon.textContent = icons[Math.floor(Math.random() * icons.length)];
+                icon.style.left = Math.random() * 100 + '%';
+                icon.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(icon);
+                setTimeout(() => icon.remove(), 17000);
+            }, 3000);
+        }
+        
+        // Start floating elements
+        createFloatingHearts();
+    </script>
+
         <!-- Footer -->
         <footer>
             Made with love by<br>
@@ -949,26 +1299,6 @@
     </div>
 
     <script>
-        // Floating birthday emojis background
-        function createFloatingHearts() {
-            const container = document.getElementById('bgHearts');
-            const icons = ['🎈', '🎉', '🎊', '🌟', '✨', '🎂', '🎁', '⭐'];
-
-            setInterval(() => {
-                const icon = document.createElement('div');
-                icon.className = 'heart-float';
-                icon.textContent = icons[Math.floor(Math.random() * icons.length)];
-                icon.style.left = Math.random() * 100 + '%';
-                icon.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                icon.style.animationDelay = Math.random() * 2 + 's';
-                container.appendChild(icon);
-
-                setTimeout(() => icon.remove(), 17000);
-            }, 3000);
-        }
-
-        createFloatingHearts();
-
         // NO button runs away, YES button grows
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');

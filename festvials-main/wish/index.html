@@ -713,6 +713,154 @@
       box-shadow: none;
       transform: translateY(-2px);
     }
+    /* Send Wish Modal */
+    #sendWishModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s;
+    }
+
+    #sendWishModal .modal-content {
+      background: var(--surface-light);
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      text-align: left;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    body.dark #sendWishModal .modal-content {
+      background: var(--surface-dark);
+      border: 1px solid #333;
+    }
+
+    #sendWishModal .form-group {
+      margin-bottom: 15px;
+    }
+
+    #sendWishModal label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    #sendWishModal textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      background: #f9f9f9;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    body.dark #sendWishModal textarea {
+      background: #2c2c2c;
+      border-color: #333;
+      color: white;
+    }
+
+    #sendWishModal .image-presets {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+    }
+
+    #sendWishModal .preset-img {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    /* Tabs in Send Wish Modal */
+    .tab-nav {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+      overflow-x: auto;
+    }
+
+    body.dark .tab-nav {
+      border-color: #333;
+    }
+
+    .tab-link {
+      padding: 8px 15px;
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: all 0.2s;
+      background: rgba(0,0,0,0.05);
+      color: var(--text-muted-light);
+    }
+
+    body.dark .tab-link {
+      background: rgba(255,255,255,0.05);
+      color: var(--text-muted-dark);
+    }
+
+    .tab-link.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .form-section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 15px 0 10px;
+      color: var(--primary);
+    }
+    .add-more-btn {
+      background: rgba(108, 99, 255, 0.08);
+      color: var(--primary);
+      border: 1px dashed var(--primary);
+      margin-top: 15px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: auto;
+      display: inline-block;
+    }
+
+    .add-more-btn:hover {
+      background: rgba(108, 99, 255, 0.15);
+      transform: translateY(-1px);
+    }
   </style>
 </head>
 
@@ -744,6 +892,71 @@
     <!-- Dynamic list of today's birthday people injected by JS -->
     <div class="bday-list" id="bdayList"></div>
     <button class="close-btn" onclick="closeOverlay()">Close 🎊</button>
+  </div>
+
+  <!-- Send Wish Modal -->
+  <div id="sendWishModal">
+    <div class="modal-content" style="max-width: 600px;">
+      <h2 style="text-align: left; margin-bottom: 10px;">🎁 Personalize Everything</h2>
+      <p id="sendToLabel" style="margin-bottom: 15px; color: var(--text-muted-light);"></p>
+      
+      <div class="tab-nav">
+        <div class="tab-link active" onclick="switchTab('basics')">Basics</div>
+        <div class="tab-link" onclick="switchTab('memories')">Memories</div>
+        <div class="tab-link" onclick="switchTab('plans')">Plans</div>
+        <div class="tab-link" onclick="switchTab('surprises')">Wishes</div>
+      </div>
+
+      <!-- Tab: Basics -->
+      <div id="tab-basics" class="tab-content active">
+        <div class="form-group">
+          <label>Letter Message</label>
+          <textarea id="customWishMsg" placeholder="Write the main birthday card letter here..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Hero Image</label>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="customWishImg" placeholder="Image URL" style="flex: 2;" />
+            <span style="font-size: 0.8rem; color: #888;">OR</span>
+            <input type="file" id="heroFile" accept="image/*" style="flex: 2; padding: 10px;" />
+          </div>
+          <label style="margin-top: 10px;">Or pick a theme:</label>
+          <div class="image-presets" id="imagePresets"></div>
+        </div>
+      </div>
+
+      <!-- Tab: Memories -->
+      <div id="tab-memories" class="tab-content">
+        <p style="font-size: 0.8rem; color: var(--text-muted-light); margin-bottom: 10px;">Customize the photo cards in the gallery.</p>
+        <div id="memories-inputs">
+          <!-- Dynamically added -->
+        </div>
+        <button onclick="addMemoryField()" class="add-more-btn">+ Add Another Memory</button>
+      </div>
+
+      <!-- Tab: Plans -->
+      <div id="tab-plans" class="tab-content">
+        <p style="font-size: 0.8rem; color: var(--text-muted-light); margin-bottom: 10px;">Customize the birthday celebration ideas.</p>
+        <div id="plans-inputs">
+          <!-- Dynamically added -->
+        </div>
+        <button onclick="addPlanField()" class="add-more-btn">+ Add Another Plan</button>
+      </div>
+
+      <!-- Tab: Surprises -->
+      <div id="tab-surprises" class="tab-content">
+        <p style="font-size: 0.8rem; color: var(--text-muted-light); margin-bottom: 10px;">Customize the clickable surprise wishes.</p>
+        <div id="surprises-inputs">
+          <!-- Dynamically added -->
+        </div>
+        <button onclick="addWishField()" class="add-more-btn">+ Add Another Wish</button>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px;">
+        <button id="finalSendBtn" style="margin: 0; flex: 2; background: var(--primary);">Generate Custom Wish 🎉</button>
+        <button onclick="closeSendWishModal()" class="cancel-btn" style="margin: 0; flex: 1;">Cancel</button>
+      </div>
+    </div>
   </div>
 
   <!-- Signup -->
@@ -892,6 +1105,208 @@
       document.getElementById("birthdayOverlay").style.display = 'none';
     }
     window.closeOverlay = closeOverlay;
+
+    // Send Wish Modal Logic
+    const sendWishModal = document.getElementById("sendWishModal");
+    let currentReceiverName = "";
+    let selectedImageUrl = "";
+
+    window.switchTab = function (tabId) {
+      document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+    };
+
+    window.openSendWishModal = function (name) {
+      currentReceiverName = name;
+      document.getElementById("sendToLabel").textContent = `Personalizing wish for: ${name}`;
+      
+      // Reset to first tab
+      switchTab('basics');
+      
+      // Populate Basics
+      document.getElementById("customWishMsg").value = "";
+      document.getElementById("customWishImg").value = "";
+      document.getElementById("heroFile").value = "";
+      selectedImageUrl = "";
+      
+      const presets = [
+        { name: 'Balloons', url: 'balloons.png' },
+        { name: 'Cake', url: 'cake.png' },
+        { name: 'Party', url: 'https://images.unsplash.com/photo-1530103862676-fa8c9d343165?auto=format&fit=crop&w=800&q=80' }
+      ];
+      const presetsContainer = document.getElementById("imagePresets");
+      presetsContainer.innerHTML = presets.map(p => `
+        <img src="${p.url}" class="preset-img" onclick="selectPreset('${p.url}', this)" title="${p.name}" />
+      `).join('');
+      
+      // Clear dynamic containers and add first fields
+      document.getElementById("memories-inputs").innerHTML = "";
+      document.getElementById("plans-inputs").innerHTML = "";
+      document.getElementById("surprises-inputs").innerHTML = "";
+      
+      addMemoryField();
+      addPlanField();
+      addWishField();
+      
+      sendWishModal.style.display = "flex";
+    };
+
+    window.addMemoryField = function() {
+      const container = document.getElementById("memories-inputs");
+      const i = container.children.length + 1;
+      const div = document.createElement('div');
+      div.className = 'form-group';
+      div.style.padding = '10px';
+      div.style.background = 'rgba(0,0,0,0.02)';
+      div.style.borderRadius = '8px';
+      div.style.marginBottom = '10px';
+      div.innerHTML = `
+        <label>Memory ${i} - Image</label>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <input type="text" class="mem-img" placeholder="Image URL" style="flex: 2;" />
+          <span style="font-size: 0.8rem; color: #888;">OR</span>
+          <input type="file" class="mem-file" accept="image/*" style="flex: 2; padding: 10px;" />
+        </div>
+        <label style="margin-top: 5px;">Memory ${i} - Caption</label>
+        <input type="text" class="mem-cap" placeholder="Our favorite moment..." />
+      `;
+      container.appendChild(div);
+    };
+
+    window.addPlanField = function() {
+      const container = document.getElementById("plans-inputs");
+      const i = container.children.length + 1;
+      const div = document.createElement('div');
+      div.className = 'form-group';
+      div.style.padding = '10px';
+      div.style.background = 'rgba(0,0,0,0.02)';
+      div.style.borderRadius = '8px';
+      div.style.marginBottom = '10px';
+      div.innerHTML = `
+        <label>Plan ${i} - Title</label>
+        <input type="text" class="plan-title" placeholder="E.g. Dinner Date" />
+        <label>Plan ${i} - Description</label>
+        <input type="text" class="plan-desc" placeholder="Details about the plan..." />
+      `;
+      container.appendChild(div);
+    };
+
+    window.addWishField = function() {
+      const container = document.getElementById("surprises-inputs");
+      const i = container.children.length + 1;
+      const div = document.createElement('div');
+      div.className = 'form-group';
+      div.innerHTML = `
+        <label>Surprise Wish ${i}</label>
+        <textarea class="surprise-msg" style="min-height: 60px;" placeholder="A short sweet wish..."></textarea>
+      `;
+      container.appendChild(div);
+    };
+
+    window.closeSendWishModal = function () {
+      sendWishModal.style.display = "none";
+    };
+
+    window.selectPreset = function (url, el) {
+      selectedImageUrl = url;
+      document.querySelectorAll('.preset-img').forEach(img => img.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById("customWishImg").value = ""; // Clear manual input if preset selected
+    };
+
+    // Image Compression Helper
+    async function compressImage(file, maxWidth = 800) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            // Low quality to save space in Firestore (1MB limit)
+            resolve(canvas.toDataURL('image/jpeg', 0.6));
+          };
+        };
+      });
+    }
+
+    document.getElementById("finalSendBtn").addEventListener("click", async () => {
+      document.getElementById("finalSendBtn").disabled = true;
+      document.getElementById("finalSendBtn").textContent = "Processing... ⏳";
+
+      try {
+        const data = {
+          name: currentReceiverName,
+          from: currentUsername || 'A Special Friend',
+          msg: document.getElementById("customWishMsg").value,
+          heroImg: document.getElementById("customWishImg").value || selectedImageUrl,
+          memories: [],
+          plans: [],
+          wishes: [],
+          createdAt: new Date().toISOString()
+        };
+
+        // Handle Hero File
+        const heroFile = document.getElementById("heroFile").files[0];
+        if (heroFile) data.heroImg = await compressImage(heroFile, 1200);
+
+        // Collect Memories
+        const memGroups = document.querySelectorAll('#memories-inputs .form-group');
+        for (let group of memGroups) {
+          const imgUrl = group.querySelector('.mem-img').value;
+          const file = group.querySelector('.mem-file').files[0];
+          const cap = group.querySelector('.mem-cap').value;
+          
+          let finalImg = imgUrl;
+          if (file) finalImg = await compressImage(file, 600);
+          
+          if (finalImg || cap) {
+            data.memories.push({ img: finalImg, cap });
+          }
+        }
+
+        // Collect Plans (Sync is fine here)
+        document.querySelectorAll('#plans-inputs .form-group').forEach(group => {
+          const title = group.querySelector('.plan-title').value;
+          const desc = group.querySelector('.plan-desc').value;
+          if (title || desc) data.plans.push({ title, desc });
+        });
+
+        // Collect Wishes
+        document.querySelectorAll('.surprise-msg').forEach(msgInput => {
+          if (msgInput.value) data.wishes.push(msgInput.value);
+        });
+
+        // Save to Firestore for permanent sharing
+        const docRef = await addDoc(collection(db, "sent_wishes"), data);
+        const wishUrl = `wish1.html?wish_id=${docRef.id}`;
+        
+        window.open(wishUrl, '_blank');
+        closeSendWishModal();
+      } catch (err) {
+        console.error("Failed to save wish", err);
+        alert("Ops! Something went wrong saving your wish. Please try again.");
+      } finally {
+        document.getElementById("finalSendBtn").disabled = false;
+        document.getElementById("finalSendBtn").textContent = "Generate Custom Wish 🎉";
+      }
+    });
 
     toggleView('login');
 
@@ -1304,12 +1719,11 @@
         const bdayList = document.getElementById('bdayList');
         bdayList.innerHTML = '';
         todayBirthdays.forEach(person => {
-          const wishUrl = `wish1.html?name=${encodeURIComponent(person.name)}&from=${encodeURIComponent(currentUsername || 'A Friend')}`;
           const row = document.createElement('div');
           row.className = 'bday-row';
           row.innerHTML = `
             <span class="bday-name">🎂 ${person.name}</span>
-            <a href="${wishUrl}" target="_blank" class="wish-btn">Send Wish 🎉</a>
+            <button onclick="openSendWishModal('${person.name.replace(/'/g, "\\'")}')" class="wish-btn">Send Wish 🎉</button>
           `;
           bdayList.appendChild(row);
         });
