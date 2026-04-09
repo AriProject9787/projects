@@ -4,73 +4,158 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Terms & Policies - Birthday Reminder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary: #6C63FF;
+      --bg: #F0F2F5;
+      --surface: #FFFFFF;
+      --text: #333333;
+      --text-muted: #666666;
+      --radius: 16px;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    body.dark {
+      --bg: #121212;
+      --surface: #1E1E1E;
+      --text: #E0E0E0;
+      --text-muted: #AAAAAA;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       margin: 0;
-      padding: 20px;
-      line-height: 1.6;
-      color: #333;
+      padding: 40px 20px;
+      line-height: 1.7;
+      transition: all 0.3s ease;
     }
+
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background: var(--surface);
+      padding: 50px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
     }
-    h1, h2 {
-      color: #222;
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 30px;
+      text-align: center;
     }
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-top: 40px;
+      margin-bottom: 15px;
+      color: var(--primary);
+      border-bottom: 2px solid rgba(108, 99, 255, 0.1);
+      padding-bottom: 8px;
+    }
+
+    p {
+      margin-bottom: 20px;
+    }
+
     ul {
-      margin-left: 20px;
+      margin-left: 0;
+      padding-left: 20px;
+      margin-bottom: 30px;
     }
+
+    li {
+      margin-bottom: 10px;
+    }
+
     a {
-      color: #0077cc;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .footer {
+      margin-top: 60px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(0,0,0,0.05);
+      padding-top: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 30px 20px;
+      }
+      h1 { font-size: 1.8rem; }
     }
   </style>
 </head>
-<body>
+<body id="themeBody">
   <div class="container">
-    <h1>Terms and Policies</h1>
-    <p>Welcome to the <strong>Birthday Reminder</strong> website. By creating an account and using our services, you agree to the following Terms and Conditions and Privacy Policy.</p>
+    <h1>Terms & Policies</h1>
+    <p>Welcome to <strong>Birthday Reminder & Celebration Generator</strong>. By accessing our platform, whether as a guest or a registered user, you agree to the following terms designed to ensure a safe and celebratory experience for everyone.</p>
 
-    <h2>1. User Responsibilities</h2>
+    <h2>1. Access & Account Security</h2>
     <ul>
-      <li>You must provide accurate and complete information during signup.</li>
-      <li>You are responsible for maintaining the confidentiality of your account credentials.</li>
-      <li>You agree not to misuse, abuse, or attempt to harm the platform or other users.</li>
+      <li><strong>Registered Users</strong>: You are responsible for maintaining the security of your account and password. All actions taken under your account are your responsibility.</li>
+      <li><strong>Guest Access</strong>: Users may skip login to view public birthdays. In this mode, some features (like adding birthdays or seeing private entries) are restricted.</li>
+      <li><strong>Accuracy</strong>: You agree to provide accurate information when registering or adding birthday data.</li>
     </ul>
 
-    <h2>2. Birthday Information</h2>
+    <h2>2. Birthday Visibility & Privacy</h2>
+    <p>Our platform offers two levels of privacy for birthdays you add:</p>
     <ul>
-      <li>You may choose to set your date of birth as <em>Public</em> or <em>Private</em> during signup or in your dashboard.</li>
-      <li><strong>Public</strong>: Your birthday will be visible to all users.</li>
-      <li><strong>Private</strong>: Your birthday will only be visible to you.</li>
+      <li><strong>Public</strong>: Visible to all users, including guests. Use this for friends and colleagues whose celebrations everyone should share.</li>
+      <li><strong>Private</strong>: Visible only to you and the platform administrator. Perfect for personal reminders.</li>
     </ul>
 
-    <h2>3. Data Usage & Privacy</h2>
+    <h2>3. Custom Wish Generator</h2>
     <ul>
-      <li>Your personal data (name, email, date of birth, visibility preference) is stored securely in our database.</li>
-      <li>We do not sell or share your data with third parties.</li>
-      <li>You may request deletion of your account and data at any time by contacting the administrator.</li>
+      <li><strong>Content Quality</strong>: You are responsible for the images, memories, and messages you include in custom wishes. Please do not upload offensive or unauthorized content.</li>
+      <li><strong>Data Storage</strong>: Personalized wishes generate a unique link. Anyone with this link can view the content. Use discretion when sharing sensitive memories.</li>
     </ul>
 
-    <h2>4. Limitations of Service</h2>
+    <h2>4. Data Rights & Deletion</h2>
     <ul>
-      <li>The service is provided on an "as-is" basis, without guarantees of uninterrupted or error-free operation.</li>
-      <li>We are not responsible for missed reminders, data loss, or technical issues beyond our control.</li>
+      <li><strong>Self-Service Deletion</strong>: You have the right to permanently delete any birthday entry or custom wish you have created. Once deleted, this action cannot be undone.</li>
+      <li><strong>Account Deletion</strong>: Registered users can request full account deletion by contacting the administrator.</li>
+      <li><strong>Data Privacy</strong>: We do not sell your personal data. We use it solely to provide reminders and generate celebration pages.</li>
     </ul>
 
-    <h2>5. Changes to Terms</h2>
-    <p>We reserve the right to update these Terms and Policies at any time. Any updates will be effective immediately upon posting on this page.</p>
+    <h2>5. Disclaimer & Liability</h2>
+    <ul>
+      <li><strong>As-Is Service</strong>: This platform is provided "as is" without warranty. We are not responsible for technical failures or missed reminders.</li>
+      <li><strong>Content Moderate</strong>: The administrator reserves the right to remove any public content that violates community standards or seems malicious.</li>
+    </ul>
 
-    <h2>6. Contact</h2>
-    <p>If you have any questions regarding these Terms or our Privacy Policy, please contact us at <a href="mailto:ariofficial9787@gmail.com">ariofficial9787@gmail.com</a>.</p>
+    <h2>6. Contact & Support</h2>
+    <p>For questions regarding your data or these terms, please contact us at:</p>
+    <p><a href="mailto:ariofficial9787@gmail.com">ariofficial9787@gmail.com</a></p>
 
-    <p><strong>Last Updated:</strong> September 2025</p>
+    <div class="footer">
+      <strong>Last Updated:</strong> April 2026<br>
+      © 2026 Birthday Reminder & Celebration Generator
+    </div>
   </div>
+
+  <script>
+    // Match theme with main app if possible
+    try {
+      if (document.body.classList.contains('dark') || window.location.search.includes('theme=dark')) {
+        document.body.classList.add('dark');
+      }
+    } catch(e) {}
+  </script>
 </body>
 </html>
