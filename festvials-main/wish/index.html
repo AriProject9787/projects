@@ -270,6 +270,32 @@
       box-shadow: none;
     }
 
+    /* Delete Button */
+    .delete-btn {
+      background: rgba(255, 107, 107, 0.1);
+      color: #FF6B6B;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      margin-left: 5px;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+      box-shadow: none;
+      width: auto;
+    }
+
+    .delete-btn:hover {
+      background: rgba(255, 107, 107, 0.2);
+      transform: translateY(-2px);
+      box-shadow: none;
+      color: #FF5252;
+    }
+
     /* Loading Skeleton */
     .skeleton {
       background: #f0f0f0;
@@ -985,6 +1011,7 @@
     <input type="password" id="loginPassword" placeholder="Password" />
     <button id="loginBtn">Login</button>
     <div class="link" onclick="toggleView('signup')">New user? Sign Up</div>
+    <div class="link" style="margin-top: 10px; opacity: 0.8; font-size: 0.9rem;" onclick="skipLogin()">Skip Login (View Public Birthdays)</div>
   </div>
 
   <!-- Dashboard -->
@@ -1037,7 +1064,7 @@
       </div>
     </div>
 
-    <div class="section-container">
+    <div class="section-container" id="privateBirthdaysSection">
       <h3 class="section-header">🔒 My Private Birthdays</h3>
       <div class="subsection">
         <h4>🎂 Today</h4>
@@ -1049,14 +1076,16 @@
       </div>
     </div>
 
-    <h3>Add Birthday</h3>
-    <input type="text" id="name" placeholder="Name" />
-    <input type="date" id="dob" />
-    <select id="dobVisibility">
-      <option value="public" selected>Public</option>
-      <option value="private">Private</option>
-    </select>
-    <button id="addBtn">Add Birthday</button>
+    <div id="addBirthdaySection">
+      <h3>Add Birthday</h3>
+      <input type="text" id="name" placeholder="Name" />
+      <input type="date" id="dob" />
+      <select id="dobVisibility">
+        <option value="public" selected>Public</option>
+        <option value="private">Private</option>
+      </select>
+      <button id="addBtn">Add Birthday</button>
+    </div>
 
     <button class="logout-btn">Logout</button>
   </div>
@@ -1068,7 +1097,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA5dtwCn09lEtrAOP3ih_Iq9YDFSKB181w",
@@ -1086,6 +1115,7 @@
 
     let currentUser = null;
     let currentUsername = null;
+    let isGuestMode = false;
     let countdownIntervals = [];
     let inactivityTimer;
     let allBirthdaysData = []; // Store fetched data
@@ -1096,10 +1126,17 @@
     }
 
     function toggleView(view) {
+      isGuestMode = false; // Reset guest mode if switching views
       document.getElementById("signupContainer").style.display = view === 'signup' ? 'block' : 'none';
       document.getElementById("loginContainer").style.display = view === 'login' ? 'block' : 'none';
+      document.getElementById("dashboardContainer").style.display = 'none';
     }
     window.toggleView = toggleView;
+
+    window.skipLogin = function() {
+      isGuestMode = true;
+      showDashboard();
+    };
 
     function closeOverlay() {
       document.getElementById("birthdayOverlay").style.display = 'none';
@@ -1396,15 +1433,38 @@
       }
     }
 
-    // Check for Import Data on Load
+    // Check for Parameters on Load
     window.addEventListener('load', () => {
       const urlParams = new URLSearchParams(window.location.search);
+      
+      // 1. Handle Bulk Import
       const importData = urlParams.get('import_data');
       if (importData) {
         const birthdays = decodeData(importData);
         if (birthdays && Array.isArray(birthdays)) {
           showImportModal(birthdays);
         }
+      }
+
+      // 2. Handle Quick Custom (from wish1.html)
+      const isQuickCustom = urlParams.get('quick_custom');
+      if (isQuickCustom === 'true') {
+        const to = urlParams.get('to');
+        const from = urlParams.get('from');
+        
+        if (!currentUser) isGuestMode = true;
+        showDashboard();
+
+        if (to) {
+          // Open the customization modal automatically
+          setTimeout(() => {
+            openSendWishModal(to);
+            if (from) currentUsername = from;
+          }, 800);
+        }
+        
+        // Clean URL params
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
     });
 
@@ -1589,8 +1649,6 @@
 
     // Load birthdays
     async function loadBirthdays() {
-      if (!currentUser) return;
-
       showSkeletons(); // Show skeletons immediately
 
       try {
@@ -1598,7 +1656,7 @@
         allBirthdaysData = []; // Reset local store
 
         snapshot.forEach(docSnap => {
-          allBirthdaysData.push(docSnap.data());
+          allBirthdaysData.push({ ...docSnap.data(), id: docSnap.id });
         });
 
         renderBirthdays();
@@ -1638,7 +1696,13 @@
       let filteredData = allBirthdaysData.filter(person => {
         // Visibility Logic
         const isPrivate = person.visibility === 'private';
-        if (isPrivate && person.uid !== currentUser.uid) return false;
+        
+        // If guest, show nothing private
+        if (isGuestMode && isPrivate) return false;
+        
+        // If logged in, show my privates only
+        if (isPrivate && (!currentUser || person.uid !== currentUser.uid)) return false;
+        
         if (!person.dob || !person.dob.includes('-')) return false;
 
         // Search Logic
@@ -1805,11 +1869,19 @@
         <div class="custom-checkbox ${isChecked ? 'checked' : ''}"></div>
       </div>`;
 
+      const isOwner = currentUser && person.uid === currentUser.uid;
+      const isAdmin = currentUsername === "admin";
+      const deleteBtnHTML = (isOwner || isAdmin) ? `
+        <button onclick="deleteBirthday('${person.id}', '${person.name.replace(/'/g, "\\'")}')" class="delete-btn" title="Delete Birthday">
+          🗑️ Delete
+        </button>` : '';
+
       card.innerHTML = `${checkboxHTML}
       <div style="flex:1;"><b>${person.name}</b> 🎂 (${age} yrs) - ${target.toDateString()} 
         <a href="${calendarLink}" target="_blank" class="calendar-btn" title="Add to Google Calendar">
-          📅 Add
+          📅 Set Alert
         </a>
+        ${deleteBtnHTML}
         ${addedByText}
       </div>
       <div class="countdown" aria-live="polite"></div>`;
@@ -1851,10 +1923,37 @@
       tick(); countdownIntervals.push(setInterval(tick, 1000));
     }
 
+    window.deleteBirthday = async function (docId, name) {
+      if (confirm(`Are you sure you want to delete ${name}'s birthday?`)) {
+        try {
+          await deleteDoc(doc(db, "birthdays", docId));
+          alert("Birthday deleted successfully!");
+          loadBirthdays();
+        } catch (error) {
+          console.error("Error deleting birthday:", error);
+          alert("Failed to delete birthday. " + error.message);
+        }
+      }
+    };
+
     async function showDashboard(username = null) {
       document.getElementById("signupContainer").style.display = 'none';
       document.getElementById("loginContainer").style.display = 'none';
       document.getElementById("dashboardContainer").style.display = 'block';
+
+      // Visibility controls for Guest Mode
+      document.getElementById("addBirthdaySection").style.display = isGuestMode ? 'none' : 'block';
+      document.getElementById("privateBirthdaysSection").style.display = isGuestMode ? 'none' : 'block';
+      
+      document.querySelectorAll(".logout-btn").forEach(btn => {
+        btn.textContent = isGuestMode ? "Back to Login" : "Logout";
+      });
+
+      if (isGuestMode) {
+        currentUsername = "Guest";
+        document.getElementById("welcomeMsg").textContent = `👋 Welcome, Guest! (Viewing Public Only)`;
+      }
+
       if (currentUser) {
         const usersSnapshot = await getDocs(collection(db, "users"));
         const userDoc = usersSnapshot.docs.find(doc => doc.data().uid === currentUser.uid);
@@ -1872,11 +1971,12 @@
     // Auth state listener
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        isGuestMode = false;
         currentUser = user;
         showDashboard();
         resetInactivityTimer();
       } else {
-        toggleView('login');
+        if (!isGuestMode) toggleView('login');
       }
     });
 

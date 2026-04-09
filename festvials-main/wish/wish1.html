@@ -654,6 +654,97 @@
             font-size: 1.1rem;
         }
 
+        /* Create Wish CTA Section */
+        .create-wish-section {
+            background: linear-gradient(135deg, var(--deep-purple) 0%, var(--violet) 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 20px;
+            margin: 60px 0;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(124, 58, 237, 0.3);
+            animation: fadeIn 1s ease-out;
+        }
+
+        .create-wish-section h2 {
+            font-family: 'Righteous', cursive;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .create-wish-section p {
+            font-size: 1.2rem;
+            margin-bottom: 35px;
+            opacity: 0.9;
+        }
+
+        .create-wish-btn {
+            background: #FFD700;
+            color: var(--deep-purple);
+            padding: 18px 45px;
+            font-size: 1.3rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Fredoka', sans-serif;
+            text-decoration: none;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .create-wish-btn:hover {
+            transform: scale(1.08) rotate(2deg);
+            box-shadow: 0 12px 35px rgba(255, 215, 0, 0.6);
+            background: white;
+        }
+
+        /* Quick Wish Form */
+        .quick-wish-form {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: left;
+            animation: fadeInDown 0.5s ease;
+        }
+
+        .quick-wish-form.show {
+            display: block;
+        }
+
+        .quick-wish-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: white;
+        }
+
+        .quick-wish-form input {
+            width: 100%;
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: none;
+            background: white;
+            color: var(--text);
+            font-family: inherit;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .quick-wish-form input:focus {
+            outline: 3px solid #FFD700;
+        }
+
         footer span {
             display: inline-block;
             animation: pulse 1.5s ease-in-out infinite;
@@ -1289,6 +1380,33 @@
         createFloatingHearts();
     </script>
 
+        <!-- Create Your Own Wish Section -->
+        <section class="create-wish-section">
+            <h2>Want to make someone feel special? ✨</h2>
+            <p>You can create a personalized birthday surprise just like this one for your friends and family!</p>
+            <button onclick="toggleQuickWish()" class="create-wish-btn" id="quickStartBtn">
+                Create My Own Wish 🎉
+            </button>
+
+            <!-- Quick Create Form -->
+            <div id="quickWishForm" class="quick-wish-form">
+                <div class="form-group">
+                    <label>To (Birthday Person's Name):</label>
+                    <input type="text" id="quickTo" placeholder="E.g. Sahithi" />
+                </div>
+                <div class="form-group">
+                    <label>From (Your Name):</label>
+                    <input type="text" id="quickFrom" placeholder="E.g. Your Bestie" />
+                </div>
+                <button onclick="generateQuickWish()" class="create-wish-btn" style="width: 100%; background: #25D366; color: white; justify-content: center;">
+                    Generate & View Wish! 🚀
+                </button>
+                <p style="margin-top: 20px; font-size: 0.85rem; opacity: 0.8; text-align: center; color: white;">
+                    Want full control? <a href="index.html" style="color: #FFD700; font-weight: 700; text-decoration: underline;">Use the full dashboard</a>
+                </p>
+            </div>
+        </section>
+
         <!-- Footer -->
         <footer>
             Made with love by<br>
@@ -1471,6 +1589,30 @@
                 }, 300);
             });
         });
+
+        // Quick Wish Functions
+        window.toggleQuickWish = function() {
+            const form = document.getElementById('quickWishForm');
+            form.classList.toggle('show');
+            if (form.classList.contains('show')) {
+                form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                document.getElementById('quickTo').focus();
+            }
+        };
+
+        window.generateQuickWish = function() {
+            const to = document.getElementById('quickTo').value.trim();
+            const from = document.getElementById('quickFrom').value.trim();
+
+            if (!to || !from) {
+                alert("Please enter both names to create a wish! ✨");
+                return;
+            }
+
+            // Redirect back to index.html with instructions to open customization
+            const url = `index.html?quick_custom=true&to=${encodeURIComponent(to)}&from=${encodeURIComponent(from)}`;
+            window.location.href = url;
+        };
     </script>
 </body>
 
