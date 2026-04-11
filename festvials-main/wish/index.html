@@ -887,6 +887,37 @@
       background: rgba(108, 99, 255, 0.15);
       transform: translateY(-1px);
     }
+
+    /* Blocked Overlay */
+    #blockedOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      color: #fff;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 20000;
+      font-family: 'Poppins', sans-serif;
+      padding: 20px;
+    }
+
+    #blockedOverlay h1 {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      color: #FF6B6B;
+    }
+
+    #blockedOverlay p {
+      font-size: 1.5rem;
+      max-width: 600px;
+      line-height: 1.5;
+    }
   </style>
 </head>
 
@@ -1027,6 +1058,7 @@
         <a href="terms.html" target="_blank" class="nav-link">Terms</a>
         <a href="contact.html" target="_blank" class="nav-link">Contact</a>
         <a href="b-day.apk" download class="nav-link">⬇ Download APK</a>
+        <a href="admin.html" id="adminNavLink" class="nav-link" style="display:none; color: var(--primary); font-weight: 600;">🛡️ Admin</a>
         <button class="logout-btn">Logout</button>
 
       </div>
@@ -1087,6 +1119,8 @@
       <button id="addBtn">Add Birthday</button>
     </div>
 
+
+
     <button class="logout-btn">Logout</button>
   </div>
 
@@ -1094,20 +1128,22 @@
     © <span id="year"></span> Arirama Selvam - <span id="todayDate"></span>
   </footer>
 
+  <!-- Blocked Overlay -->
+  <div id="blockedOverlay">
+    <h1>🚫</h1>
+    <h2 style="color: #FF6B6B; margin-bottom: 10px;">Access Denied</h2>
+    <p>Admin has blocked you. Please contact admin to resolve this issue.</p>
+    <div style="margin-top: 30px; padding: 10px; border: 1px dashed #444; color: #888; border-radius: 8px;">
+       Your IP: <span id="blockedIpDisplay">Detecting...</span>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyA5dtwCn09lEtrAOP3ih_Iq9YDFSKB181w",
-      authDomain: "birthdaycountdown9787.firebaseapp.com",
-      projectId: "birthdaycountdown9787",
-      storageBucket: "birthdaycountdown9787.firebasestorage.app",
-      messagingSenderId: "1057605732413",
-      appId: "1:1057605732413:web:18768b4a6bb5a7c2f64254",
-      measurementId: "G-M3914S92YP"
-    };
+    import firebaseConfig from "./firebase-config.js";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -1963,10 +1999,108 @@
           document.getElementById("name").value = data.username || "";
           document.getElementById("dob").value = data.dob || "";
           document.getElementById("dobVisibility").style.display = (data.username === "admin") ? "block" : "none";
-        } else if (username) { currentUsername = username; document.getElementById("welcomeMsg").textContent = `👋 Welcome, ${username}!`; }
+          
+          if (data.username === "admin") {
+            document.getElementById("adminNavLink").style.display = "block";
+          } else {
+            document.getElementById("adminNavLink").style.display = "none";
+          }
+          
+        } else if (username) { 
+          currentUsername = username; 
+          document.getElementById("welcomeMsg").textContent = `👋 Welcome, ${username}!`; 
+          if (username === "admin") document.getElementById("adminNavLink").style.display = "block";
+        }
       }
       loadBirthdays();
     }
+
+    // ---------------------------------------------------------
+    // Visitor Logging & Admin Logic
+    // ---------------------------------------------------------
+    let currentCollection = "";
+    let selectedDocId = "";
+    let visitorDocId = null;
+    let visitStartTime = Date.now();
+
+    async function logVisitorVisit() {
+      try {
+        let visitorId = localStorage.getItem('visitor_id');
+        if (!visitorId) {
+          visitorId = 'id_' + Math.random().toString(36).substr(2, 9) + Date.now();
+          localStorage.setItem('visitor_id', visitorId);
+        }
+
+        let ipData = { ip: "Unknown" };
+        try {
+          const res = await fetch('https://api.ipify.org?format=json');
+          ipData = await res.json();
+        } catch (e) { console.warn("IP fetch failed", e); }
+
+        const logData = {
+          visitor_id: visitorId,
+          public_ip: ipData.ip,
+          ipv4: ipData.ip,
+          ipv6: "Pending...",
+          user_agent: navigator.userAgent,
+          platform: navigator.platform,
+          screen: `${window.screen.width}x${window.screen.height}`,
+          referrer: document.referrer || "Direct",
+          page: window.location.pathname,
+          timestamp: new Date().toISOString(),
+          duration_seconds: 0,
+          username: currentUsername || "Guest",
+          email: currentUser ? currentUser.email : "N/A"
+        };
+
+        const docRef = await addDoc(collection(db, "visitor_logs"), logData);
+        visitorDocId = docRef.id;
+        visitStartTime = Date.now();
+
+        // CHECK BLOCKLIST
+        try {
+          const blocklistSnap = await getDocs(collection(db, "blocklist"));
+          const isBlocked = blocklistSnap.docs.some(d => d.data().ip === ipData.ip);
+          if (isBlocked) {
+            document.getElementById("blockedIpDisplay").textContent = ipData.ip;
+            document.getElementById("blockedOverlay").style.display = "flex";
+            document.body.style.overflow = "hidden";
+            // Stop further initialization
+            await updateDoc(doc(db, "visitor_logs", visitorDocId), { status: "Blocked Attempt" });
+            return; 
+          }
+        } catch (e) { console.error("Blocklist check failed", e); }
+
+        // Start duration timer
+        if (window._durationInterval) clearInterval(window._durationInterval);
+        window._durationInterval = setInterval(async () => {
+          if (visitorDocId) {
+            const elapsed = Math.floor((Date.now() - visitStartTime) / 1000);
+            try {
+              await updateDoc(doc(db, "visitor_logs", visitorDocId), { duration_seconds: elapsed });
+            } catch (e) { console.error("Duration update failed", e); }
+          }
+        }, 10000); // Every 10 seconds
+
+        // Attempt to fetch IPv6 specifically
+        try {
+          const res6 = await fetch('https://api64.ipify.org?format=json');
+          const ipData6 = await res6.json();
+          if (ipData6.ip.includes(':')) { // Basic check for IPv6 format
+             await updateDoc(doc(db, "visitor_logs", docRef.id), { ipv6: ipData6.ip });
+          } else {
+             await updateDoc(doc(db, "visitor_logs", docRef.id), { ipv6: "Not available" });
+          }
+        } catch (e) { console.warn("IPv6 fetch failed", e); }
+      } catch (err) {
+        console.error("Failed to log visitor", err);
+      }
+    }
+
+
+
+    // Call visitor log
+    logVisitorVisit();
 
     // Auth state listener
     onAuthStateChanged(auth, (user) => {
@@ -1975,6 +2109,8 @@
         currentUser = user;
         showDashboard();
         resetInactivityTimer();
+        // Log visit again with user info
+        setTimeout(() => logVisitorVisit(), 1500); // Small delay to ensure currentUsername is populated
       } else {
         if (!isGuestMode) toggleView('login');
       }

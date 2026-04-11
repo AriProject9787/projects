@@ -77,6 +77,31 @@
     .contact-info a:hover {
       text-decoration: underline;
     }
+
+    /* Blocked Overlay */
+    #blockedOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      color: #fff;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 20000;
+      font-family: 'Poppins', sans-serif;
+      padding: 20px;
+    }
+
+    #blockedOverlay h2 {
+      color: #FF6B6B;
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
@@ -97,10 +122,145 @@
     </div>
   </section>
 
+  <!-- Blocked Overlay -->
+  <div id="blockedOverlay">
+    <h1 style="font-size: 5rem; margin: 0;">🚫</h1>
+    <h2>Access Denied</h2>
+    <p style="font-size: 1.2rem; max-width: 500px;">Admin has blocked you. Please contact admin to resolve this issue.</p>
+    <div style="margin-top: 30px; padding: 10px; border: 1px dashed #444; color: #888; border-radius: 8px;">
+       Your IP: <span id="blockedIpDisplay">Detecting...</span>
+    </div>
+  </div>
+
   <!-- AOS Animation Script -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
     AOS.init();
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA5dtwCn09lEtrAOP3ih_Iq9YDFSKB181w",
+      authDomain: "birthdaycountdown9787.firebaseapp.com",
+      projectId: "birthdaycountdown9787",
+      storageBucket: "birthdaycountdown9787.firebasestorage.app",
+      messagingSenderId: "1057605732413",
+      appId: "1:1057605732413:web:18768b4a6bb5a7c2f64254",
+      measurementId: "G-M3914S92YP"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let visitorDocId = null;
+    let visitStartTime = Date.now();
+    let currentIpv4 = "Unknown";
+    let currentIpv6 = "Pending...";
+
+    async function logVisitorVisit() {
+      try {
+        let visitorId = localStorage.getItem('visitor_id');
+        if (!visitorId) {
+          visitorId = 'id_' + Math.random().toString(36).substr(2, 9) + Date.now();
+          localStorage.setItem('visitor_id', visitorId);
+        }
+
+        let ipData = { ip: "Unknown" };
+        try {
+          const res = await fetch('https://api.ipify.org?format=json');
+          ipData = await res.json();
+          currentIpv4 = ipData.ip;
+        } catch (e) { console.warn("IP fetch failed", e); }
+
+        const logData = {
+          visitor_id: visitorId,
+          public_ip: ipData.ip,
+          ipv4: ipData.ip,
+          ipv6: "Pending...",
+          user_agent: navigator.userAgent,
+          platform: navigator.platform,
+          screen: `${window.screen.width}x${window.screen.height}`,
+          referrer: document.referrer || "Direct",
+          page: window.location.pathname,
+          timestamp: new Date().toISOString(),
+          duration_seconds: 0
+        };
+
+        const docRef = await addDoc(collection(db, "visitor_logs"), logData);
+        visitorDocId = docRef.id;
+        visitStartTime = Date.now();
+
+        // CHECK BLOCKLIST
+        try {
+          // Note: Needs Firestore composite index if using where, but a simple fetch is fine for small lists
+          const blocklistSnap = await getDocs(collection(db, "blocklist"));
+          const isBlocked = blocklistSnap.docs.some(d => d.data().ip === ipData.ip);
+          if (isBlocked) {
+            document.getElementById("blockedIpDisplay").textContent = ipData.ip;
+            document.getElementById("blockedOverlay").style.display = "flex";
+            document.body.style.overflow = "hidden";
+            await updateDoc(doc(db, "visitor_logs", visitorDocId), { status: "Blocked Attempt (Contact Page)" });
+            return; 
+          }
+        } catch (e) { console.error("Blocklist check failed", e); }
+
+        // Start duration timer
+        if (window._durationInterval) clearInterval(window._durationInterval);
+        window._durationInterval = setInterval(async () => {
+          if (visitorDocId) {
+            const elapsed = Math.floor((Date.now() - visitStartTime) / 1000);
+            try {
+              await updateDoc(doc(db, "visitor_logs", visitorDocId), { duration_seconds: elapsed });
+            } catch (e) { console.error("Duration update failed", e); }
+          }
+        }, 10000); // Every 10 seconds
+
+        // Attempt to fetch IPv6 specifically
+        try {
+          const res6 = await fetch('https://api64.ipify.org?format=json');
+          const ipData6 = await res6.json();
+          currentIpv6 = ipData6.ip;
+          if (ipData6.ip.includes(':')) { // Basic check for IPv6 format
+             await updateDoc(doc(db, "visitor_logs", docRef.id), { ipv6: ipData6.ip });
+          } else {
+             currentIpv6 = "Not available";
+             await updateDoc(doc(db, "visitor_logs", docRef.id), { ipv6: "Not available" });
+          }
+        } catch (e) { console.warn("IPv6 fetch failed", e); }
+      } catch (err) {
+        console.error("Failed to log visitor", err);
+      }
+    }
+
+    // Call visitor log
+    logVisitorVisit();
+
+    const contactForm = document.querySelector('form');
+    contactForm.addEventListener('submit', async (e) => {
+      // We don't prevent default because we still want formspree to work
+      // effectively it will run both
+      const formData = new FormData(contactForm);
+      const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        message: formData.get('message'),
+        timestamp: new Date().toISOString(),
+        page: "contact.html",
+        ipv4: currentIpv4,
+        ipv6: currentIpv6
+      };
+
+      try {
+        await addDoc(collection(db, "contact_messages"), data);
+        console.log("Logged to Firestore");
+      } catch (err) {
+        console.error("Firestore log failed", err);
+      }
+    });
+
   </script>
 </body>
 </html>

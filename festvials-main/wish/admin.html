@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control Panel | Birthday Reminder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --primary-light: #8B85FF;
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --surface-accent: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        .navbar {
+            padding: 1rem 2rem;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-family: inherit;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 400px;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0; /* Critical for inner scrolling */
+        }
+
+        /* Sidebar: Collections */
+        .sidebar {
+            background: rgba(15, 23, 42, 0.5);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .collection-list {
+            list-style: none;
+        }
+
+        .collection-item {
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-muted);
+        }
+
+        .collection-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+        }
+
+        .collection-item.active {
+            background: rgba(108, 99, 255, 0.15);
+            color: var(--primary-light);
+            font-weight: 500;
+        }
+
+        /* Content: Document List */
+        .content-list {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-dark);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            min-height: 0; /* Critical for inner scrolling */
+        }
+
+        .list-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-search {
+            background: var(--surface-dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: var(--text-main);
+            width: 100%;
+            margin-top: 1rem;
+            font-family: inherit;
+        }
+
+        .docs-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .doc-card {
+            background: var(--surface-dark);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: var(--transition);
+        }
+
+        .doc-card:hover {
+            border-color: rgba(108, 99, 255, 0.3);
+            background: var(--surface-accent);
+        }
+
+        .doc-card.active {
+            border-color: var(--primary);
+            background: var(--surface-accent);
+        }
+
+        .doc-id {
+            font-size: 0.85rem;
+            font-family: monospace;
+            color: var(--primary-light);
+            margin-bottom: 5px;
+        }
+
+        .doc-preview {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar, .detail-view {
+            min-height: 0; /* Critical for inner scrolling */
+        }
+
+        /* Detail View */
+        .detail-view {
+            background: rgba(15, 23, 42, 0.8);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .detail-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .detail-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .field-group {
+            margin-bottom: 1.5rem;
+            background: rgba(30, 41, 59, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .field-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .field-value {
+            font-size: 0.95rem;
+            word-break: break-all;
+        }
+
+        .json-value {
+            font-family: monospace;
+            background: #000;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            display: block;
+            margin-top: 5px;
+            color: #10b981;
+        }
+
+        .detail-actions {
+            margin-top: auto;
+            padding-top: 2rem;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-danger:hover {
+            filter: brightness(1.1);
+        }
+
+        /* Access Denied / Loader */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-bottom-color: var(--primary);
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden { display: none !important; }
+
+        /* Blocked IP section */
+        .block-input-group {
+            display: flex;
+            gap: 8px;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .input-text {
+            flex: 1;
+            background: var(--surface-dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: inherit;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(108, 99, 255, 0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(108, 99, 255, 0.5);
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 250px 1fr;
+            }
+            .detail-view {
+                position: fixed;
+                right: -100%;
+                top: 60px;
+                bottom: 0;
+                width: 100%;
+                z-index: 50;
+                transition: right 0.3s ease;
+                background: var(--bg-dark);
+            }
+            .detail-view.open {
+                right: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Auth Overlay -->
+    <div id="authOverlay" class="overlay">
+        <span class="loader"></span>
+        <h2 style="margin-top: 20px;">Checking Admin Permissions...</h2>
+    </div>
+
+    <!-- Access Denied Overlay -->
+    <div id="deniedOverlay" class="overlay hidden">
+        <h1 style="font-size: 5rem; color: var(--danger);">🚫</h1>
+        <h2 style="margin-top: 20px;">Access Denied</h2>
+        <p style="color: var(--text-muted); margin-top: 10px;">You do not have administrative privileges to view this page.</p>
+        <button class="btn btn-primary" style="margin-top: 30px;" onclick="window.location.href='index.html'">Back to Home</button>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="brand">
+            🛡️ Admin Control Panel
+        </div>
+        <div class="nav-actions">
+            <button class="btn btn-outline" onclick="window.location.href='index.html'">View Site</button>
+            <button class="btn btn-primary" id="logoutBtn">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard -->
+    <main class="main-container">
+        <!-- Step 1: Sidebar (Collections) -->
+        <aside class="sidebar">
+            <h3 class="sidebar-title">Firestore Collections</h3>
+            <ul class="collection-list" id="collectionList">
+                <li class="collection-item active" data-col="visitor_logs">
+                    <span>📊</span> Visitor Logs
+                </li>
+                <li class="collection-item" data-col="contact_messages">
+                    <span>✉️</span> Contact Messages
+                </li>
+                <li class="collection-item" data-col="sent_wishes">
+                    <span>🎁</span> Sent Wishes
+                </li>
+                <li class="collection-item" data-col="birthdays">
+                    <span>🎂</span> Birthdays
+                </li>
+                <li class="collection-item" data-col="users">
+                    <span>👥</span> User Accounts
+                </li>
+                <li class="collection-item" data-col="blocklist">
+                    <span>🚫</span> Blocklist (IPs)
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Step 2: Document List -->
+        <section class="content-list">
+            <div id="blockControls" class="block-input-group hidden">
+                <input type="text" id="adminNewEntryVal" class="input-text" placeholder="Add IP to block..." />
+                <button onclick="adminHandleAddEntry()" class="btn btn-primary">Add</button>
+            </div>
+            <div class="list-header">
+                <div>
+                    <h2 id="currentColTitle">Visitor Logs</h2>
+                    <p id="docCount" style="font-size: 0.8rem; color: var(--text-muted);">0 documents</p>
+                </div>
+                <button class="btn btn-outline" onclick="refreshDocs()">
+                    <span>🔄</span>
+                </button>
+            </div>
+            <div class="docs-container" id="adminDocs">
+                <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                    Select a collection to view documents.
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 3: Detail View -->
+        <section class="detail-view" id="detailView">
+            <div id="fieldsPlaceholder" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--text-muted);">
+                <span style="font-size: 3rem;">🔍</span>
+                <p style="margin-top: 1rem;">Select a document to view details</p>
+            </div>
+            
+            <div id="fieldsContent" class="hidden">
+                <div class="detail-header">
+                    <div>
+                        <h2 class="detail-title">Document Detail</h2>
+                        <p id="selectedDocId" style="font-family: monospace; font-size: 0.8rem; color: var(--primary-light);"></p>
+                    </div>
+                    <button class="btn btn-outline" onclick="closeDetail()">&times;</button>
+                </div>
+
+                <div id="fieldsContainer">
+                    <!-- Fields injected here -->
+                </div>
+
+                <div class="detail-actions">
+                    <button id="deleteEntryBtn" class="btn btn-danger">
+                        <span>🗑️</span> Delete Document
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        import firebaseConfig from "./firebase-config.js";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentCollection = "visitor_logs";
+        let selectedDocId = "";
+        let adminUser = null;
+
+        // Initialize UI
+        document.querySelectorAll('.collection-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.collection-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                currentCollection = item.getAttribute('data-col');
+                document.getElementById('currentColTitle').textContent = item.textContent.replace(/[^\w\s]/gi, '').trim();
+                
+                // Show/hide block controls
+                if (currentCollection === 'blocklist') {
+                    document.getElementById('blockControls').classList.remove('hidden');
+                } else {
+                    document.getElementById('blockControls').classList.add('hidden');
+                }
+                
+                refreshDocs();
+                closeDetail();
+            });
+        });
+
+        // Auth Logic
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Check if user is admin
+                // Based on index.html logic, "admin" is checked by username in 'users' collection or just string "admin"
+                // Here we will check if the user is the one with username 'admin'
+                const usersSnap = await getDocs(collection(db, "users"));
+                const userData = usersSnap.docs.find(d => d.data().uid === user.uid)?.data();
+                
+                if (userData && userData.username === 'admin') {
+                    adminUser = user;
+                    document.getElementById('authOverlay').classList.add('hidden');
+                    refreshDocs();
+                } else {
+                    document.getElementById('authOverlay').classList.add('hidden');
+                    document.getElementById('deniedOverlay').classList.remove('hidden');
+                }
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await signOut(auth);
+            window.location.href = 'index.html';
+        });
+
+        // Data Logic
+        window.refreshDocs = async function() {
+            const container = document.getElementById('adminDocs');
+            container.innerHTML = '<div style="padding: 2rem; text-align: center;"><span class="loader"></span></div>';
+            
+            try {
+                // Get most recent docs first
+                let q = query(collection(db, currentCollection), limit(100));
+                
+                // Try ordering by timestamp if it exists (for logs)
+                if (currentCollection === 'visitor_logs' || currentCollection === 'contact_messages') {
+                    q = query(collection(db, currentCollection), orderBy('timestamp', 'desc'), limit(100));
+                }
+
+                const snap = await getDocs(q);
+                container.innerHTML = "";
+                document.getElementById('docCount').textContent = `${snap.size} documents`;
+
+                if (snap.empty) {
+                    container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">No documents found in this collection.</div>';
+                    return;
+                }
+
+                snap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const card = document.createElement('div');
+                    card.className = 'doc-card';
+                    card.onclick = () => selectDocument(docSnap.id, data);
+                    
+                    let preview = "No data preview available";
+                    if (currentCollection === 'visitor_logs') preview = `${data.username || 'Guest'} - ${data.public_ip || 'No IP'}`;
+                    else if (currentCollection === 'contact_messages') preview = `${data.name || 'Anonymous'}: ${data.message?.substring(0, 30)}...`;
+                    else if (currentCollection === 'birthdays') preview = `${data.name} (${data.dob})`;
+                    else if (currentCollection === 'users') preview = `${data.username} (${data.email || 'No email'})`;
+                    else if (currentCollection === 'blocklist') preview = `Blocked IP: ${data.ip}`;
+                    else if (currentCollection === 'sent_wishes') preview = `To: ${data.name} From: ${data.from}`;
+
+                    card.innerHTML = `
+                        <div class="doc-id">${docSnap.id}</div>
+                        <div class="doc-preview">${preview}</div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                container.innerHTML = `<div style="padding: 2rem; color: var(--danger); text-align: center;">Error: ${err.message}</div>`;
+            }
+        };
+
+        function selectDocument(id, data) {
+            selectedDocId = id;
+            
+            // Highlight active card
+            document.querySelectorAll('.doc-card').forEach(c => c.classList.remove('active'));
+            const clickedCard = Array.from(document.querySelectorAll('.doc-card')).find(c => c.querySelector('.doc-id').textContent === id);
+            if (clickedCard) clickedCard.classList.add('active');
+
+            document.getElementById('fieldsPlaceholder').classList.add('hidden');
+            document.getElementById('fieldsContent').classList.remove('hidden');
+            document.getElementById('selectedDocId').textContent = id;
+            document.getElementById('detailView').classList.add('open');
+
+            const container = document.getElementById('fieldsContainer');
+            container.innerHTML = "";
+
+            for (const [key, val] of Object.entries(data)) {
+                const group = document.createElement('div');
+                group.className = 'field-group';
+                
+                let valDisplay = val;
+                if (typeof val === 'object' && val !== null) {
+                    valDisplay = `<span class="json-value">${JSON.stringify(val, null, 2)}</span>`;
+                } else if (key.includes('Img') || key.includes('file') || (typeof val === 'string' && val.startsWith('data:image'))) {
+                    valDisplay = `<img src="${val}" style="max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid rgba(255,255,255,0.1);" />`;
+                }
+
+                group.innerHTML = `
+                    <div class="field-label">${key}</div>
+                    <div class="field-value">${valDisplay}</div>
+                `;
+                container.appendChild(group);
+            }
+        }
+
+        window.closeDetail = function() {
+            document.getElementById('detailView').classList.remove('open');
+            document.getElementById('fieldsPlaceholder').classList.remove('hidden');
+            document.getElementById('fieldsContent').classList.add('hidden');
+            document.querySelectorAll('.doc-card').forEach(c => c.classList.remove('active'));
+        };
+
+        document.getElementById('deleteEntryBtn').addEventListener('click', async () => {
+            if (!selectedDocId) return;
+            if (confirm(`Are you sure you want to PERMANENTLY delete this document from ${currentCollection}?`)) {
+                try {
+                    await deleteDoc(doc(db, currentCollection, selectedDocId));
+                    closeDetail();
+                    refreshDocs();
+                } catch (err) {
+                    alert("Delete failed: " + err.message);
+                }
+            }
+        });
+
+        window.adminHandleAddEntry = async function() {
+            const input = document.getElementById("adminNewEntryVal");
+            const val = input.value.trim();
+            if (!val) return;
+            
+            try {
+                if (currentCollection === 'blocklist') {
+                    await addDoc(collection(db, "blocklist"), { ip: val, addedAt: new Date().toISOString(), reason: "Manual ban" });
+                    input.value = "";
+                    refreshDocs();
+                }
+            } catch (e) { alert("Failed: " + e.message); }
+        };
+
+    </script>
+</body>
+</html>

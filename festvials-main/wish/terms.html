@@ -3,24 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Terms & Policies - Birthday Reminder</title>
+  <title>Terms & Privacy - Birthday Reminder</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #6C63FF;
-      --bg: #F0F2F5;
-      --surface: #FFFFFF;
-      --text: #333333;
-      --text-muted: #666666;
-      --radius: 16px;
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    body.dark {
       --bg: #121212;
       --surface: #1E1E1E;
       --text: #E0E0E0;
       --text-muted: #AAAAAA;
+      --radius: 16px;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     }
 
     body {
@@ -28,9 +21,8 @@
       background: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 40px 20px;
+      padding: 60px 20px;
       line-height: 1.7;
-      transition: all 0.3s ease;
     }
 
     .container {
@@ -40,6 +32,7 @@
       padding: 50px;
       border-radius: var(--radius);
       box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     h1 {
@@ -60,102 +53,75 @@
       padding-bottom: 8px;
     }
 
-    p {
-      margin-bottom: 20px;
-    }
+    p { margin-bottom: 20px; color: var(--text-muted); }
 
-    ul {
-      margin-left: 0;
-      padding-left: 20px;
-      margin-bottom: 30px;
-    }
+    ul { margin-bottom: 30px; padding-left: 20px; }
+    li { margin-bottom: 12px; color: var(--text-muted); }
 
-    li {
-      margin-bottom: 10px;
-    }
-
-    a {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
+    .highlight { color: var(--primary); font-weight: 500; }
 
     .footer {
       margin-top: 60px;
       text-align: center;
       font-size: 0.9rem;
       color: var(--text-muted);
-      border-top: 1px solid rgba(0,0,0,0.05);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
       padding-top: 30px;
     }
 
+    .back-home {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
     @media (max-width: 768px) {
-      .container {
-        padding: 30px 20px;
-      }
+      .container { padding: 30px 20px; }
       h1 { font-size: 1.8rem; }
     }
   </style>
 </head>
-<body id="themeBody">
+<body>
   <div class="container">
-    <h1>Terms & Policies</h1>
-    <p>Welcome to <strong>Birthday Reminder & Celebration Generator</strong>. By accessing our platform, whether as a guest or a registered user, you agree to the following terms designed to ensure a safe and celebratory experience for everyone.</p>
+    <h1>Terms of Service</h1>
+    <p>By using the platform, you agree to these legal terms regarding data handling, privacy, and community standards.</p>
 
-    <h2>1. Access & Account Security</h2>
+    <h2>1. Data Collection & Visitor Logging</h2>
+    <p>To ensure system security and prevent abuse, we automatically log certain visitor information including:</p>
     <ul>
-      <li><strong>Registered Users</strong>: You are responsible for maintaining the security of your account and password. All actions taken under your account are your responsibility.</li>
-      <li><strong>Guest Access</strong>: Users may skip login to view public birthdays. In this mode, some features (like adding birthdays or seeing private entries) are restricted.</li>
-      <li><strong>Accuracy</strong>: You agree to provide accurate information when registering or adding birthday data.</li>
+      <li><span class="highlight">IP Address</span>: Used for blocklist enforcement and DDoS protection.</li>
+      <li><span class="highlight">User Agent & Device Info</span>: Used to optimize responsive performance.</li>
+      <li><span class="highlight">Engagement Metrics</span>: Duration of visit and pages accessed.</li>
     </ul>
 
-    <h2>2. Birthday Visibility & Privacy</h2>
-    <p>Our platform offers two levels of privacy for birthdays you add:</p>
+    <h2>2. Birthday Privacy</h2>
     <ul>
-      <li><strong>Public</strong>: Visible to all users, including guests. Use this for friends and colleagues whose celebrations everyone should share.</li>
-      <li><strong>Private</strong>: Visible only to you and the platform administrator. Perfect for personal reminders.</li>
+      <li><strong>Public Birthdays</strong>: These are indexed by the system and visible to all users. By setting an entry to public, you consent to its wide distribution.</li>
+      <li><strong>Private Birthdays</strong>: These are strictly restricted to your account and the system administrator for moderation purposes.</li>
     </ul>
 
-    <h2>3. Custom Wish Generator</h2>
+    <h2>3. Administrative Rights</h2>
+    <p>Current system administrators maintain full management rights over all data stored on the platform, including the ability to:</p>
     <ul>
-      <li><strong>Content Quality</strong>: You are responsible for the images, memories, and messages you include in custom wishes. Please do not upload offensive or unauthorized content.</li>
-      <li><strong>Data Storage</strong>: Personalized wishes generate a unique link. Anyone with this link can view the content. Use discretion when sharing sensitive memories.</li>
+      <li>Remove offensive or malicious content.</li>
+      <li>Block IPs associated with malicious activity.</li>
+      <li>Edit content that violates community standards.</li>
     </ul>
 
-    <h2>4. Data Rights & Deletion</h2>
-    <ul>
-      <li><strong>Self-Service Deletion</strong>: You have the right to permanently delete any birthday entry or custom wish you have created. Once deleted, this action cannot be undone.</li>
-      <li><strong>Account Deletion</strong>: Registered users can request full account deletion by contacting the administrator.</li>
-      <li><strong>Data Privacy</strong>: We do not sell your personal data. We use it solely to provide reminders and generate celebration pages.</li>
-    </ul>
+    <h2>4. Wish Factory Security</h2>
+    <p>Custom wishes generate permanent URLs. While unique, these are public links. You are solely responsible for the content, photos, and messages shared via these links.</p>
 
-    <h2>5. Disclaimer & Liability</h2>
-    <ul>
-      <li><strong>As-Is Service</strong>: This platform is provided "as is" without warranty. We are not responsible for technical failures or missed reminders.</li>
-      <li><strong>Content Moderate</strong>: The administrator reserves the right to remove any public content that violates community standards or seems malicious.</li>
-    </ul>
-
-    <h2>6. Contact & Support</h2>
-    <p>For questions regarding your data or these terms, please contact us at:</p>
-    <p><a href="mailto:ariofficial9787@gmail.com">ariofficial9787@gmail.com</a></p>
+    <h2>5. Account Responsibility</h2>
+    <p>Users are responsible for maintaining the confidentiality of their credentials. Any activity under your account is your legal responsibility.</p>
 
     <div class="footer">
-      <strong>Last Updated:</strong> April 2026<br>
+      <strong>Last Updated:</strong> April 11, 2026<br>
       © 2026 Birthday Reminder & Celebration Generator
     </div>
+    <a href="index.html" class="back-home">Back to Dashboard</a>
   </div>
-
-  <script>
-    // Match theme with main app if possible
-    try {
-      if (document.body.classList.contains('dark') || window.location.search.includes('theme=dark')) {
-        document.body.classList.add('dark');
-      }
-    } catch(e) {}
-  </script>
 </body>
 </html>

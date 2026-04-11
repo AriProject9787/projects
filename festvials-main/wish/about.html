@@ -3,113 +3,159 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About - Birthday Countdown</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <title>About - Birthday Reminder & Celebration Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary: #6C63FF;
+      --primary-hover: #5a52d5;
+      --bg: #121212;
+      --surface: #1E1E1E;
+      --text: #E0E0E0;
+      --text-muted: #AAAAAA;
+      --radius: 20px;
+      --transition: all 0.3s ease;
+    }
+
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
-      color: #fff;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 40px 20px;
+      line-height: 1.6;
     }
+
     .about-container {
-      max-width: 900px;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 40px;
-      border-radius: 15px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 0 15px rgba(0,247,255,0.3);
+      max-width: 800px;
+      background: var(--surface);
+      padding: 60px;
+      border-radius: var(--radius);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      animation: fadeIn 0.8s ease-out;
     }
-    h2 {
-      text-align: center;
-      color: #00f7ff;
-      font-size: 2rem;
+
+    h1, h2, h3 {
+      font-weight: 700;
+      color: var(--primary);
+      margin-top: 0;
+    }
+
+    h1 { font-size: 2.5rem; margin-bottom: 20px; text-align: center; }
+    h2 { font-size: 1.8rem; margin-top: 40px; }
+    h3 { font-size: 1.2rem; margin-top: 25px; color: var(--text); opacity: 0.9; }
+
+    p {
+      font-size: 1.05rem;
+      color: var(--text-muted);
       margin-bottom: 20px;
     }
-    p {
-      line-height: 1.6;
-      font-size: 1.05rem;
-      text-align: justify;
-      margin-bottom: 15px;
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
     }
-    .section {
-      margin-top: 25px;
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.02);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: var(--transition);
     }
-    .section h3 {
-      color: #00f7ff;
-      margin-bottom: 10px;
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      background: rgba(108, 99, 255, 0.05);
+      border-color: var(--primary);
     }
-    ul {
-      list-style: none;
-      padding: 0;
+
+    .feature-card h4 {
+      margin: 0 0 10px 0;
+      color: var(--primary);
+      font-size: 1.1rem;
     }
-    ul li {
-      background: rgba(0,247,255,0.1);
-      margin: 8px 0;
-      padding: 10px;
-      border-radius: 8px;
-      border-left: 3px solid #00f7ff;
+
+    .feature-card p {
+      font-size: 0.9rem;
+      margin: 0;
     }
-    a.back-home {
+
+    .back-btn {
       display: block;
-      margin-top: 25px;
-      text-align: center;
-      background: #00f7ff;
-      color: #0d0d0d;
-      padding: 12px;
-      border-radius: 8px;
+      width: fit-content;
+      margin: 50px auto 0;
+      padding: 12px 35px;
+      background: var(--primary);
+      color: white;
       text-decoration: none;
-      font-weight: bold;
-      transition: 0.3s;
+      border-radius: 50px;
+      font-weight: 600;
+      transition: var(--transition);
+      box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
     }
-    a.back-home:hover {
-      background: #00d5e0;
+
+    .back-btn:hover {
+      background: var(--primary-hover);
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .about-container { padding: 30px 20px; }
+      h1 { font-size: 1.8rem; }
     }
   </style>
 </head>
 <body>
   <div class="about-container">
-    <h2>About Birthday Countdown</h2>
+    <h1>Our Vision</h1>
     <p>
-      <strong>Birthday Countdown</strong> is a simple and fun web app that helps you 
-      remember and celebrate the birthdays of your friends and loved ones.  
-      Instead of forgetting important dates, this app ensures you’re always prepared 
-      with reminders and countdowns.
-    </p>
-    <p>
-      The app is designed with a clean interface, secure login, and privacy options 
-      for displaying your date of birth only if you choose to. Whether you’re tracking 
-      your best friend’s birthday or your entire family’s, this tool makes it easy.
+      <strong>Birthday Reminder & Celebration Generator</strong> was born out of a simple desire: to make meaningful celebrations easier and more frequent. In a busy digital world, forgetting a birthday is easy, but celebrating one should be unforgettable.
     </p>
 
-    <div class="section">
-      <h3>✨ Key Features</h3>
-      <ul>
-        <li>🔔 Automatic birthday reminders</li>
-        <li>📅 Countdown timer for upcoming birthdays</li>
-        <li>🔑 Secure login with privacy options</li>
-        <li>📊 Personal dashboard to manage birthdays</li>
-        <li>🌐 Responsive design for mobile and desktop</li>
-      </ul>
+    <h2>What We Do</h2>
+    <p>
+      We go beyond simple notifications. We provide a <strong>Custom Wish Factory</strong> that allows you to transform a simple date into a personalized, viral celebration page complete with memory galleries, heartfelt letters, and interactive surprises.
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h4>🔒 Privacy-First Management</h4>
+        <p>Your birthdays, your rules. Toggle between public and private visibility with ease.</p>
+      </div>
+      <div class="feature-card">
+        <h4>🚀 Viral Sharing</h4>
+        <p>Instantly share custom wishes via WhatsApp or unique links that inspire others to celebrate.</p>
+      </div>
+      <div class="feature-card">
+        <h4>📊 Intelligent Dashboard</h4>
+        <p>Auto-calculating age, countdowns, and quick Google Calendar integration.</p>
+      </div>
+      <div class="feature-card">
+        <h4>🛡️ Secure & Modern</h4>
+        <p>Built with modular Firebase architecture, separated configurations, and dedicated administrative controls.</p>
+      </div>
     </div>
 
-    <div class="section">
-      <h3>⚙️ Technologies Used</h3>
-      <ul>
-        <li>HTML5, CSS3, JavaScript – Core front-end structure</li>
-        <li>Firebase – User authentication & birthday data storage</li>
-        
-        <li>AOS (Animate on Scroll) – Smooth animations</li>
-        <li>Responsive Web Design – Works on desktop & mobile</li>
-      </ul>
-    </div>
+    <h2>Technical Foundation</h2>
+    <p>
+      The platform is built using a modern decoupled architecture. We use <strong>Firebase</strong> for lightning-fast real-time data sync, <strong>Vanilla JS ES6 Modules</strong> for lean performance, and a <strong>Dedicated Admin Panel</strong> for secure system oversight and visitor analytics.
+    </p>
 
-    <a href="index.html" class="back-home">⬅ Back to Home</a>
+    <a href="index.html" class="back-btn">Return to Dashboard</a>
   </div>
 </body>
 </html>

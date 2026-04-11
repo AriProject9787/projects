@@ -5,39 +5,34 @@ A premium, all-in-one platform to manage birthdays, get reminders, and generate 
 ## 🚀 Key Features
 
 ### 📅 Birthday Dashboard
-- **Real-time Reminders**: Automatic age calculation and countdowns to the next birthday.
-- **Privacy Controls**: Set your birthdays to "Public" for everyone to see, or "Private" for your eyes only.
-- **Guest Mode**: Skip login to instantly view public birthdays without an account.
-- **Self-Service Deletion**: Full control over your data—delete any entry you've created.
+- **Real-time Reminders**: Automatic age calculation and countdowns.
+- **Privacy Controls**: Toggle between "Public" and "Private" visibility.
+- **Guest Mode**: Instantly view public birthdays without an account.
+
+### 🛡️ Secure & Scalable Architecture
+- **Modular Config**: Isolated Firebase configuration in `firebase-config.js` for better security and maintainability.
+- **Administrative Control**: Dedicated `admin.html` page for system-wide data management and collection oversight.
+- **Visitor Analytics**: Automated logging of visitor traffic, IP tracking, and duration metrics.
+- **Security Hardening**: Implementation of API restrictions and robust security protocols.
 
 ### 🎁 The Wish Factory (Custom Generator)
 - **Deep Personalization**: Add custom photos, heartfelt messages, and surprise plans.
-- **Memory Gallery**: Create a scrollable gallery of your favorite moments together.
-- **Viral Sharing**: Generate a unique URL or share directly via WhatsApp.
-- **Quick Create**: Recipients can instantly "Create their own wish" from the view page, making the celebration contagious!
-
-### 🌍 Social Integration
-- **Bulk Export/Import**: Share your entire public birthday list or specific entries with friends via WhatsApp.
-- **One-Click Imports**: Effortlessly add shared birthdays to your own dashboard.
-- **Google Calendar Sync**: Add a birthday to your calendar with a single click.
+- **Memory Gallery**: Create a scrollable gallery of your favorite moments.
+- **contagious Growth**: Recipients can instantly "Create their own wish" from the view page.
 
 ## 🛠️ Tech Stack
-- **Frontend**: HTML5, CSS3 (Modern Vanilla), Vanilla JavaScript.
+- **Frontend**: HTML5, CSS3 (Modern Vanilla), Vanilla JavaScript (ES6 Modules).
 - **Backend (BaaS)**: Firebase Authentication, Cloud Firestore.
-- **Visuals**: Poppins Typography, Canvas Confetti animation, Glassmorphic UI.
+- **Security**: Modular configuration, restrictive security rules, and encrypted/separated keys.
 
-## 📦 Getting Started
+## 📦 Project Structure
+- `index.html`: Main user dashboard and login.
+- `admin.html`: Professional administrative control panel.
+- `firebase-config.js`: Centralized Firebase credentials.
+- `wish1.html`: The interactive personalized celebration template.
 
-### 1. Prerequisites
-- A Firebase project (Firebase Auth and Firestore enabled).
-- An active Internet connection to load the Firebase SDKs and custom fonts.
-
-### 2. Configuration
-Update the `firebaseConfig` object in `index.html` and `wish1.html` 
-
-### 3. Usage
-- Simply open `index.html` in any modern browser.
-- Start by adding your own birthday or skipping login to see what others have shared!
+## ⚙️ Configuration
+Replace the credentials in [firebase-config.js](firebase-config.js) with your own Firebase project settings. Ensure you restrict your API keys in the Google Cloud Console to your specific domains.
 
 ## 📜 License & Terms
 Please refer to [terms.html](terms.html) for our full User Terms and Privacy Policy.
