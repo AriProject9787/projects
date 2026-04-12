@@ -845,6 +845,30 @@
                 background-position: 300% center;
             }
         }
+        /* Blocked Overlay */
+        #blockedOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            color: #fff;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 10000;
+            font-family: 'Fredoka', sans-serif;
+            padding: 20px;
+        }
+
+        #blockedOverlay h2 {
+            color: #FF6B6B;
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 
@@ -1086,17 +1110,9 @@
         <!-- Firebase & Dynamic Content Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyA5dtwCn09lEtrAOP3ih_Iq9YDFSKB181w",
-            authDomain: "birthdaycountdown9787.firebaseapp.com",
-            projectId: "birthdaycountdown9787",
-            storageBucket: "birthdaycountdown9787.firebasestorage.app",
-            messagingSenderId: "1057605732413",
-            appId: "1:1057605732413:web:18768b4a6bb5a7c2f64254",
-            measurementId: "G-M3914S92YP"
-        };
+        import firebaseConfig from "./firebase-config.js";
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -1281,6 +1297,7 @@
 
             // Forward Button Link
             document.getElementById('forwardWishBtn').addEventListener('click', function (e) {
+                if (window.logWishActivity) window.logWishActivity("Forwarded Wish via WhatsApp");
                 e.preventDefault();
                 const url = window.location.href;
                 const bdayName = name || 'Friend';
@@ -1307,6 +1324,98 @@
         
         // Start floating elements
         createFloatingHearts();
+
+        // --- Visitor Logging & Blocklist Logic ---
+        let visitorDocId = null;
+        let visitStartTime = Date.now();
+
+        async function logVisitorVisit(bdayPerson = "Unknown") {
+            try {
+                let visitorId = localStorage.getItem('visitor_id');
+                if (!visitorId) {
+                    visitorId = 'id_' + Math.random().toString(36).substr(2, 9) + Date.now();
+                    localStorage.setItem('visitor_id', visitorId);
+                }
+
+                let ipData = { ip: "Unknown" };
+                try {
+                    const res = await fetch('https://api.ipify.org?format=json');
+                    ipData = await res.json();
+                } catch (e) { console.warn("IP fetch failed", e); }
+
+                const params = new URLSearchParams(window.location.search);
+                const wishId = params.get('wish_id');
+
+                const logData = {
+                    visitor_id: visitorId,
+                    public_ip: ipData.ip,
+                    ipv4: ipData.ip,
+                    ipv6: "Pending...",
+                    user_agent: navigator.userAgent,
+                    platform: navigator.platform,
+                    screen: `${window.screen.width}x${window.screen.height}`,
+                    referrer: document.referrer || "Direct",
+                    page: window.location.pathname + window.location.search,
+                    wish_id: wishId || "None",
+                    birthday_person: bdayPerson,
+                    timestamp: new Date().toISOString(),
+                    duration_seconds: 0
+                };
+
+                const docRef = await addDoc(collection(db, "visitor_logs"), logData);
+                visitorDocId = docRef.id;
+
+                // CHECK BLOCKLIST
+                try {
+                    const blocklistSnap = await getDocs(collection(db, "blocklist"));
+                    const isBlocked = blocklistSnap.docs.some(d => d.data().ip === ipData.ip);
+                    if (isBlocked) {
+                        document.getElementById("blockedIpDisplay").textContent = ipData.ip;
+                        document.getElementById("blockedOverlay").style.display = "flex";
+                        document.body.style.overflow = "hidden";
+                        await updateDoc(doc(db, "visitor_logs", visitorDocId), { status: "Blocked Attempt (Wish Page)" });
+                        return;
+                    }
+                } catch (e) { console.error("Blocklist check failed", e); }
+
+                // Start duration timer (every 10 seconds)
+                setInterval(async () => {
+                    if (visitorDocId) {
+                        const elapsed = Math.floor((Date.now() - visitStartTime) / 1000);
+                        try {
+                            await updateDoc(doc(db, "visitor_logs", visitorDocId), { duration_seconds: elapsed });
+                        } catch (e) { console.error("Duration update failed", e); }
+                    }
+                }, 10000);
+
+                // IPv6 detection
+                try {
+                    const res6 = await fetch('https://api64.ipify.org?format=json');
+                    const ipData6 = await res6.json();
+                    if (ipData6.ip) {
+                        await updateDoc(doc(db, "visitor_logs", visitorDocId), { ipv6: ipData6.ip });
+                    }
+                } catch (e) { console.warn("IPv6 fetch failed", e); }
+
+            } catch (err) {
+                console.error("Failed to log visitor", err);
+            }
+        }
+
+        // Call logging after data is resolved
+        logVisitorVisit(name || "Unknown");
+
+        // Expose activity logging
+        window.logWishActivity = async function (activity) {
+            if (visitorDocId) {
+                try {
+                    await updateDoc(doc(db, "visitor_logs", visitorDocId), {
+                        last_activity: activity,
+                        [`action_${Date.now()}`]: activity
+                    });
+                } catch (e) { console.error("Activity logging failed", e); }
+            }
+        };
     </script>
 
         <!-- Create Your Own Wish Section -->
@@ -1400,6 +1509,7 @@
 
         // YES button clicked
         yesBtn.addEventListener('click', () => {
+            if (window.logWishActivity) window.logWishActivity("Accepted Birthday Invitation (YES)");
             document.getElementById('buttonContainer').style.display = 'none';
             document.getElementById('successSection').classList.add('show');
             createConfetti();
@@ -1580,6 +1690,15 @@
             window.location.href = url;
         };
     </script>
+    <!-- Blocked Overlay -->
+    <div id="blockedOverlay">
+        <h1 style="font-size: 5rem; margin: 0;">🚫</h1>
+        <h2>Access Denied</h2>
+        <p style="font-size: 1.2rem; max-width: 500px;">Admin has blocked you. Please contact admin to resolve this issue.</p>
+        <div style="margin-top: 30px; padding: 10px; border: 1px dashed #444; color: #888; border-radius: 8px;">
+            Your IP: <span id="blockedIpDisplay">Detecting...</span>
+        </div>
+    </div>
 </body>
 
 </html>
