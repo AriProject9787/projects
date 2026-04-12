@@ -646,6 +646,55 @@
             box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
         }
 
+        /* Lightbox Overlay */
+        #photoLightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(15px);
+            z-index: 3000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        #photoLightbox img {
+            max-width: 90%;
+            max-height: 80vh;
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #photoLightbox .lightbox-caption {
+            color: white;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            text-align: center;
+            max-width: 80%;
+            font-family: 'Fredoka', sans-serif;
+            display: none; /* Hide memory (caption) as requested */
+        }
+
+        #photoLightbox .close-lightbox {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        #photoLightbox .close-lightbox:hover {
+            transform: scale(1.2) rotate(90deg);
+        }
+
         /* Footer */
         footer {
             text-align: center;
@@ -800,130 +849,6 @@
 </head>
 
 <body>
-    <!-- ✨ Auto-personalize: reads ?name= and ?from= URL params -->
-    <script>
-        (function () {
-            const params = new URLSearchParams(window.location.search);
-            const bdayName = params.get('name');
-            const wisherName = params.get('from');
-
-            // Update page title if birthday name is provided
-            if (bdayName) {
-                document.title = `Happy Birthday, ${bdayName}! 🎂`;
-            }
-
-            document.addEventListener('DOMContentLoaded', function () {
-                const wishDataEncoded = params.get('wish_data');
-                let wishData = null;
-
-                if (wishDataEncoded) {
-                    try {
-                        wishData = JSON.parse(decodeURIComponent(escape(atob(wishDataEncoded))));
-                    } catch (e) {
-                        console.error("Failed to decode wish data", e);
-                    }
-                }
-
-                // If no wishData, use individual params (legacy/simple support)
-                const name = wishData ? wishData.name : params.get('name');
-                const from = wishData ? wishData.from : params.get('from');
-                const msg = wishData ? wishData.msg : params.get('msg');
-                const heroImg = wishData ? wishData.heroImg : params.get('img');
-
-                // Update Page Title
-                if (name) document.title = `Happy Birthday, ${name}! 🎂`;
-
-                // Update Letter
-                const letterText = document.querySelector('.letter-text');
-                if (letterText) {
-                    const bodyMsg = msg || `Happy Birthday! 🎂 On this special day, I want you to know just how amazing and wonderful you truly are. Every day you inspire those around you with your kindness, your energy, and your infectious laughter.<br><br>Another year has passed, and with it came so many beautiful memories. You've grown stronger, wiser, and more wonderful — and I truly feel blessed to share these moments with you.`;
-                    letterText.innerHTML = `
-                        Dearest ${name || '[Name]'},
-                        <br><br>
-                        ${bodyMsg.replace(/\n/g, '<br>')}
-                        <br><br>
-                        Wishing you the happiest of birthdays,<br>
-                        <span id="wisherNameLetter" class="wisher-highlight">${from || 'Someone Special'}</span> 🎈🎉
-                    `;
-                }
-
-                // Update Hero / First Memory
-                const photoCards = document.querySelectorAll('.photo-card');
-                if (photoCards.length > 0) {
-                    const firstImg = photoCards[0].querySelector('img');
-                    if (firstImg) {
-                        const imgUrl = heroImg || 'balloons.png';
-                        firstImg.src = imgUrl;
-                        if (heroImg) {
-                            photoCards[0].querySelector('.photo-content').classList.add('revealed');
-                            photoCards[0].querySelector('.photo-placeholder').style.display = 'none';
-                        }
-                    }
-                }
-
-                // Update Memories (up to 4)
-                if (wishData && wishData.memories && wishData.memories.length > 0) {
-                    wishData.memories.forEach((mem, i) => {
-                        if (photoCards[i]) {
-                            const img = photoCards[i].querySelector('img');
-                            const caption = photoCards[i].querySelector('.photo-caption');
-                            if (mem.img) img.src = mem.img;
-                            if (mem.cap) caption.textContent = mem.cap;
-                            // Auto-reveal if customized
-                            if (mem.img || mem.cap) {
-                                photoCards[i].querySelector('.photo-content').classList.add('revealed');
-                                photoCards[i].querySelector('.photo-placeholder').style.display = 'none';
-                            }
-                        }
-                    });
-                }
-
-                // Update Plans (up to 6)
-                if (wishData && wishData.plans && wishData.plans.length > 0) {
-                    const planItems = document.querySelectorAll('.date-item');
-                    wishData.plans.forEach((plan, i) => {
-                        if (planItems[i]) {
-                            const title = planItems[i].querySelector('h3');
-                            const desc = planItems[i].querySelector('p');
-                            if (plan.title) title.textContent = `🎁 ${plan.title}`;
-                            if (plan.desc) desc.textContent = plan.desc;
-                        }
-                    });
-                }
-
-                // Update Surprise Wishes (up to 6)
-                if (wishData && wishData.wishes && wishData.wishes.length > 0) {
-                    const surpriseMsgs = document.querySelectorAll('.surprise-message');
-                    wishData.wishes.forEach((wish, i) => {
-                        if (surpriseMsgs[i]) {
-                            surpriseMsgs[i].textContent = wish;
-                        }
-                    });
-                }
-
-                // Replace [Name] text nodes with birthday person's name
-                if (name) {
-                    function replaceInNode(node) {
-                        if (node.nodeType === Node.TEXT_NODE) {
-                            if (node.textContent.includes('[Name]')) {
-                                node.textContent = node.textContent.replaceAll('[Name]', name);
-                            }
-                        } else {
-                            node.childNodes.forEach(replaceInNode);
-                        }
-                    }
-                    replaceInNode(document.body);
-                }
-
-                // Fill wisher names
-                const resolvedWisher = from || 'Someone Special';
-                const wisherEl = document.getElementById('wisherName');
-                if (wisherEl) wisherEl.textContent = resolvedWisher;
-            });
-        })();
-    </script>
-
-    <!-- Floating balloons/stars background -->
     <div class="bg-hearts" id="bgHearts"></div>
 
     <!-- Cute doodles -->
@@ -996,7 +921,7 @@
                     <div class="photo-placeholder">🎭</div>
                     <div class="photo-content">
                         <img src="https://via.placeholder.com/400x400/C084FC/FFFFFF?text=Memory+1" alt="Memory 1">
-                        <div class="photo-caption">
+                        <div class="photo-caption" style="display: none;">
                             Our first big adventure together — unforgettable!
                         </div>
                     </div>
@@ -1006,7 +931,7 @@
                     <div class="photo-placeholder">🎨</div>
                     <div class="photo-content">
                         <img src="https://via.placeholder.com/400x400/A855F7/FFFFFF?text=Memory+2" alt="Memory 2">
-                        <div class="photo-caption">
+                        <div class="photo-caption" style="display: none;">
                             That time we laughed until we cried 😂
                         </div>
                     </div>
@@ -1016,7 +941,7 @@
                     <div class="photo-placeholder">🌟</div>
                     <div class="photo-content">
                         <img src="https://via.placeholder.com/400x400/EDE9FE/5A4A4A?text=Memory+3" alt="Memory 3">
-                        <div class="photo-caption">
+                        <div class="photo-caption" style="display: none;">
                             The moment I knew you were one-of-a-kind
                         </div>
                     </div>
@@ -1026,7 +951,7 @@
                     <div class="photo-placeholder">💫</div>
                     <div class="photo-content">
                         <img src="https://via.placeholder.com/400x400/7C3AED/FFFFFF?text=Memory+4" alt="Memory 4">
-                        <div class="photo-caption">
+                        <div class="photo-caption" style="display: none;">
                             Creating magical memories, one day at a time
                         </div>
                     </div>
@@ -1267,11 +1192,16 @@
                     const card = document.createElement('div');
                     card.className = 'photo-card';
                     card.onclick = () => revealPhoto(card);
+                    
+                    // Simple placeholder icons
+                    const icons = ['🎭', '🎨', '🌟', '💫', '📸', '✨'];
+                    const icon = icons[i % icons.length];
+
                     card.innerHTML = `
-                        <div class="photo-placeholder" style="display: none;">📷</div>
-                        <div class="photo-content revealed">
+                        <div class="photo-placeholder">${icon}</div>
+                        <div class="photo-content">
                             <img src="${mem.img || 'balloons.png'}" alt="Memory ${i+1}">
-                            <div class="photo-caption">${mem.cap || ''}</div>
+                            <div class="photo-caption" style="display: none;">${mem.cap || ''}</div>
                         </div>
                     `;
                     photoGrid.appendChild(card);
@@ -1331,19 +1261,18 @@
             } else if (wishData) {
                 surpriseSection.style.display = 'none'; // Hide if custom data exists but no wishes
             }
-            // End of the replaced block. The instruction had a trailing partial loop which is omitted.
 
-            // Replace [Name] text nodes
+            // Consolidated [Name] replacement logic
             if (name) {
-                function replaceInNode(node) {
+                const replaceInNode = (node) => {
                     if (node.nodeType === Node.TEXT_NODE) {
                         if (node.textContent.includes('[Name]')) {
                             node.textContent = node.textContent.replaceAll('[Name]', name);
                         }
-                    } else {
+                    } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
                         node.childNodes.forEach(replaceInNode);
                     }
-                }
+                };
                 replaceInNode(document.body);
             }
 
@@ -1414,6 +1343,13 @@
             <br><br>
             <small>P.S. The world became a better place the day you were born! 🌟</small>
         </footer>
+    </div>
+
+    <!-- Lightbox for Memories -->
+    <div id="photoLightbox">
+        <span class="close-lightbox" onclick="closeLightbox()">&times;</span>
+        <img id="lightboxImg" src="" alt="Fullscreen Memory">
+        <div class="lightbox-caption" id="lightboxCaption"></div>
     </div>
 
     <script>
@@ -1508,6 +1444,8 @@
         function revealPhoto(card) {
             const placeholder = card.querySelector('.photo-placeholder');
             const content = card.querySelector('.photo-content');
+            const img = card.querySelector('img');
+            const caption = card.querySelector('.photo-caption');
 
             if (!content.classList.contains('revealed')) {
                 placeholder.style.display = 'none';
@@ -1527,7 +1465,35 @@
                         setTimeout(() => sparkle.remove(), 1000);
                     }, i * 50);
                 }
+            } else {
+                // If already revealed and clicked, show in Lightbox (only image)
+                openLightbox(img.src, caption ? caption.textContent : "");
             }
+        }
+
+        function openLightbox(src, cap) {
+            const lightbox = document.getElementById('photoLightbox');
+            const img = document.getElementById('lightboxImg');
+            const caption = document.getElementById('lightboxCaption');
+            
+            img.src = src;
+            caption.textContent = cap;
+            
+            lightbox.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+
+            // Close when clicking the image itself or background
+            lightbox.onclick = (e) => {
+                if (e.target.id === 'photoLightbox' || e.target.id === 'lightboxImg') {
+                    closeLightbox();
+                }
+            };
+        }
+
+        window.closeLightbox = function() {
+            const lightbox = document.getElementById('photoLightbox');
+            lightbox.style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
 
         // Birthday wish toggles
