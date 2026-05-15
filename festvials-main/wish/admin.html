@@ -424,6 +424,25 @@
 
     <!-- Main Dashboard -->
     <main class="main-container">
+        <!-- Add this inside your Admin Dashboard section -->
+<div id="adminControls" style="display:none; margin-top: 20px; padding: 15px; background: rgba(108, 99, 255, 0.1); border-radius: 12px;">
+    <h3 style="margin-bottom: 10px;">🛡️ Admin Tools</h3>
+    <button onclick="sendTestNotification()" style="background: #4D96FF;">🔔 Send Test Notification</button>
+</div>
+
+<script>
+// Add this to your script
+window.sendTestNotification = function() {
+    // This intent URL is specifically caught by your updated Android App
+    window.location.href = "intent://test#Intent;action=SEND_TEST_NOTIFICATION;scheme=bday;end;";
+};
+
+// Update your showDashboard function to show this div if user is admin
+// Inside your existing showDashboard(username) logic:
+if (data.username === "admin") {
+    document.getElementById("adminControls").style.display = "block";
+}
+</script>
         <!-- Step 1: Sidebar (Collections) -->
         <aside class="sidebar">
             <h3 class="sidebar-title">Firestore Collections</h3>
