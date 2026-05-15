@@ -421,28 +421,10 @@
             <button class="btn btn-primary" id="logoutBtn">Logout</button>
         </div>
     </nav>
-<!-- Add this inside your Admin Dashboard section -->
-<div id="adminControls" style="display:none; margin-top: 20px; padding: 15px; background: rgba(108, 99, 255, 0.1); border-radius: 12px;">
-    <h3 style="margin-bottom: 10px;">🛡️ Admin Tools</h3>
-    <button onclick="sendTestNotification()" style="background: #4D96FF;">🔔 Send Test Notification</button>
-</div>
 
-<script>
-// Add this to your script
-window.sendTestNotification = function() {
-    // This intent URL is specifically caught by your updated Android App
-    window.location.href = "intent://test#Intent;action=SEND_TEST_NOTIFICATION;scheme=bday;end;";
-};
-
-// Update your showDashboard function to show this div if user is admin
-// Inside your existing showDashboard(username) logic:
-if (data.username === "admin") {
-    document.getElementById("adminControls").style.display = "block";
-}
-</script>
     <!-- Main Dashboard -->
     <main class="main-container">
-        
+
         <!-- Step 1: Sidebar (Collections) -->
         <aside class="sidebar">
             <h3 class="sidebar-title">Firestore Collections</h3>
@@ -465,7 +447,9 @@ if (data.username === "admin") {
                 <li class="collection-item" data-col="blocklist">
                     <span>🚫</span> Blocklist (IPs)
                 </li>
-                
+                <li class="collection-item" data-col="system">
+                    <span>⚙️</span> System Tools
+                </li>
             </ul>
         </aside>
 
@@ -497,7 +481,7 @@ if (data.username === "admin") {
                 <span style="font-size: 3rem;">🔍</span>
                 <p style="margin-top: 1rem;">Select a document to view details</p>
             </div>
-            
+
             <div id="fieldsContent" class="hidden">
                 <div class="detail-header">
                     <div>
@@ -542,14 +526,14 @@ if (data.username === "admin") {
                 item.classList.add('active');
                 currentCollection = item.getAttribute('data-col');
                 document.getElementById('currentColTitle').textContent = item.textContent.replace(/[^\w\s]/gi, '').trim();
-                
+
                 // Show/hide block controls
                 if (currentCollection === 'blocklist') {
                     document.getElementById('blockControls').classList.remove('hidden');
                 } else {
                     document.getElementById('blockControls').classList.add('hidden');
                 }
-                
+
                 refreshDocs();
                 closeDetail();
             });
@@ -559,11 +543,9 @@ if (data.username === "admin") {
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 // Check if user is admin
-                // Based on index.html logic, "admin" is checked by username in 'users' collection or just string "admin"
-                // Here we will check if the user is the one with username 'admin'
                 const usersSnap = await getDocs(collection(db, "users"));
                 const userData = usersSnap.docs.find(d => d.data().uid === user.uid)?.data();
-                
+
                 if (userData && userData.username === 'admin') {
                     adminUser = user;
                     document.getElementById('authOverlay').classList.add('hidden');
@@ -586,11 +568,31 @@ if (data.username === "admin") {
         window.refreshDocs = async function() {
             const container = document.getElementById('adminDocs');
             container.innerHTML = '<div style="padding: 2rem; text-align: center;"><span class="loader"></span></div>';
-            
+
             try {
+                // Special case for System Tools
+                if (currentCollection === 'system') {
+                    container.innerHTML = `
+                        <div style="padding: 2.5rem; text-align: center; background: var(--surface-dark); border-radius: 16px; margin: 1rem; border: 1px solid rgba(255,255,255,0.05);">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📱</div>
+                            <h3>Mobile App Utilities</h3>
+                            <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem;">Trigger internal app functions for testing purposes.</p>
+
+                            <div style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
+                                <button onclick="triggerDemoNotification()" class="btn btn-primary" style="width: 100%; max-width: 300px; padding: 12px 20px; font-size: 1rem; justify-content: center;">
+                                    <span>🔔</span> Send Test Notification
+                                </button>
+                                <p style="font-size: 0.75rem; color: var(--text-muted);">Tapping this will fire a broadcast to AlarmReceiver inside the Android app.</p>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('docCount').textContent = `1 tool available`;
+                    return;
+                }
+
                 // Get most recent docs first
                 let q = query(collection(db, currentCollection), limit(100));
-                
+
                 // Try ordering by timestamp if it exists (for logs)
                 if (currentCollection === 'visitor_logs' || currentCollection === 'contact_messages') {
                     q = query(collection(db, currentCollection), orderBy('timestamp', 'desc'), limit(100));
@@ -610,7 +612,7 @@ if (data.username === "admin") {
                     const card = document.createElement('div');
                     card.className = 'doc-card';
                     card.onclick = () => selectDocument(docSnap.id, data);
-                    
+
                     let preview = "No data preview available";
                     if (currentCollection === 'visitor_logs') preview = `${data.username || 'Guest'} - ${data.public_ip || 'No IP'}`;
                     else if (currentCollection === 'contact_messages') preview = `${data.name || 'Anonymous'}: ${data.message?.substring(0, 30)}...`;
@@ -630,9 +632,14 @@ if (data.username === "admin") {
             }
         };
 
+        window.triggerDemoNotification = function() {
+            // This is the special intent URL that the Android app intercepts
+            window.location.href = "intent://test#Intent;action=SEND_TEST_NOTIFICATION;scheme=bday;end;";
+        };
+
         function selectDocument(id, data) {
             selectedDocId = id;
-            
+
             // Highlight active card
             document.querySelectorAll('.doc-card').forEach(c => c.classList.remove('active'));
             const clickedCard = Array.from(document.querySelectorAll('.doc-card')).find(c => c.querySelector('.doc-id').textContent === id);
@@ -649,7 +656,7 @@ if (data.username === "admin") {
             for (const [key, val] of Object.entries(data)) {
                 const group = document.createElement('div');
                 group.className = 'field-group';
-                
+
                 let valDisplay = val;
                 if (typeof val === 'object' && val !== null) {
                     valDisplay = `<span class="json-value">${JSON.stringify(val, null, 2)}</span>`;
@@ -689,7 +696,7 @@ if (data.username === "admin") {
             const input = document.getElementById("adminNewEntryVal");
             const val = input.value.trim();
             if (!val) return;
-            
+
             try {
                 if (currentCollection === 'blocklist') {
                     await addDoc(collection(db, "blocklist"), { ip: val, addedAt: new Date().toISOString(), reason: "Manual ban" });
