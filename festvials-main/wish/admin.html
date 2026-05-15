@@ -421,10 +421,7 @@
             <button class="btn btn-primary" id="logoutBtn">Logout</button>
         </div>
     </nav>
-
-    <!-- Main Dashboard -->
-    <main class="main-container">
-        <!-- Add this inside your Admin Dashboard section -->
+<!-- Add this inside your Admin Dashboard section -->
 <div id="adminControls" style="display:none; margin-top: 20px; padding: 15px; background: rgba(108, 99, 255, 0.1); border-radius: 12px;">
     <h3 style="margin-bottom: 10px;">🛡️ Admin Tools</h3>
     <button onclick="sendTestNotification()" style="background: #4D96FF;">🔔 Send Test Notification</button>
@@ -443,6 +440,9 @@ if (data.username === "admin") {
     document.getElementById("adminControls").style.display = "block";
 }
 </script>
+    <!-- Main Dashboard -->
+    <main class="main-container">
+        
         <!-- Step 1: Sidebar (Collections) -->
         <aside class="sidebar">
             <h3 class="sidebar-title">Firestore Collections</h3>
@@ -465,6 +465,7 @@ if (data.username === "admin") {
                 <li class="collection-item" data-col="blocklist">
                     <span>🚫</span> Blocklist (IPs)
                 </li>
+                
             </ul>
         </aside>
 
