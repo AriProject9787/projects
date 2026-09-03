@@ -913,10 +913,173 @@
       color: #FF6B6B;
     }
 
-    #blockedOverlay p {
-      font-size: 1.5rem;
-      max-width: 600px;
-      line-height: 1.5;
+    /* Multi-Event & Category Filter Styles */
+    .filter-pills-wrap {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 15px 0 5px;
+    }
+
+    .filter-pill {
+      background: rgba(108, 99, 255, 0.08);
+      border: 1px solid rgba(108, 99, 255, 0.2);
+      color: var(--text-light);
+      padding: 7px 16px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      width: auto;
+      margin: 0;
+    }
+
+    body.dark .filter-pill {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.12);
+      color: var(--text-dark);
+    }
+
+    .filter-pill:hover,
+    .filter-pill.active {
+      background: linear-gradient(135deg, var(--primary), #8B85FF);
+      color: #fff;
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(108, 99, 255, 0.35);
+    }
+
+    /* Event Badges */
+    .event-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .badge-birthday { background: rgba(108, 99, 255, 0.15); color: #8B85FF; border: 1px solid rgba(108, 99, 255, 0.3); }
+    .badge-anniversary { background: rgba(212, 175, 55, 0.18); color: #F1C40F; border: 1px solid rgba(212, 175, 55, 0.35); }
+    .badge-diwali { background: rgba(255, 87, 34, 0.18); color: #FF7043; border: 1px solid rgba(255, 87, 34, 0.35); }
+    .badge-pongal { background: rgba(0, 184, 148, 0.18); color: #00CEC9; border: 1px solid rgba(0, 184, 148, 0.35); }
+    .badge-christmas { background: rgba(231, 76, 60, 0.18); color: #FF7675; border: 1px solid rgba(231, 76, 60, 0.35); }
+    .badge-eid { background: rgba(9, 132, 227, 0.18); color: #74B9FF; border: 1px solid rgba(9, 132, 227, 0.35); }
+    .badge-valentine { background: rgba(232, 67, 147, 0.18); color: #FD79A8; border: 1px solid rgba(232, 67, 147, 0.35); }
+    .badge-milestone { background: rgba(155, 89, 182, 0.18); color: #A29BFE; border: 1px solid rgba(155, 89, 182, 0.35); }
+
+    /* Card Send Wish Button */
+    .card-wish-btn {
+      background: linear-gradient(135deg, #7C3AED, #A855F7);
+      color: #fff;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: var(--transition);
+      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+      width: auto;
+    }
+
+    .card-wish-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.45);
+    }
+
+    /* Template Picker Grid in Send Wish Modal */
+    .template-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 10px;
+      margin: 10px 0 15px;
+    }
+
+    .template-option-card {
+      background: rgba(0, 0, 0, 0.03);
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 10px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    body.dark .template-option-card {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .template-option-card:hover {
+      background: rgba(108, 99, 255, 0.08);
+      border-color: rgba(108, 99, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .template-option-card.selected {
+      border-color: var(--primary);
+      background: rgba(108, 99, 255, 0.14);
+      box-shadow: 0 0 15px rgba(108, 99, 255, 0.25);
+    }
+
+    .tpl-opt-icon {
+      font-size: 1.8rem;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .tpl-opt-name {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+
+    body.dark .tpl-opt-name {
+      color: var(--text-dark);
+    }
+
+    /* Quick Festival Presets */
+    .fest-presets-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 10px 0 15px;
+    }
+
+    .fest-preset-chip {
+      background: rgba(0, 0, 0, 0.04);
+      border: 1px dashed rgba(0, 0, 0, 0.2);
+      color: var(--text-muted-light);
+      padding: 5px 12px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: auto;
+      margin: 0;
+    }
+
+    body.dark .fest-preset-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--text-muted-dark);
+    }
+
+    .fest-preset-chip:hover {
+      background: rgba(108, 99, 255, 0.15);
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: scale(1.03);
     }
   </style>
 </head>
@@ -967,8 +1130,35 @@
       <!-- Tab: Basics -->
       <div id="tab-basics" class="tab-content active">
         <div class="form-group">
+          <label style="font-weight: 600;">Choose Celebration Template</label>
+          <div class="template-picker-grid" id="templatePickerGrid">
+            <div class="template-option-card selected" data-template="birthday" onclick="selectWishTemplate('birthday', this)">
+              <span class="tpl-opt-icon">🎂</span>
+              <span class="tpl-opt-name">Birthday Extravaganza</span>
+            </div>
+            <div class="template-option-card" data-template="anniversary" onclick="selectWishTemplate('anniversary', this)">
+              <span class="tpl-opt-icon">💍</span>
+              <span class="tpl-opt-name">Golden Romance</span>
+            </div>
+            <div class="template-option-card" data-template="festival" onclick="selectWishTemplate('festival', this)">
+              <span class="tpl-opt-icon">🪔</span>
+              <span class="tpl-opt-name">Grand Festival</span>
+            </div>
+            <div class="template-option-card" data-template="modern_card" onclick="selectWishTemplate('modern_card', this)">
+              <span class="tpl-opt-icon">💎</span>
+              <span class="tpl-opt-name">3D Luxury Card</span>
+            </div>
+          </div>
+          <div style="text-align: right; margin-top: -5px; margin-bottom: 12px;">
+            <a href="template/index.html" target="_blank" style="color: var(--primary); font-size: 0.8rem; text-decoration: underline;">
+              Browse all templates in gallery ↗
+            </a>
+          </div>
+        </div>
+
+        <div class="form-group">
           <label>Letter Message</label>
-          <textarea id="customWishMsg" placeholder="Write the main birthday card letter here..."></textarea>
+          <textarea id="customWishMsg" placeholder="Write your personalized greeting or celebration letter here..."></textarea>
         </div>
         <div class="form-group">
           <label>Hero Image</label>
@@ -993,7 +1183,7 @@
 
       <!-- Tab: Plans -->
       <div id="tab-plans" class="tab-content">
-        <p style="font-size: 0.8rem; color: var(--text-muted-light); margin-bottom: 10px;">Customize the birthday celebration ideas.</p>
+        <p style="font-size: 0.8rem; color: var(--text-muted-light); margin-bottom: 10px;">Customize the celebration ideas or bucket list.</p>
         <div id="plans-inputs">
           <!-- Dynamically added -->
         </div>
@@ -1002,7 +1192,7 @@
 
       <!-- Tab: Surprises -->
       <div id="tab-surprises" class="tab-content">
-        <p style="font-size: 0.8rem; color: var(--text-muted-light); margin-bottom: 10px;">Customize the clickable surprise wishes.</p>
+        <p style="font-size: 0.8rem; color: var(--text-muted-light); margin-bottom: 10px;">Customize the clickable surprise blessings & wishes.</p>
         <div id="surprises-inputs">
           <!-- Dynamically added -->
         </div>
@@ -1042,17 +1232,18 @@
     <input type="password" id="loginPassword" placeholder="Password" />
     <button id="loginBtn">Login</button>
     <div class="link" onclick="toggleView('signup')">New user? Sign Up</div>
-    <div class="link" style="margin-top: 10px; opacity: 0.8; font-size: 0.9rem;" onclick="skipLogin()">Skip Login (View Public Birthdays)</div>
+    <div class="link" style="margin-top: 10px; opacity: 0.8; font-size: 0.9rem;" onclick="skipLogin()">Skip Login (View Public Celebrations)</div>
   </div>
 
   <!-- Dashboard -->
   <div class="container" id="dashboardContainer" style="display:none;">
     <!-- Navbar -->
     <div class="navbar">
-      <div class="brand">Birthday Reminder</div>
+      <div class="brand">🎉 Celebration Hub</div>
       <div class="nav-toggle" id="navToggle">☰</div>
       <div class="nav-links" id="navLinks">
         <a href="#" class="nav-link">Home</a>
+        <a href="template/index.html" target="_blank" class="nav-link" style="color: var(--primary); font-weight: 600;">🎨 Wish Templates</a>
         <a href="about.html" target="_blank" class="nav-link">About</a>
         <a href="https://ariproject9787.github.io/portfolio/" target="_blank" class="nav-link">Developer</a>
         <a href="terms.html" target="_blank" class="nav-link">Terms</a>
@@ -1060,34 +1251,43 @@
         <a href="b-day.apk" download class="nav-link">⬇ Download APK</a>
         <a href="admin.html" id="adminNavLink" class="nav-link" style="display:none; color: var(--primary); font-weight: 600;">🛡️ Admin</a>
         <button class="logout-btn">Logout</button>
-
       </div>
     </div>
 
     <h2 id="welcomeMsg">Dashboard</h2>
 
     <div class="section-container">
-      <h3 class="section-header">🔍 Filter & Sort</h3>
+      <h3 class="section-header">🔍 Filter & Sort Celebrations</h3>
       <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
-        <input type="text" id="searchInput" placeholder="Search by name..." style="flex: 2; margin: 0;" />
+        <input type="text" id="searchInput" placeholder="Search by name or festival..." style="flex: 2; margin: 0;" />
         <select id="sortSelect" style="flex: 1; margin: 0;">
           <option value="name-asc" selected>Name (A-Z)</option>
           <option value="name-desc">Name (Z-A)</option>
-          <option value="dob-asc">DOB (Jan - Dec)</option>
-          <option value="dob-desc">DOB (Dec - Jan)</option>
-          <option value="age-young">Age (Youngest First)</option>
-          <option value="age-old">Age (Oldest First)</option>
+          <option value="dob-asc">Date (Jan - Dec)</option>
+          <option value="dob-desc">Date (Dec - Jan)</option>
+          <option value="age-young">Age / Milestone (Asc)</option>
+          <option value="age-old">Age / Milestone (Desc)</option>
         </select>
       </div>
-      <div class="bulk-controls">
-        <button id="toggleSelectBtn" class="select-toggle-btn">Share DOB via WhatsApp</button>
+
+      <!-- Category Filter Pills -->
+      <div class="filter-pills-wrap">
+        <button type="button" class="filter-pill active" onclick="setCategoryFilter('all', this)">All Events</button>
+        <button type="button" class="filter-pill" onclick="setCategoryFilter('birthday', this)">🎂 Birthdays</button>
+        <button type="button" class="filter-pill" onclick="setCategoryFilter('anniversary', this)">💍 Anniversaries</button>
+        <button type="button" class="filter-pill" onclick="setCategoryFilter('festival', this)">🪔 Festivals</button>
+        <button type="button" class="filter-pill" onclick="setCategoryFilter('milestone', this)">🎉 Milestones</button>
+      </div>
+
+      <div class="bulk-controls" style="margin-top: 15px;">
+        <button id="toggleSelectBtn" class="select-toggle-btn">Share Events via WhatsApp</button>
       </div>
     </div>
 
     <div class="section-container">
-      <h3 class="section-header">🌍 Public Birthdays</h3>
+      <h3 class="section-header">🌍 Public Celebrations & Events</h3>
       <div class="subsection">
-        <h4>🎂 Today</h4>
+        <h4>🎉 Today</h4>
         <div id="public-today"></div>
         <h4>📅 Upcoming</h4>
         <div id="public-upcoming"></div>
@@ -1097,9 +1297,9 @@
     </div>
 
     <div class="section-container" id="privateBirthdaysSection">
-      <h3 class="section-header">🔒 My Private Birthdays</h3>
+      <h3 class="section-header">🔒 My Private Celebrations & Events</h3>
       <div class="subsection">
-        <h4>🎂 Today</h4>
+        <h4>🎉 Today</h4>
         <div id="private-today"></div>
         <h4>📅 Upcoming</h4>
         <div id="private-upcoming"></div>
@@ -1108,18 +1308,40 @@
       </div>
     </div>
 
-    <div id="addBirthdaySection">
-      <h3>Add Birthday</h3>
-      <input type="text" id="name" placeholder="Name" />
-      <input type="date" id="dob" />
+    <div id="addBirthdaySection" class="section-container">
+      <h3 class="section-header">➕ Add Celebration or Festival</h3>
+      
+      <label style="font-size: 0.9rem; font-weight: 500; color: var(--text-muted-light);">Select Event Type:</label>
+      <select id="eventType">
+        <option value="birthday" selected>🎂 Birthday</option>
+        <option value="anniversary">💍 Anniversary (Wedding / Relationship)</option>
+        <option value="diwali">🪔 Diwali / Deepavali</option>
+        <option value="pongal">🌾 Pongal / Makar Sankranti</option>
+        <option value="christmas">🎄 Christmas / New Year</option>
+        <option value="eid">🌙 Eid Mubarak</option>
+        <option value="valentine">❤️ Valentine's Day</option>
+        <option value="milestone">🎓 Milestone / Achievement / Custom</option>
+      </select>
+
+      <div style="margin-top: 5px;">
+        <label style="font-size: 0.8rem; color: var(--text-muted-light);">⚡ Quick Add Upcoming Festivals:</label>
+        <div class="fest-presets-bar">
+          <button type="button" class="fest-preset-chip" onclick="quickFillFestival('diwali', 'Diwali - Festival of Lights', '2026-11-08')">🪔 Diwali</button>
+          <button type="button" class="fest-preset-chip" onclick="quickFillFestival('pongal', 'Pongal / Makar Sankranti', '2027-01-14')">🌾 Pongal</button>
+          <button type="button" class="fest-preset-chip" onclick="quickFillFestival('christmas', 'Christmas Day', '2026-12-25')">🎄 Christmas</button>
+          <button type="button" class="fest-preset-chip" onclick="quickFillFestival('christmas', 'New Year Celebration', '2027-01-01')">🎆 New Year</button>
+          <button type="button" class="fest-preset-chip" onclick="quickFillFestival('eid', 'Eid al-Fitr', '2027-03-10')">🌙 Eid Mubarak</button>
+        </div>
+      </div>
+
+      <input type="text" id="name" placeholder="Name or Event Title (e.g. Priya's Birthday, Raj & Simran 5th Anniv)" />
+      <input type="date" id="dob" title="Celebration Date" />
       <select id="dobVisibility">
         <option value="public" selected>Public</option>
         <option value="private">Private</option>
       </select>
-      <button id="addBtn">Add Birthday</button>
+      <button id="addBtn">Add Celebration Event ✨</button>
     </div>
-
-
 
     <button class="logout-btn">Logout</button>
   </div>
@@ -1182,6 +1404,8 @@
     // Send Wish Modal Logic
     const sendWishModal = document.getElementById("sendWishModal");
     let currentReceiverName = "";
+    let currentReceiverEventType = "birthday";
+    let selectedWishTemplate = "birthday";
     let selectedImageUrl = "";
 
     window.switchTab = function (tabId) {
@@ -1192,9 +1416,56 @@
       document.getElementById(`tab-${tabId}`).classList.add('active');
     };
 
-    window.openSendWishModal = function (name) {
+    window.selectWishTemplate = function (tplKey, el) {
+      selectedWishTemplate = tplKey;
+      document.querySelectorAll('#templatePickerGrid .template-option-card').forEach(card => card.classList.remove('selected'));
+      if (el) el.classList.add('selected');
+    };
+
+    window.quickFillFestival = function (type, title, date) {
+      const typeEl = document.getElementById('eventType');
+      const nameEl = document.getElementById('name');
+      const dobEl = document.getElementById('dob');
+      if (typeEl) typeEl.value = type;
+      if (nameEl) nameEl.value = title;
+      if (dobEl) dobEl.value = date;
+      document.getElementById('addBirthdaySection').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    window.openSendWishModal = function (target) {
+      let name = "";
+      let eventType = "birthday";
+
+      if (typeof target === 'object' && target !== null) {
+        name = target.name || "";
+        eventType = target.eventType || "birthday";
+      } else {
+        name = target || "";
+      }
+
       currentReceiverName = name;
-      document.getElementById("sendToLabel").textContent = `Personalizing wish for: ${name}`;
+      currentReceiverEventType = eventType;
+      document.getElementById("sendToLabel").textContent = `Personalizing celebration wish for: ${name}`;
+
+      // Automatically select the best template matching event type
+      if (eventType === 'anniversary') {
+        selectedWishTemplate = 'anniversary';
+      } else if (['diwali', 'pongal', 'christmas', 'eid', 'festival'].includes(eventType)) {
+        selectedWishTemplate = 'festival';
+      } else if (['milestone', 'valentine'].includes(eventType)) {
+        selectedWishTemplate = 'modern_card';
+      } else {
+        selectedWishTemplate = 'birthday';
+      }
+
+      // Update template card highlight
+      document.querySelectorAll('#templatePickerGrid .template-option-card').forEach(card => {
+        if (card.dataset.template === selectedWishTemplate) {
+          card.classList.add('selected');
+        } else {
+          card.classList.remove('selected');
+        }
+      });
       
       // Reset to first tab
       switchTab('basics');
@@ -1260,9 +1531,9 @@
       div.style.marginBottom = '10px';
       div.innerHTML = `
         <label>Plan ${i} - Title</label>
-        <input type="text" class="plan-title" placeholder="E.g. Dinner Date" />
+        <input type="text" class="plan-title" placeholder="E.g. Dinner Date, Cake Cutting, Sparklers" />
         <label>Plan ${i} - Description</label>
-        <input type="text" class="plan-desc" placeholder="Details about the plan..." />
+        <input type="text" class="plan-desc" placeholder="Details about the celebration plan..." />
       `;
       container.appendChild(div);
     };
@@ -1273,8 +1544,8 @@
       const div = document.createElement('div');
       div.className = 'form-group';
       div.innerHTML = `
-        <label>Surprise Wish ${i}</label>
-        <textarea class="surprise-msg" style="min-height: 60px;" placeholder="A short sweet wish..."></textarea>
+        <label>Surprise Wish / Blessing ${i}</label>
+        <textarea class="surprise-msg" style="min-height: 60px;" placeholder="A short heartfelt wish or blessing..."></textarea>
       `;
       container.appendChild(div);
     };
@@ -1312,7 +1583,6 @@
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            // Low quality to save space in Firestore (1MB limit)
             resolve(canvas.toDataURL('image/jpeg', 0.6));
           };
         };
@@ -1327,6 +1597,8 @@
         const data = {
           name: currentReceiverName,
           from: currentUsername || 'A Special Friend',
+          eventType: currentReceiverEventType || 'birthday',
+          template: selectedWishTemplate || 'birthday',
           msg: document.getElementById("customWishMsg").value,
           heroImg: document.getElementById("customWishImg").value || selectedImageUrl,
           memories: [],
@@ -1354,7 +1626,7 @@
           }
         }
 
-        // Collect Plans (Sync is fine here)
+        // Collect Plans
         document.querySelectorAll('#plans-inputs .form-group').forEach(group => {
           const title = group.querySelector('.plan-title').value;
           const desc = group.querySelector('.plan-desc').value;
@@ -1368,7 +1640,14 @@
 
         // Save to Firestore for permanent sharing
         const docRef = await addDoc(collection(db, "sent_wishes"), data);
-        const wishUrl = `wish1.html?wish_id=${docRef.id}`;
+        
+        // Generate template URL
+        let wishUrl;
+        if (selectedWishTemplate === 'wish1') {
+          wishUrl = `wish1.html?wish_id=${docRef.id}`;
+        } else {
+          wishUrl = `template/${selectedWishTemplate}.html?wish_id=${docRef.id}`;
+        }
         
         window.open(wishUrl, '_blank');
         closeSendWishModal();
@@ -1482,7 +1761,7 @@
         }
       }
 
-      // 2. Handle Quick Custom (from wish1.html)
+      // 2. Handle Quick Custom (from wish1.html or other templates)
       const isQuickCustom = urlParams.get('quick_custom');
       if (isQuickCustom === 'true') {
         const to = urlParams.get('to');
@@ -1500,6 +1779,23 @@
         }
         
         // Clean URL params
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // 3. Handle Quick Template Selection (from template/index.html)
+      const quickTemplate = urlParams.get('quick_template');
+      if (quickTemplate) {
+        if (!currentUser) isGuestMode = true;
+        showDashboard();
+        setTimeout(() => {
+          let eventType = 'birthday';
+          if (quickTemplate === 'anniversary') eventType = 'anniversary';
+          else if (quickTemplate === 'festival') eventType = 'diwali';
+          else if (quickTemplate === 'modern_card') eventType = 'milestone';
+          
+          openSendWishModal({ name: "Special Someone", eventType });
+          selectWishTemplate(quickTemplate, document.querySelector(`[data-template="${quickTemplate}"]`));
+        }, 800);
         window.history.replaceState({}, document.title, window.location.pathname);
       }
     });
@@ -1666,16 +1962,48 @@
     document.addEventListener("mousemove", resetInactivityTimer);
     document.addEventListener("keydown", resetInactivityTimer);
 
-    // Add birthday
+    // Multi-Event Category Filter State
+    let currentCategoryFilter = 'all';
+    window.setCategoryFilter = function (cat, el) {
+      currentCategoryFilter = cat;
+      document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+      if (el) el.classList.add('active');
+      renderBirthdays();
+    };
+
+    function getEventMeta(evt) {
+      switch (evt) {
+        case 'anniversary': return { icon: '💍', label: 'Anniversary', badgeClass: 'badge-anniversary' };
+        case 'diwali': return { icon: '🪔', label: 'Diwali', badgeClass: 'badge-diwali' };
+        case 'pongal': return { icon: '🌾', label: 'Pongal', badgeClass: 'badge-pongal' };
+        case 'christmas': return { icon: '🎄', label: 'Christmas/NY', badgeClass: 'badge-christmas' };
+        case 'eid': return { icon: '🌙', label: 'Eid', badgeClass: 'badge-eid' };
+        case 'valentine': return { icon: '❤️', label: 'Valentine', badgeClass: 'badge-valentine' };
+        case 'milestone': return { icon: '🎓', label: 'Milestone', badgeClass: 'badge-milestone' };
+        default: return { icon: '🎂', label: 'Birthday', badgeClass: 'badge-birthday' };
+      }
+    }
+
+    // Add Event / Celebration
     document.getElementById("addBtn").addEventListener("click", async () => {
       if (!currentUser) return;
-      const name = document.getElementById("name").value;
+      const name = document.getElementById("name").value.trim();
       const dob = document.getElementById("dob").value;
+      const eventType = document.getElementById("eventType").value || "birthday";
       let visibility = "private";
       if (currentUsername === "admin") visibility = document.getElementById("dobVisibility").value;
-      if (!name || !dob) { alert("Enter both name and date"); return; }
-      // Add addedBy field
-      await addDoc(collection(db, "birthdays"), { uid: currentUser.uid, name, dob, visibility, addedBy: currentUsername });
+      if (!name || !dob) { alert("Please enter both the name/title and date"); return; }
+      
+      await addDoc(collection(db, "birthdays"), { 
+        uid: currentUser.uid, 
+        name, 
+        dob, 
+        eventType,
+        visibility, 
+        addedBy: currentUsername 
+      });
+      document.getElementById("name").value = "";
+      alert("Celebration event added successfully! ✨");
       loadBirthdays();
     });
 
@@ -1683,7 +2011,7 @@
     document.getElementById("searchInput").addEventListener("input", renderBirthdays);
     document.getElementById("sortSelect").addEventListener("change", renderBirthdays);
 
-    // Load birthdays
+    // Load birthdays / celebrations
     async function loadBirthdays() {
       showSkeletons(); // Show skeletons immediately
 
@@ -1698,7 +2026,7 @@
         renderBirthdays();
 
       } catch (error) {
-        console.error("Error loading birthdays:", error);
+        console.error("Error loading celebrations:", error);
         if (error.code === 'permission-denied') {
           alert("Permission Error: Please check your Firestore Security Rules in the Firebase Console.");
         }
@@ -1726,7 +2054,7 @@
       const sortValue = document.getElementById("sortSelect").value; // e.g. "name-asc"
 
       const today = new Date();
-      let hasBirthdayToday = false;
+      let hasCelebrationToday = false;
 
       // 1. Filter
       let filteredData = allBirthdaysData.filter(person => {
@@ -1744,6 +2072,13 @@
         // Search Logic
         if (searchQuery && !person.name.toLowerCase().includes(searchQuery)) return false;
 
+        // Category Filter Logic
+        const evt = person.eventType || 'birthday';
+        if (currentCategoryFilter === 'birthday' && evt !== 'birthday') return false;
+        if (currentCategoryFilter === 'anniversary' && evt !== 'anniversary') return false;
+        if (currentCategoryFilter === 'festival' && !['diwali', 'pongal', 'christmas', 'eid', 'festival'].includes(evt)) return false;
+        if (currentCategoryFilter === 'milestone' && !['milestone', 'valentine'].includes(evt)) return false;
+
         return true;
       });
 
@@ -1752,12 +2087,9 @@
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
 
-        // Calculate objects for DOB sort
         const dateA = new Date(a.dob);
         const dateB = new Date(b.dob);
 
-        // For DOB (Month-Day) sort, we need to compare month/day independent of year
-        // We can set them all to the same year (e.g. 2000) for comparison
         const mmddA = new Date(2000, dateA.getMonth(), dateA.getDate());
         const mmddB = new Date(2000, dateB.getMonth(), dateB.getDate());
 
@@ -1766,14 +2098,14 @@
           case 'name-desc': return nameB.localeCompare(nameA);
           case 'dob-asc': return mmddA - mmddB;
           case 'dob-desc': return mmddB - mmddA;
-          case 'age-young': return dateB - dateA; // Younger = later birthdate
-          case 'age-old': return dateA - dateB; // Older = earlier birthdate
+          case 'age-young': return dateB - dateA;
+          case 'age-old': return dateA - dateB;
           default: return 0;
         }
       });
 
-      // Collect today's birthday people for the wish overlay
-      const todayBirthdays = [];
+      // Collect today's people for the celebration overlay
+      const todayCelebrants = [];
 
       // 3. Render
       filteredData.forEach(person => {
@@ -1789,8 +2121,8 @@
 
         if (thisYear.toDateString() === today.toDateString()) {
           suffix = 'today';
-          hasBirthdayToday = true;
-          todayBirthdays.push({ name: person.name, dob: person.dob });
+          hasCelebrationToday = true;
+          todayCelebrants.push(person);
           sendBirthdayNotification(person.name);
         }
         else if (thisYear > today) suffix = 'upcoming';
@@ -1807,33 +2139,34 @@
       // Re-apply selection state if in selection mode
       if (isSelectionMode) {
         document.querySelectorAll('.birthday-card').forEach(card => {
-          // Rely on the click handler in updateCard for state restoration
+          // Rely on the click handler in updateCard
         });
       }
 
-      // ✨ Show Birthday Wish Overlay — only once per session load
-      if (hasBirthdayToday && !window._overlayShownThisSession) {
+      // ✨ Show Celebration Wish Overlay — only once per session load
+      if (hasCelebrationToday && !window._overlayShownThisSession) {
         window._overlayShownThisSession = true;
 
-        // Build the list of birthday person rows
         const bdayList = document.getElementById('bdayList');
         bdayList.innerHTML = '';
-        todayBirthdays.forEach(person => {
+        todayCelebrants.forEach(person => {
           const row = document.createElement('div');
           row.className = 'bday-row';
+          const meta = getEventMeta(person.eventType || 'birthday');
+          const targetJson = JSON.stringify({ name: person.name, eventType: person.eventType || 'birthday' }).replace(/"/g, '&quot;');
           row.innerHTML = `
-            <span class="bday-name">🎂 ${person.name}</span>
-            <button onclick="openSendWishModal('${person.name.replace(/'/g, "\\'")}')" class="wish-btn">Send Wish 🎉</button>
+            <span class="bday-name">${meta.icon} ${person.name}</span>
+            <button onclick="openSendWishModal(${targetJson})" class="wish-btn">Send Wish 🎉</button>
           `;
           bdayList.appendChild(row);
         });
 
         // Dynamic subtitle
         const subtitle = document.getElementById('bdaySubtitle');
-        if (todayBirthdays.length === 1) {
-          subtitle.textContent = `Today is ${todayBirthdays[0].name}'s special day! 🎊`;
+        if (todayCelebrants.length === 1) {
+          subtitle.textContent = `Today is ${todayCelebrants[0].name}'s special celebration! 🎊`;
         } else {
-          subtitle.textContent = `It's a special day for ${todayBirthdays.length} amazing people! 🎊`;
+          subtitle.textContent = `It's a special celebration for ${todayCelebrants.length} amazing events today! 🎊`;
         }
 
         // Show the overlay
@@ -1846,8 +2179,7 @@
           origin: { y: 0.6 },
           colors: ['#7C3AED', '#A855F7', '#FFD93D', '#6BCB77', '#FF6B6B']
         });
-      } else if (hasBirthdayToday) {
-        // Re-render (filter/sort): lighter confetti only
+      } else if (hasCelebrationToday) {
         confetti({
           particleCount: 80,
           spread: 60,
@@ -1857,7 +2189,7 @@
       }
     }
 
-    function generateGoogleCalendarLink(name, date) {
+    function generateGoogleCalendarLink(person, date) {
       const start = new Date(date);
       const end = new Date(date);
       end.setDate(end.getDate() + 1);
@@ -1869,18 +2201,19 @@
       const startStr = formatDate(start);
       const endStr = formatDate(end);
 
-      const title = encodeURIComponent(`🎂 Birthday: ${name}`);
-      const details = encodeURIComponent(`Wish ${name} a Happy Birthday!`);
+      const meta = getEventMeta(person.eventType || 'birthday');
+      const title = encodeURIComponent(`${meta.icon} ${meta.label}: ${person.name}`);
+      const details = encodeURIComponent(`Celebrate ${person.name} with warm wishes and cheer!`);
 
       return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startStr}/${endStr}&details=${details}`;
     }
 
-    function generateSingleWhatsAppLink(name, dob) {
-      // Create an import link for just this one person
-      const data = [{ name, dob }];
+    function generateSingleWhatsAppLink(person, dob) {
+      const data = [{ name: person.name, dob: person.dob, eventType: person.eventType || 'birthday' }];
       const encoded = encodeData(data);
       const shareUrl = `${window.location.origin}${window.location.pathname}?import_data=${encoded}`;
-      return `https://api.whatsapp.com/send?text=${encodeURIComponent(`🎂 Share birthday: ${name} (${dob}) \nImport here: ${shareUrl}`)}`;
+      const meta = getEventMeta(person.eventType || 'birthday');
+      return `https://api.whatsapp.com/send?text=${encodeURIComponent(`${meta.icon} Celebration: ${person.name} (${dob}) \nImport to celebration hub: ${shareUrl}`)}`;
     }
 
     function updateCard(person, container, age, date) {
@@ -1891,16 +2224,11 @@
       const addedByText = person.addedBy ? `<br><small style="color:#888;">Added by: ${person.addedBy}</small>` : '';
 
       // Calendar Link
-      const calendarLink = generateGoogleCalendarLink(person.name, target);
-
-      // WhatsApp Link
-      const waLink = generateSingleWhatsAppLink(person.name, person.dob);
+      const calendarLink = generateGoogleCalendarLink(person, target);
 
       // Checkbox for bulk selection
-      // We attach the data directly to the element for easier access
       const isChecked = selectedBirthdays.has(JSON.stringify({ name: person.name, dob: person.dob }));
 
-      // We need to inject the checkbox wrapper
       const checkboxHTML = `<div class="checkbox-wrapper">
         <div class="custom-checkbox ${isChecked ? 'checked' : ''}"></div>
       </div>`;
@@ -1908,12 +2236,30 @@
       const isOwner = currentUser && person.uid === currentUser.uid;
       const isAdmin = currentUsername === "admin";
       const deleteBtnHTML = (isOwner || isAdmin) ? `
-        <button onclick="deleteBirthday('${person.id}', '${person.name.replace(/'/g, "\\'")}')" class="delete-btn" title="Delete Birthday">
+        <button onclick="deleteBirthday('${person.id}', '${person.name.replace(/'/g, "\\'")}')" class="delete-btn" title="Delete Celebration">
           🗑️ Delete
         </button>` : '';
 
+      const evt = person.eventType || 'birthday';
+      const meta = getEventMeta(evt);
+      const badgeHTML = `<span class="event-badge ${meta.badgeClass}">${meta.icon} ${meta.label}</span>`;
+
+      let detailLabel = `(${age} yrs)`;
+      if (evt === 'anniversary') detailLabel = `(${age} yrs of love)`;
+      else if (['diwali', 'pongal', 'christmas', 'eid', 'festival'].includes(evt)) detailLabel = `(${meta.label})`;
+      else if (evt === 'milestone') detailLabel = `(Milestone)`;
+
+      const escapedTarget = JSON.stringify({ name: person.name, eventType: evt }).replace(/"/g, '&quot;');
+      const sendWishBtnHTML = `
+        <button onclick="openSendWishModal(${escapedTarget})" class="card-wish-btn" title="Send Celebration Wish">
+          ✨ Send Wish
+        </button>
+      `;
+
       card.innerHTML = `${checkboxHTML}
-      <div style="flex:1;"><b>${person.name}</b> 🎂 (${age} yrs) - ${target.toDateString()} 
+      <div style="flex:1;">
+        <b>${person.name}</b> ${badgeHTML} <small style="color:var(--text-muted-light);">${detailLabel}</small> - ${target.toDateString()} 
+        ${sendWishBtnHTML}
         <a href="${calendarLink}" target="_blank" class="calendar-btn" title="Add to Google Calendar">
           📅 Set Alert
         </a>
@@ -1926,11 +2272,10 @@
       const checkbox = card.querySelector('.custom-checkbox');
       if (checkbox) {
         checkbox.addEventListener('click', (e) => {
-          e.stopPropagation(); // Prevent card click if any
+          e.stopPropagation();
           toggleSelection(person, checkbox);
         });
 
-        // Also allow clicking the checkbox wrapper
         card.querySelector('.checkbox-wrapper').addEventListener('click', (e) => {
           e.stopPropagation();
           toggleSelection(person, checkbox);
@@ -1950,24 +2295,28 @@
           card.classList.remove('today-card');
         }
         else if (target.toDateString() === now.toDateString()) {
-          countdownEl.textContent = `🎉 Today!`; card.classList.add('today-card');
+          if (evt === 'birthday') countdownEl.textContent = `🎉 Happy Birthday Today!`;
+          else if (evt === 'anniversary') countdownEl.textContent = `🥂 Happy Anniversary Today!`;
+          else if (['diwali', 'pongal', 'christmas', 'eid'].includes(evt)) countdownEl.textContent = `🪔 Happy ${meta.label} Today!`;
+          else countdownEl.textContent = `🎉 Celebrating Today!`;
+          card.classList.add('today-card');
         }
         else {
-          countdownEl.textContent = `✅ Already celebrated this year`; card.classList.remove('today-card');
+          countdownEl.textContent = `✅ Celebrated this year`; card.classList.remove('today-card');
         }
       }
       tick(); countdownIntervals.push(setInterval(tick, 1000));
     }
 
     window.deleteBirthday = async function (docId, name) {
-      if (confirm(`Are you sure you want to delete ${name}'s birthday?`)) {
+      if (confirm(`Are you sure you want to delete ${name}'s celebration?`)) {
         try {
           await deleteDoc(doc(db, "birthdays", docId));
-          alert("Birthday deleted successfully!");
+          alert("Celebration deleted successfully!");
           loadBirthdays();
         } catch (error) {
-          console.error("Error deleting birthday:", error);
-          alert("Failed to delete birthday. " + error.message);
+          console.error("Error deleting celebration:", error);
+          alert("Failed to delete celebration. " + error.message);
         }
       }
     };

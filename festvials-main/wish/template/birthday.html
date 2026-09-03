@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday! 🎂✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --primary: #FF5E7E;
+      --primary-light: #FF94B9;
+      --secondary: #6C5CE7;
+      --accent: #FDCB6E;
+      --accent-cyan: #00CEC9;
+      --bg: #0F0C20;
+      --card-bg: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(255, 255, 255, 0.14);
+      --text: #F8F9FA;
+      --text-muted: #B2BEC3;
+      --radius: 20px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: radial-gradient(circle at 50% 20%, #201335 0%, #0c0818 100%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Floating balloons & sparkles */
+    .floating-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .balloon {
+      position: absolute;
+      bottom: -100px;
+      font-size: 2.2rem;
+      animation: floatUp 14s linear infinite;
+      opacity: 0.8;
+      filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% { opacity: 0.85; }
+      90% { opacity: 0.85; }
+      100% {
+        transform: translateY(-120vh) rotate(30deg);
+        opacity: 0;
+      }
+    }
+
+    /* Top celebration banner */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 30px;
+      position: relative;
+      z-index: 10;
+      background: rgba(15, 12, 32, 0.6);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .brand-tag {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #FF7675, #FDCB6E);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .action-chips {
+      display: flex;
+      gap: 10px;
+    }
+
+    .chip-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chip-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+      transform: translateY(-2px);
+    }
+
+    .chip-btn.primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      box-shadow: 0 4px 15px rgba(255, 94, 126, 0.4);
+    }
+
+    /* Main Container */
+    .content-wrapper {
+      position: relative;
+      z-index: 5;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      text-align: center;
+      padding: 40px 20px 20px;
+    }
+
+    .badge-event {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, rgba(255, 94, 126, 0.2), rgba(108, 92, 231, 0.2));
+      border: 1px solid rgba(255, 94, 126, 0.4);
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #FFAEC9;
+      margin-bottom: 24px;
+      box-shadow: 0 0 25px rgba(255, 94, 126, 0.2);
+      animation: pulseGlow 3s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      from { box-shadow: 0 0 15px rgba(255, 94, 126, 0.2); }
+      to { box-shadow: 0 0 30px rgba(255, 94, 126, 0.5); }
+    }
+
+    .hero-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 3.5rem;
+      line-height: 1.15;
+      margin-bottom: 15px;
+      background: linear-gradient(135deg, #FFF, #FFE2EA 40%, #FFA8BE 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .person-name {
+      display: block;
+      font-size: 4.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #FF6B8B, #FFD93D, #6BCB77);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 5px 20px rgba(255, 107, 139, 0.4));
+      animation: bounceTitle 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes bounceTitle {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.03); }
+    }
+
+    .hero-sub {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 30px;
+      line-height: 1.6;
+    }
+
+    /* Interactive Gift Box */
+    .gift-box-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 35px 25px;
+      margin: 30px 0;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .gift-icon {
+      font-size: 5rem;
+      display: inline-block;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: wiggleGift 2.5s infinite;
+      user-select: none;
+    }
+
+    .gift-icon:hover {
+      transform: scale(1.15) rotate(-5deg);
+    }
+
+    @keyframes wiggleGift {
+      0%, 100% { transform: rotate(0deg); }
+      20% { transform: rotate(-8deg); }
+      40% { transform: rotate(8deg); }
+      60% { transform: rotate(-4deg); }
+      80% { transform: rotate(4deg); }
+    }
+
+    .unwrapped-content {
+      display: none;
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      margin-top: 20px;
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Secret Letter Section */
+    .letter-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      padding: 40px;
+      margin: 35px 0;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+
+    .letter-card::before {
+      content: '🎂';
+      position: absolute;
+      right: 20px;
+      bottom: -20px;
+      font-size: 10rem;
+      opacity: 0.05;
+      pointer-events: none;
+    }
+
+    .letter-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      color: var(--accent);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+    }
+
+    .letter-body {
+      font-size: 1.15rem;
+      line-height: 1.85;
+      color: #E2E8F0;
+      white-space: pre-line;
+    }
+
+    .letter-author {
+      margin-top: 25px;
+      text-align: right;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: #FFAEC9;
+    }
+
+    /* Photo Polaroid Gallery */
+    .section-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 2rem;
+      margin: 40px 0 20px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .polaroid-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 25px;
+      margin-top: 25px;
+    }
+
+    .polaroid-card {
+      background: #FFFFFF;
+      color: #2D3436;
+      border-radius: 12px;
+      padding: 12px 12px 24px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      transform: rotate(calc(-2deg + 4deg * var(--rand, 0.5)));
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+    }
+
+    .polaroid-card:hover {
+      transform: scale(1.05) rotate(0deg);
+      box-shadow: 0 20px 35px rgba(255, 94, 126, 0.3);
+      z-index: 10;
+    }
+
+    .polaroid-card:nth-child(even) {
+      transform: rotate(2deg);
+    }
+    .polaroid-card:nth-child(even):hover {
+      transform: scale(1.05) rotate(0deg);
+    }
+
+    .polaroid-img-box {
+      width: 100%;
+      height: 220px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #EFEFEF;
+    }
+
+    .polaroid-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .polaroid-caption {
+      margin-top: 14px;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      text-align: center;
+      color: #4A4A4A;
+    }
+
+    /* Surprise Wish Toggles */
+    .surprises-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .surprise-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .surprise-card:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-3px);
+      border-color: rgba(255, 94, 126, 0.4);
+    }
+
+    .surprise-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 1.05rem;
+    }
+
+    .surprise-text {
+      margin-top: 12px;
+      font-size: 0.95rem;
+      color: #E2E8F0;
+      line-height: 1.6;
+      display: none;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.15);
+    }
+
+    .surprise-card.opened .surprise-text {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Celebration Plans */
+    .plans-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .plan-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      transition: all 0.2s;
+    }
+
+    .plan-row:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateX(6px);
+    }
+
+    .plan-icon {
+      font-size: 1.8rem;
+    }
+
+    .plan-info h4 {
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+      color: #fff;
+    }
+
+    .plan-info p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Bottom Viral Share Bar */
+    .footer-bar {
+      margin-top: 60px;
+      background: linear-gradient(135deg, rgba(255, 94, 126, 0.15), rgba(108, 92, 231, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius);
+      padding: 35px 25px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    .share-btn-wa {
+      background: #25D366;
+      color: white;
+      border: none;
+      padding: 14px 30px;
+      border-radius: 50px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+      box-shadow: 0 8px 25px rgba(37, 211, 102, 0.35);
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .share-btn-wa:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 30px rgba(37, 211, 102, 0.5);
+    }
+
+    /* Lightbox */
+    .lightbox-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .lightbox-img {
+      max-width: 90%;
+      max-height: 75vh;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    }
+
+    .lightbox-cap {
+      color: white;
+      margin-top: 15px;
+      font-size: 1.1rem;
+      font-style: italic;
+    }
+
+    @media (max-width: 600px) {
+      .hero-title { font-size: 2.5rem; }
+      .person-name { font-size: 3rem; }
+      .letter-card { padding: 25px 20px; }
+      .top-bar { padding: 14px 18px; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Floating background balloons -->
+  <div class="floating-container" id="balloonsContainer"></div>
+
+  <!-- Top bar -->
+  <nav class="top-bar">
+    <div class="brand-tag">
+      <span>🎂</span> Celebration Hub
+    </div>
+    <div class="action-chips">
+      <button class="chip-btn" id="confettiCannonBtn">🎉 Confetti!</button>
+      <a href="../index.html" class="chip-btn primary">✨ Create Wish</a>
+    </div>
+  </nav>
+
+  <main class="content-wrapper">
+    <!-- Hero Title -->
+    <header class="hero-section">
+      <div class="badge-event">🎈 Special Birthday Celebration</div>
+      <h1 class="hero-title">
+        Happy Birthday
+        <span class="person-name" id="displayRecipient">Awesome Friend</span>
+      </h1>
+      <p class="hero-sub" id="displaySubtitle">
+        Today we celebrate your wonderful journey, your vibrant smiles, and all the magical moments yet to come!
+      </p>
+
+      <!-- Interactive Gift Box Card -->
+      <div class="gift-box-card">
+        <div class="gift-icon" id="giftBoxTrigger" title="Click to open your surprise!">🎁</div>
+        <p style="font-weight: 600; margin-top: 10px; color: var(--accent);" id="giftPrompt">Tap the Gift Box to Unwrap Your Birthday Surprise!</p>
+        
+        <div class="unwrapped-content" id="unwrappedArea">
+          <h3 style="color: #FFAEC9; font-size: 1.5rem; margin-bottom: 10px;">🌟 You Deserve The World Today! 🌟</h3>
+          <p style="max-width: 650px; margin: 0 auto; color: #E2E8F0; line-height: 1.7;" id="heroMessage">
+            May this upcoming year shower you with endless happiness, true success, unstoppable confidence, and countless blessings. Keep shining brighter every single day!
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Heartfelt Letter Card -->
+    <section class="letter-card" id="letterSection">
+      <div class="letter-header">
+        <span>💌</span> Personal Birthday Letter
+      </div>
+      <div class="letter-body" id="letterBody">
+Dearest Friend,
+
+Another fantastic year around the sun! May your day be filled with warm laughter, sweet cakes, and surrounding loved ones.
+
+Thank you for being such a wonderful person, inspiring everyone with your kind spirit and positive energy. May all your wildest dreams take flight this year!
+      </div>
+      <div class="letter-author">
+        With love & best wishes,<br>
+        <span id="displaySender" style="font-weight: 700; font-size: 1.2rem; color: #fff;">A Special Friend</span> 💖
+      </div>
+    </section>
+
+    <!-- Photo Memory Gallery -->
+    <section id="gallerySection">
+      <h2 class="section-title">📸 Cherished Memories</h2>
+      <p style="text-align: center; color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;">
+        Click any photo to zoom in
+      </p>
+      <div class="polaroid-grid" id="polaroidGrid">
+        <!-- Dynamically injected or default photos -->
+      </div>
+    </section>
+
+    <!-- Surprise Wishes Cards -->
+    <section id="surprisesSection" style="margin-top: 40px;">
+      <h2 class="section-title">✨ Birthday Blessings & Wishes</h2>
+      <p style="text-align: center; color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;">
+        Tap on each card to reveal the special surprise
+      </p>
+      <div class="surprises-grid" id="surprisesGrid">
+        <!-- Dynamically injected -->
+      </div>
+    </section>
+
+    <!-- Celebration Plans -->
+    <section id="plansSection" style="margin-top: 40px;">
+      <h2 class="section-title">🎉 Birthday Bucket List & Plans</h2>
+      <div class="plans-list" id="plansList">
+        <!-- Dynamically injected -->
+      </div>
+    </section>
+
+    <!-- Bottom Viral Share Section -->
+    <footer class="footer-bar">
+      <h3 style="font-size: 1.5rem; margin-bottom: 8px;">Share the Joy! 🎊</h3>
+      <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto 15px;">
+        Send this celebration link to friends & family or create your own custom greeting!
+      </p>
+      <a href="#" id="forwardWaBtn" class="share-btn-wa">
+        <span>💬</span> Forward on WhatsApp
+      </a>
+      <div style="margin-top: 18px;">
+        <a href="../index.html" style="color: #FFAEC9; font-weight: 600; text-decoration: underline;">
+          Create a personalized wish for someone you love →
+        </a>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Photo Lightbox -->
+  <div class="lightbox-overlay" id="photoLightbox" onclick="closeLightbox()">
+    <img src="" alt="Memory" class="lightbox-img" id="lightboxImg">
+    <div class="lightbox-cap" id="lightboxCap"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import firebaseConfig from "../firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Floating balloons generator
+    const balloonIcons = ['🎈', '🎂', '🎉', '🎁', '✨', '💖', '⭐', '🎊'];
+    const container = document.getElementById('balloonsContainer');
+    
+    for (let i = 0; i < 15; i++) {
+      const b = document.createElement('div');
+      b.className = 'balloon';
+      b.textContent = balloonIcons[Math.floor(Math.random() * balloonIcons.length)];
+      b.style.left = `${Math.random() * 95}%`;
+      b.style.animationDelay = `${Math.random() * 12}s`;
+      b.style.animationDuration = `${10 + Math.random() * 10}s`;
+      container.appendChild(b);
+    }
+
+    // Confetti Cannon
+    function fireConfetti() {
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['#FF5E7E', '#6C5CE7', '#FDCB6E', '#00CEC9', '#FFAEC9']
+      });
+    }
+
+    document.getElementById('confettiCannonBtn').addEventListener('click', fireConfetti);
+
+    // Gift box unwrap
+    const giftBox = document.getElementById('giftBoxTrigger');
+    const unwrapped = document.getElementById('unwrappedArea');
+    const giftPrompt = document.getElementById('giftPrompt');
+
+    giftBox.addEventListener('click', () => {
+      unwrapped.style.display = 'block';
+      giftBox.style.animation = 'none';
+      giftBox.textContent = '🌟';
+      giftPrompt.textContent = 'Surprise Unwrapped! ✨';
+      fireConfetti();
+    });
+
+    // Lightbox handlers
+    window.openLightbox = function(src, cap) {
+      document.getElementById('lightboxImg').src = src;
+      document.getElementById('lightboxCap').textContent = cap || '';
+      document.getElementById('photoLightbox').style.display = 'flex';
+    };
+
+    window.closeLightbox = function() {
+      document.getElementById('photoLightbox').style.display = 'none';
+    };
+
+    // Load Data
+    async function loadWishData() {
+      const params = new URLSearchParams(window.location.search);
+      const wishId = params.get('wish_id');
+      let data = null;
+
+      if (wishId) {
+        try {
+          const snap = await getDoc(doc(db, "sent_wishes", wishId));
+          if (snap.exists()) {
+            data = snap.data();
+          }
+        } catch (err) {
+          console.warn("Firestore fetch error:", err);
+        }
+      }
+
+      // Query parameter fallbacks
+      const name = data?.name || params.get('name') || "Special Friend";
+      const from = data?.from || params.get('from') || "Someone Special";
+      const msg = data?.msg || params.get('msg');
+      const heroImg = data?.heroImg || params.get('img');
+      const memories = data?.memories || [];
+      const plans = data?.plans || [];
+      const wishes = data?.wishes || [];
+
+      // Update Document Details
+      document.title = `Happy Birthday, ${name}! 🎂✨`;
+      document.getElementById('displayRecipient').textContent = name;
+      document.getElementById('displaySender').textContent = from;
+
+      if (msg) {
+        document.getElementById('letterBody').textContent = msg;
+        document.getElementById('heroMessage').textContent = msg.slice(0, 200) + (msg.length > 200 ? "..." : "");
+      }
+
+      // Memories / Polaroids
+      const polaroidGrid = document.getElementById('polaroidGrid');
+      const gallerySection = document.getElementById('gallerySection');
+      
+      const defaultMemories = [
+        { img: heroImg || '../cake.png', cap: 'Sweet Celebrations! 🍰' },
+        { img: '../balloons.png', cap: 'Joy & Laughter! 🎈' },
+        { img: 'https://images.unsplash.com/photo-1530103862676-fa8c9d343165?auto=format&fit=crop&w=600&q=80', cap: 'Making Unforgettable Memories ✨' }
+      ];
+
+      const activeMemories = (memories && memories.length > 0) ? memories : defaultMemories;
+      polaroidGrid.innerHTML = '';
+      activeMemories.forEach((m, idx) => {
+        const card = document.createElement('div');
+        card.className = 'polaroid-card';
+        card.style.setProperty('--rand', (idx % 2 === 0 ? 0.8 : 0.2));
+        card.onclick = () => openLightbox(m.img, m.cap);
+        card.innerHTML = `
+          <div class="polaroid-img-box">
+            <img src="${m.img}" alt="Memory" onerror="this.src='../cake.png'">
+          </div>
+          <div class="polaroid-caption">${m.cap || 'Special Memory 💖'}</div>
+        `;
+        polaroidGrid.appendChild(card);
+      });
+
+      // Surprise Wishes
+      const surprisesGrid = document.getElementById('surprisesGrid');
+      const defaultWishes = [
+        "May your year ahead be blessed with boundless health, laughter, and high vibrations! 🌟",
+        "May every door of opportunity swing wide open for you this year! 🚀",
+        "Keep inspiring everyone around you with your contagious smile and heart of gold! 💛"
+      ];
+      const activeWishes = (wishes && wishes.length > 0) ? wishes : defaultWishes;
+      surprisesGrid.innerHTML = '';
+      activeWishes.forEach((w, i) => {
+        const card = document.createElement('div');
+        card.className = 'surprise-card';
+        card.innerHTML = `
+          <div class="surprise-title">
+            <span>🎁 Secret Wish #${i + 1}</span>
+            <span style="color: var(--accent);">Tap to Open</span>
+          </div>
+          <div class="surprise-text">${w}</div>
+        `;
+        card.addEventListener('click', () => {
+          card.classList.toggle('opened');
+          fireConfetti();
+        });
+        surprisesGrid.appendChild(card);
+      });
+
+      // Plans
+      const plansList = document.getElementById('plansList');
+      const defaultPlans = [
+        { title: 'Birthday Feast 🍕', desc: 'Indulge in your absolute favorite dishes and desserts without limits!' },
+        { title: 'Midnight Stargazing 🌠', desc: 'Make three grand wishes for the brand new year of your life!' }
+      ];
+      const activePlans = (plans && plans.length > 0) ? plans : defaultPlans;
+      plansList.innerHTML = '';
+      activePlans.forEach(p => {
+        const row = document.createElement('div');
+        row.className = 'plan-row';
+        row.innerHTML = `
+          <div class="plan-icon">🎯</div>
+          <div class="plan-info">
+            <h4>${p.title}</h4>
+            <p>${p.desc}</p>
+          </div>
+        `;
+        plansList.appendChild(row);
+      });
+
+      // WhatsApp Forwarding
+      const waBtn = document.getElementById('forwardWaBtn');
+      const currentUrl = window.location.href;
+      const waMsg = `🎂 I created a special birthday celebration surprise for you, ${name}! Check it out here: ${currentUrl}`;
+      waBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(waMsg)}`;
+      waBtn.target = "_blank";
+
+      // Trigger welcoming confetti
+      setTimeout(fireConfetti, 800);
+    }
+
+    loadWishData();
+  </script>
+</body>
+</html>

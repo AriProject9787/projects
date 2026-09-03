@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luxury Celebration Greeting 💎✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --primary: #8A2BE2;
+      --primary-neon: #9D4EDD;
+      --secondary: #00F2FE;
+      --accent: #4FACFE;
+      --gold: #FFD700;
+      --bg: #0A0814;
+      --card-glass: rgba(255, 255, 255, 0.05);
+      --border-glass: rgba(255, 255, 255, 0.15);
+      --text: #F8F9FA;
+      --radius: 24px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(138, 43, 226, 0.25) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(79, 172, 254, 0.25) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(0, 242, 254, 0.15) 0px, transparent 50%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      perspective: 1200px;
+    }
+
+    /* Floating glowing orbs in background */
+    .ambient-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.5;
+      animation: floatOrb 10s infinite alternate ease-in-out;
+    }
+
+    .orb-1 {
+      width: 320px;
+      height: 320px;
+      background: #8A2BE2;
+      top: 10%;
+      left: 10%;
+    }
+
+    .orb-2 {
+      width: 380px;
+      height: 380px;
+      background: #00F2FE;
+      bottom: 10%;
+      right: 10%;
+      animation-delay: -5s;
+    }
+
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 60px) scale(1.15); }
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+      position: relative;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(10, 8, 20, 0.6);
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .brand-tag {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #00F2FE, #9D4EDD);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .action-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-glass);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+    }
+
+    .action-btn.neon {
+      background: linear-gradient(135deg, #00F2FE, #9D4EDD);
+      color: #000;
+      font-weight: 700;
+      border: none;
+      box-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
+    }
+
+    /* Main Container */
+    .wrapper {
+      position: relative;
+      z-index: 10;
+      max-width: 860px;
+      margin: 40px auto 80px;
+      padding: 0 20px;
+    }
+
+    /* 3D Interactive Card */
+    .glass-card-3d {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius);
+      padding: 50px 40px;
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      box-shadow: 
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transform-style: preserve-3d;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card-3d::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+      pointer-events: none;
+      transform: rotate(30deg);
+    }
+
+    .event-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      background: rgba(157, 78, 221, 0.15);
+      border: 1px solid rgba(157, 78, 221, 0.5);
+      border-radius: 50px;
+      color: #E0AAFF;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 25px;
+      box-shadow: 0 0 15px rgba(157, 78, 221, 0.3);
+    }
+
+    .card-headline {
+      font-family: 'Syne', sans-serif;
+      font-size: 3.6rem;
+      line-height: 1.15;
+      margin-bottom: 15px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FFF 30%, #00F2FE 70%, #9D4EDD 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .recipient-name {
+      display: block;
+      font-size: 4.4rem;
+      color: #FFF;
+      text-shadow: 0 0 40px rgba(0, 242, 254, 0.6);
+    }
+
+    .sub-greeting {
+      font-size: 1.2rem;
+      color: #A0AEC0;
+      max-width: 600px;
+      line-height: 1.7;
+      margin-bottom: 35px;
+    }
+
+    /* Scratch/Reveal Surprise Box */
+    .reveal-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px dashed rgba(0, 242, 254, 0.4);
+      border-radius: 18px;
+      padding: 30px 25px;
+      text-align: center;
+      margin: 30px 0;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .reveal-box:hover {
+      border-color: #00F2FE;
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.2);
+    }
+
+    .reveal-badge {
+      font-size: 3.5rem;
+      margin-bottom: 10px;
+      display: inline-block;
+      animation: pulseReveal 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseReveal {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+    }
+
+    .reveal-content {
+      display: none;
+      animation: popOpen 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      margin-top: 15px;
+    }
+
+    @keyframes popOpen {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Message Letter Card */
+    .personal-msg-box {
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 4px solid #00F2FE;
+      border-radius: 0 16px 16px 0;
+      padding: 30px;
+      margin: 35px 0;
+    }
+
+    .msg-title {
+      font-size: 0.95rem;
+      color: #00F2FE;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .msg-body {
+      font-size: 1.2rem;
+      line-height: 1.85;
+      color: #E2E8F0;
+      white-space: pre-line;
+    }
+
+    .msg-author {
+      margin-top: 25px;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: #C77DFF;
+      text-align: right;
+    }
+
+    /* Photo Polaroid / Frame */
+    .frame-container {
+      margin: 40px 0;
+      text-align: center;
+    }
+
+    .glow-frame {
+      display: inline-block;
+      max-width: 500px;
+      width: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px rgba(157, 78, 221, 0.3);
+      position: relative;
+    }
+
+    .glow-frame img {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .frame-cap {
+      padding: 16px;
+      background: rgba(15, 10, 25, 0.85);
+      color: #F8F9FA;
+      font-size: 1.05rem;
+      font-weight: 500;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Wishes Grid */
+    .wishes-3d-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .wish-chip-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 22px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .wish-chip-card:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-4px);
+      border-color: #00F2FE;
+      box-shadow: 0 10px 25px rgba(0, 242, 254, 0.2);
+    }
+
+    .chip-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .chip-heading {
+      font-size: 1.1rem;
+      color: #FFF;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .chip-text {
+      font-size: 0.95rem;
+      color: #A0AEC0;
+      line-height: 1.6;
+    }
+
+    /* Bottom Share Box */
+    .share-box {
+      margin-top: 50px;
+      border-radius: var(--radius);
+      padding: 40px 25px;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(0, 242, 254, 0.15));
+      border: 1px solid var(--border-glass);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    .wa-share-btn {
+      background: #25D366;
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 50px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+      text-decoration: none;
+      box-shadow: 0 8px 25px rgba(37, 211, 102, 0.35);
+      transition: all 0.3s;
+    }
+
+    .wa-share-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 30px rgba(37, 211, 102, 0.5);
+    }
+
+    @media (max-width: 600px) {
+      .card-headline { font-size: 2.7rem; }
+      .recipient-name { font-size: 3.2rem; }
+      .glass-card-3d { padding: 30px 20px; }
+      .top-bar { padding: 14px 18px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ambient-orb orb-1"></div>
+  <div class="ambient-orb orb-2"></div>
+
+  <nav class="top-bar">
+    <div class="brand-tag">
+      <span>💎</span> LUXE WISH
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button class="action-btn" id="audioChimeBtn">🔔 Play Chime</button>
+      <a href="../index.html" class="action-btn neon">+ Create Card</a>
+    </div>
+  </nav>
+
+  <main class="wrapper">
+    <div class="glass-card-3d" id="tiltCard">
+      <div class="event-chip" id="eventBadge">✨ Special Celebration Moment ✨</div>
+      
+      <h1 class="card-headline">
+        Celebration For
+        <span class="recipient-name" id="displayRecipient">Distinguished Star</span>
+      </h1>
+      
+      <p class="sub-greeting" id="displaySub">
+        Honoring this extraordinary milestone with highest admiration, bright cheer, and celebratory toasts!
+      </p>
+
+      <!-- Interactive Reveal Box -->
+      <div class="reveal-box" id="revealTrigger">
+        <div class="reveal-badge" id="revealIcon">🎁</div>
+        <h3 style="color: #00F2FE; font-size: 1.3rem; margin-bottom: 4px;" id="revealPromptTitle">
+          Tap To Reveal Your Celebration Surprise
+        </h3>
+        <p style="color: #A0AEC0; font-size: 0.95rem;" id="revealPromptDesc">
+          A personalized VIP message is waiting inside...
+        </p>
+
+        <div class="reveal-content" id="revealContent">
+          <h4 style="color: #FFF; font-size: 1.4rem; margin-bottom: 10px;">🚀 Keep Conquering New Heights!</h4>
+          <p style="color: #E2E8F0; line-height: 1.7; max-width: 600px; margin: 0 auto;" id="revealMessage">
+            Every step of your journey has been filled with dedication and heart. May the days ahead bring you triumph, abundance, happiness, and pride!
+          </p>
+        </div>
+      </div>
+
+      <!-- Personal Message -->
+      <div class="personal-msg-box">
+        <div class="msg-title">
+          <span>💌</span> Exclusive Celebration Letter
+        </div>
+        <div class="msg-body" id="personalMsg">
+Today marks an unforgettable milestone! 
+
+May your path continue to sparkle with greatness, authentic joy, and passionate pursuits. Celebrate this wonderful occasion to the fullest surrounded by those who admire and cherish you!
+        </div>
+        <div class="msg-author" id="displaySender">
+          Sincerely, A Caring Admirer 💫
+        </div>
+      </div>
+
+      <!-- Photo Display -->
+      <div class="frame-container" id="frameContainer">
+        <div class="glow-frame">
+          <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80" alt="Celebration" id="heroPhoto" onerror="this.src='../balloons.png'">
+          <div class="frame-cap" id="heroCap">A Golden Memory To Remember 🌟</div>
+        </div>
+      </div>
+
+      <!-- Celebration Highlights -->
+      <div class="wishes-3d-grid" id="highlightsGrid">
+        <!-- Injected -->
+      </div>
+    </div>
+
+    <!-- Bottom Share -->
+    <footer class="share-box">
+      <h3 style="font-family: 'Syne', sans-serif; font-size: 1.8rem; margin-bottom: 8px;">
+        Forward The Celebration 💎
+      </h3>
+      <p style="color: #A0AEC0; max-width: 500px; margin: 0 auto 15px;">
+        Instantly send this luxury celebration page on WhatsApp to make their day extraordinary.
+      </p>
+      <a href="#" id="forwardWaBtn" class="wa-share-btn">
+        <span>💬</span> Forward on WhatsApp
+      </a>
+      <div style="margin-top: 20px;">
+        <a href="../index.html" style="color: #00F2FE; font-weight: 600; text-decoration: underline;">
+          Create your own luxury celebration card →
+        </a>
+      </div>
+    </footer>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import firebaseConfig from "../firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 3D Card Tilt Effect
+    const card = document.getElementById('tiltCard');
+    document.addEventListener('mousemove', (e) => {
+      const { innerWidth, innerHeight } = window;
+      const x = (e.clientX - innerWidth / 2) / (innerWidth / 2);
+      const y = (e.clientY - innerHeight / 2) / (innerHeight / 2);
+      card.style.transform = `rotateY(${x * 6}deg) rotateX(${-y * 6}deg)`;
+    });
+
+    // Synthesized Audio Celebration Fanfare (Web Audio API)
+    function playCelebrationFanfare() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioContext();
+        
+        const notes = [261.63, 329.63, 392.00, 523.25, 659.25]; // C chord chime
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.12);
+          
+          gain.gain.setValueAtTime(0, ctx.currentTime + idx * 0.12);
+          gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + idx * 0.12 + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.12 + 0.8);
+          
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          
+          osc.start(ctx.currentTime + idx * 0.12);
+          osc.stop(ctx.currentTime + idx * 0.12 + 0.9);
+        });
+      } catch (err) {
+        console.warn("Audio unavailable", err);
+      }
+    }
+
+    document.getElementById('audioChimeBtn').addEventListener('click', () => {
+      playCelebrationFanfare();
+      fireNeonConfetti();
+    });
+
+    // Neon Confetti
+    function fireNeonConfetti() {
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['#00F2FE', '#9D4EDD', '#8A2BE2', '#4FACFE', '#FFD700']
+      });
+    }
+
+    // Reveal box
+    const revealTrigger = document.getElementById('revealTrigger');
+    const revealContent = document.getElementById('revealContent');
+    const revealPromptTitle = document.getElementById('revealPromptTitle');
+    const revealPromptDesc = document.getElementById('revealPromptDesc');
+    const revealIcon = document.getElementById('revealIcon');
+
+    revealTrigger.addEventListener('click', () => {
+      revealContent.style.display = 'block';
+      revealIcon.textContent = '🌟';
+      revealPromptTitle.textContent = 'Celebration Unlocked! ✨';
+      revealPromptDesc.textContent = 'Your special message has been revealed';
+      fireNeonConfetti();
+      playCelebrationFanfare();
+    });
+
+    async function init() {
+      const params = new URLSearchParams(window.location.search);
+      const wishId = params.get('wish_id');
+      let data = null;
+
+      if (wishId) {
+        try {
+          const snap = await getDoc(doc(db, "sent_wishes", wishId));
+          if (snap.exists()) data = snap.data();
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+
+      const name = data?.name || params.get('name') || "Valued Friend";
+      const from = data?.from || params.get('from') || "Someone Special";
+      const msg = data?.msg || params.get('msg');
+      const eventType = data?.eventType || params.get('event') || "Milestone";
+      const heroImg = data?.heroImg || params.get('img');
+      const wishes = data?.wishes || [];
+
+      document.title = `Celebration for ${name}! 💎✨`;
+      document.getElementById('displayRecipient').textContent = name;
+      document.getElementById('displaySender').textContent = `Best Wishes, ${from} ✨`;
+      document.getElementById('eventBadge').textContent = `✨ ${eventType.toUpperCase()} CELEBRATION ✨`;
+
+      if (msg) {
+        document.getElementById('personalMsg').textContent = msg;
+        document.getElementById('revealMessage').textContent = msg.slice(0, 180) + (msg.length > 180 ? '...' : '');
+      }
+
+      if (heroImg) {
+        document.getElementById('heroPhoto').src = heroImg;
+      }
+
+      // Highlights Grid
+      const grid = document.getElementById('highlightsGrid');
+      const defaultChips = [
+        { icon: '🚀', title: 'Boundless Horizons', desc: 'May every ambition transform into victory and fulfillment.' },
+        { icon: '💎', title: 'Pure Excellence', desc: 'Honoring your high standards, dedication, and inspirational spirit.' },
+        { icon: '🥂', title: 'Bright Times Ahead', desc: 'Raising a toast to the next chapters of your remarkable story.' }
+      ];
+
+      const activeChips = (wishes && wishes.length > 0) 
+        ? wishes.map((w, i) => ({ icon: '✨', title: `Wish #${i+1}`, desc: w }))
+        : defaultChips;
+
+      grid.innerHTML = '';
+      activeChips.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'wish-chip-card';
+        item.innerHTML = `
+          <div class="chip-icon">${c.icon}</div>
+          <div class="chip-heading">${c.title}</div>
+          <div class="chip-text">${c.desc}</div>
+        `;
+        item.onclick = () => {
+          fireNeonConfetti();
+          playCelebrationFanfare();
+        };
+        grid.appendChild(item);
+      });
+
+      // WhatsApp Forwarding
+      const waBtn = document.getElementById('forwardWaBtn');
+      const currentUrl = window.location.href;
+      const waMsg = `💎 I created an exclusive celebration greeting card for you, ${name}! View it here: ${currentUrl}`;
+      waBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(waMsg)}`;
+      waBtn.target = "_blank";
+
+      setTimeout(fireNeonConfetti, 800);
+    }
+
+    init();
+  </script>
+</body>
+</html>
